@@ -1,62 +1,399 @@
 package org.khatep.balaguide;
 
 import lombok.RequiredArgsConstructor;
+import org.khatep.balaguide.dao.impl.CourseDaoImpl;
+import org.khatep.balaguide.menu.MenuPrinter;
 import org.khatep.balaguide.models.entities.Child;
 import org.khatep.balaguide.models.entities.Course;
 import org.khatep.balaguide.models.entities.Parent;
-import org.khatep.balaguide.services.MainService;
+import org.khatep.balaguide.models.enums.Gender;
+import org.khatep.balaguide.services.ChildService;
+import org.khatep.balaguide.services.ParentService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.function.Predicate;
+
+import static org.khatep.balaguide.models.enums.Colors.*;
 
 @SpringBootApplication
 @RequiredArgsConstructor
 public class BalaGuideApplication implements CommandLineRunner {
+    private static final Scanner console = new Scanner(System.in);
+    private static int command = -1;
+    private final CourseDaoImpl courseDaoImpl;
+    private MenuPrinter printer = new MenuPrinter();
 
-    private final MainService mainService;
+    boolean isParentLogin = false;
+    boolean isChildLogin = false;
+
+    private final ParentService parentService;
+    private final ChildService childService;
 
     public static void main(String[] args) {
-       SpringApplication.run(BalaGuideApplication.class, args);
+        SpringApplication.run(BalaGuideApplication.class, args);
     }
-    
+
     @Override
     public void run(String... args) throws Exception {
-        Parent parent = new Parent(1L, "Nurgali", "Khatep", "87711134885", "nurgali@gmail.com", "password123", "Saina 48", BigDecimal.valueOf(100_000), new ArrayList<>());
+        runApp();
+    }
 
-        Parent savedParent = mainService.signUp(parent);
-        System.out.println("Parent registered: " + savedParent);
+    private void runApp() {
+        while (command != 0) {
+            System.out.println("************************");
+            printer.printMainMenu();
+            try {
+                System.out.print(GREEN.getCode() + "Enter command number: " + RESET.getCode());
+                command = console.nextInt();
+            } catch (Exception e) {
+                System.out.println(RED.getCode() + "Error: Enter a number! (1-6)" + RESET.getCode());
+                console.next();
+                continue;
+            }
 
-        // Create and save a child
-        Child child = new Child(1L, "Ergali", "Khatep", LocalDate.of(2008, 5, 25), "8772158945", "password123", "male", savedParent, new ArrayList<>());
+            if (command == 1) {
+                printer.printParentMenu();
+                try {
+                    System.out.print(GREEN.getCode() + "Enter command number: " + RESET.getCode());
+                    command = console.nextInt();
+                } catch (Exception e) {
+                    System.out.println(RED.getCode() + "Error: Enter a number! (1-15)" + RESET.getCode());
+                    console.next();
+                    continue;
+                }
+                switch (command) {
+                    case 1 -> signUpParent();
+                    case 2 -> loginParent();
+                    case 3 -> addChild();
+                    case 4 -> removeChild();
+                    case 5 -> getMyChildren();
+                    case 6 -> searchCourse();
+                    case 7 -> enrollChildToCourse();
+                    case 8 -> unenrollChildFromCourse();
+                    case 9 -> addBalance();
+                    case 10 -> {
+                    }
+                    default ->
+                            System.out.println(RED.getCode() + "Error: Enter right command number! (From 1 to 15)" + RESET.getCode());
+                }
+            } else if (command == 2) {
+                printer.printChildMenu();
+                try {
+                    System.out.print(GREEN.getCode() + "Enter command number: " + RESET.getCode());
+                    command = console.nextInt();
+                } catch (Exception e) {
+                    System.out.println(RED.getCode() + "Error: Enter a number! (1-4)" + RESET.getCode());
+                    console.next();
+                    continue;
+                }
+                switch (command) {
+                    case 1 -> loginChild();
+                    case 2 -> searchCourse();
+                    case 3 -> getEnrolledCourses();
+                    case 4 -> {
+                    }
+                    default ->
+                            System.out.println(RED.getCode() + "Error: Enter right command number! (From 1 to 4)" + RESET.getCode());
+                }
+            } else if (command == 3) {
+                System.exit(0);
+            } else {
+                System.out.println(RED.getCode() + "Error: Enter right command number! (From 1 to 4)" + RESET.getCode());
+            }
+        }
+    }
 
-        Child savedChild = mainService.addChild(savedParent, child);
-        System.out.println("Child added: " + savedChild);
+    public void signUpParent() {
+        System.out.print("Enter first name: ");
+        String firstName = console.next();
 
-        // Create and save a course
-        Course course = new Course(1L, "Python for children", "Basic Python Course", "IT school", "programming", "8-16", BigDecimal.valueOf(20_000), "Satbaeva 15", 15, 0);
+        System.out.print("Enter last name : ");
+        String surname = console.next();
 
-        Course savedCourse = mainService.addCourse(course);
-        System.out.println("Course added: " + savedCourse);
+        System.out.print("Enter phone number: ");
+        String phoneNumber = console.next();
 
-        // Enroll the child to the course
-        boolean enrolled = mainService.enrollChildToCourse(savedParent.getId(), savedChild.getId(), savedCourse.getId());
-        System.out.println("Child enrolled in course: " + enrolled);
+        System.out.print("Enter email: ");
+        String email = console.next();
 
-        // Check the balance after payment
-        System.out.println("Remaining balance: " + savedParent.getBalance());
+        System.out.print("Enter password: ");
+        String password = console.next();
 
-        // Get the child's enrolled courses
-        List<Course> enrolledCourses = mainService.getMyCourses(savedChild);
-        System.out.println("Courses enrolled by child: " + enrolledCourses);
+        System.out.print("Enter address: ");
+        String address = console.next();
 
-        // Unenroll the child from the course
-        boolean unenrolled = mainService.unenrollChildFromCourse(savedCourse.getId(), savedChild.getId());
-        System.out.println("Child unenrolled from course: " + unenrolled);
+        Parent parent = Parent.builder()
+                .firstName(firstName)
+                .lastName(surname)
+                .phoneNumber(phoneNumber)
+                .email(email)
+                .password(password)
+                .address(address)
+                .balance(BigDecimal.valueOf(0))
+                .build();
 
+        int rows = parentService.signUp(parent);
+        if (rows != 0)
+            System.out.println(GREEN.getCode() + "Successfully added parent!" + RESET.getCode());
+        else
+            System.out.println(RED.getCode() + "Something went wrong!" + RESET.getCode());
+
+    }
+
+    public void loginParent() {
+        System.out.print("Enter phone number: ");
+        String phoneNumber = console.next();
+
+        System.out.print("Enter password: ");
+        String password = console.next();
+
+        boolean res = parentService.login(Parent.builder().phoneNumber(phoneNumber).password(password).build());
+        isParentLogin = res;
+        if (res)
+            System.out.println(GREEN.getCode() + "Successfully logged in!" + RESET.getCode());
+        else
+            System.out.println(RED.getCode() + "Failed to log in!" + RESET.getCode());
+    }
+
+    public void addChild() {
+        if (!isParentLogin) {
+            System.out.println(CYAN.getCode() + "Please login first!" + RESET.getCode());
+            loginParent();
+        } else {
+            System.out.print("Enter child first name: ");
+            String firstName = console.next();
+
+            System.out.print("Enter child last name: ");
+            String lastName = console.next();
+
+            System.out.print("Enter child birth date (YYYY-MM-DD): ");
+            String birthDateString = console.next();
+            LocalDate birthDate = LocalDate.parse(birthDateString);
+
+            System.out.print("Enter child phone number: ");
+            String phoneNumber = console.next();
+
+            System.out.print("Enter child password: ");
+            String password = console.next();
+
+            System.out.print("Enter child gender (e.g., MALE, FEMALE): ");
+            String genderInput = console.next().toUpperCase();
+            Gender gender = Gender.valueOf(genderInput);
+
+            System.out.print("Enter parent id: ");
+            Long parentId = console.nextLong();
+
+            System.out.print("Enter parent password: ");
+            String parentPassword = console.next();
+
+            Child child = Child.builder()
+                    .firstName(firstName)
+                    .lastName(lastName)
+                    .birthDate(birthDate)
+                    .phoneNumber(phoneNumber)
+                    .password(password)
+                    .gender(gender)
+                    .parentId(parentId)
+                    .build();
+
+            int rows = parentService.addChild(child, parentPassword);
+            if (rows != 0)
+                System.out.println(GREEN.getCode() + "Successfully added child!" + RESET.getCode());
+            else
+                System.out.println(RED.getCode() + "Something was wrong!" + RESET.getCode());
+        }
+    }
+
+    public void removeChild() {
+        if (!isParentLogin) {
+            System.out.println(CYAN.getCode() + "Please login first!" + RESET.getCode());
+            loginParent();
+        } else {
+            System.out.print("Enter child id: ");
+            Long childId = console.nextLong();
+
+            System.out.print("Enter parent password: ");
+            String parentPassword = console.next();
+
+            int res = parentService.removeChild(childId, parentPassword);
+            if (res != 0)
+                System.out.println(GREEN.getCode() + "Successfully removed child!" + RESET.getCode());
+            else
+                System.out.println(RED.getCode() + "Something was wrong!" + RESET.getCode());
+        }
+    }
+
+    public void getMyChildren() {
+        if (!isParentLogin) {
+            System.out.println(CYAN.getCode() + "Please login first!" + RESET.getCode());
+            loginParent();
+        } else {
+            System.out.print("Enter parent id: ");
+            Long parentId = console.nextLong();
+
+            System.out.print("Enter parent password: ");
+            String parentPassword = console.next();
+
+            List<Child> childList = parentService.getMyChildren(parentId, parentPassword);
+            if (!childList.isEmpty()) {
+                System.out.println(GREEN.getCode() + "Successfully: " + RESET.getCode());
+                System.out.println(childList);
+            }
+            else
+                System.out.println(RED.getCode() + "Something was wrong!" + RESET.getCode());
+        }
+    }
+
+    public void searchCourse() {
+        System.out.print("Enter course name: ");
+        String courseName = console.next().trim();
+
+        System.out.print("Do you want to add filters? (Yes/No): ");
+        String isWanted = console.next().trim();
+
+        Predicate<Course> predicate = course -> true;
+
+        if (isWanted.equalsIgnoreCase("Yes")) {
+            System.out.print("Enter category (Programming, Sport, Languages, Art, Math) or press Enter to skip: ");
+            String categoryInput = console.next().trim();
+            if (!categoryInput.isEmpty()) {
+                predicate = predicate.and(course -> course.getCategory().toString().equalsIgnoreCase(categoryInput));
+            }
+
+            System.out.print("Enter maximum price or press Enter to skip: ");
+            String maxPriceInput = console.next().trim();
+            if (!maxPriceInput.isEmpty()) {
+                BigDecimal maxPrice = new BigDecimal(maxPriceInput);
+                predicate = predicate.and(course -> course.getPrice().compareTo(maxPrice) <= 0);
+            }
+
+            System.out.print("Enter age range (e.g., '6-10 years') or press Enter to skip: ");
+            String ageRangeInput = console.next().trim();
+            if (!ageRangeInput.isEmpty()) {
+                predicate = predicate.and(course -> course.getAgeRange().equalsIgnoreCase(ageRangeInput));
+            }
+        }
+
+        List<Course> filteredCourses = parentService.searchCoursesWithFilter(courseName, predicate);
+
+        if (filteredCourses.isEmpty()) {
+            System.out.println(RED.getCode() + "No courses found." + RESET.getCode());
+        } else {
+            System.out.println(GREEN.getCode() + "Found courses:" + RESET.getCode());
+            for (Course course : filteredCourses) {
+                System.out.println(course);
+            }
+        }
+    }
+
+    public void enrollChildToCourse() {
+        if (!isParentLogin) {
+            System.out.println(CYAN.getCode() + "Please login first!" + RESET.getCode());
+            loginParent();
+        } else {
+            System.out.print("Enter parent id: ");
+            Long parentId = console.nextLong();
+
+            System.out.print("Enter child id: ");
+            Long childId = console.nextLong();
+
+            System.out.print("Enter course id: ");
+            Long courseId = console.nextLong();
+
+            boolean isEnrolled = parentService.enrollChildToCourse(parentId, childId, courseId);
+            if (isEnrolled)
+                System.out.println(GREEN.getCode() + "Successfully enrolled child!" + RESET.getCode());
+            else
+                System.out.println(RED.getCode() + "Something was wrong!" + RESET.getCode());
+        }
+    }
+
+    public void unenrollChildFromCourse() {
+        if (!isParentLogin) {
+            System.out.println(CYAN.getCode() + "Please login first!" + RESET.getCode());
+            loginParent();
+        } else {
+            System.out.print("Enter parent id: ");
+            Long parentId = console.nextLong();
+
+            System.out.print("Enter child id: ");
+            Long childId = console.nextLong();
+
+            System.out.print("Enter course id: ");
+            Long courseId = console.nextLong();
+
+            boolean isUnenrolled = parentService.unenrollChildFromCourse(parentId, childId, courseId);
+            if (isUnenrolled)
+                System.out.println(GREEN.getCode() + "Successfully unenrolled child!" + RESET.getCode());
+            else
+                System.out.println(RED.getCode() + "Something went wrong!" + RESET.getCode());
+        }
+    }
+
+    /**
+     * It is fake method
+     */
+    private void addBalance() {
+        if (!isParentLogin) {
+            System.out.println(CYAN.getCode() + "Please login first!" + RESET.getCode());
+            loginParent();
+        } else {
+            System.out.print("Enter parent id: ");
+            Long parentId = console.nextLong();
+
+            System.out.print("Enter the amount of money you want to deposit: ");
+            Integer amountOfMoney = console.nextInt();
+
+            System.out.print("Enter bank account number (example: 1101): ");
+            Integer accountNumber = console.nextInt();
+
+            System.out.println(CYAN.getCode() + "The request is being sent to your bank......" + RESET.getCode());
+
+            String res = parentService.addBalance(parentId, amountOfMoney);
+            System.out.println(res);
+        }
+    }
+
+    private void loginChild() {
+        System.out.print("Enter phone number: ");
+        String phoneNumber = console.next();
+
+        System.out.print("Enter password: ");
+        String password = console.next();
+
+        boolean res = childService.login(Child.builder().phoneNumber(phoneNumber).password(password).build());
+        isChildLogin = res;
+        if (res)
+            System.out.println(GREEN.getCode() + "Successfully logged in!" + RESET.getCode());
+        else
+            System.out.println(RED.getCode() + "Failed to log in!" + RESET.getCode());
+    }
+
+    private void getEnrolledCourses() {
+        if (!isChildLogin) {
+            System.out.println(CYAN.getCode() + "Please login first!" + RESET.getCode());
+            loginChild();
+        } else {
+            System.out.print("Enter child id: ");
+            Long childId = console.nextLong();
+
+            List<Course> enrolledCourses = childService.getMyCourses(Child.builder().id(childId).build());
+
+            if (enrolledCourses.isEmpty()) {
+                System.out.println(RED.getCode() + "This child is not enrolled in any courses." + RESET.getCode());
+            } else {
+                System.out.println(GREEN.getCode() + "Enrolled Courses:" + RESET.getCode());
+                for (Course course : enrolledCourses) {
+                    System.out.println("- " + course.getName() + " (ID: " + course.getId() + ")");
+                }
+            }
+        }
     }
 }
