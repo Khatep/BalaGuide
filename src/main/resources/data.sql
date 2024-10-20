@@ -7,7 +7,7 @@ INSERT INTO course (id, name, description, educational_center_id, category, age_
 VALUES (101, 'Python for Beginners', 'Start your journey with Python', 101, 'PROGRAMMING', '8-16', 200.00, 40, '789 Secondary St, Townsville', 15, 5, 'Course book, Online materials');
 
 INSERT INTO course (id, name, description, educational_center_id, category, age_range, price, durability, address, max_participants, current_participants, course_materials)
-VALUES (102, 'Web Development Basics', 'Learn HTML, CSS, and JavaScript', 100, 'PROGRAMMING', '10-18', 350.00, 60, '123 Main St, Cityville', 20, 10, 'Course book, Online materials, Projects');
+VALUES (102, 'Web Development Basics', 'Learn HTML, CSS, and JavaScript', 101, 'PROGRAMMING', '10-18', 350.00, 60, '123 Main St, Cityville', 20, 10, 'Course book, Online materials, Projects');
 
 -- Вставка данных в teacher
 INSERT INTO teacher (id, first_name, last_name, date_of_birth, phone_number, password, gender)
