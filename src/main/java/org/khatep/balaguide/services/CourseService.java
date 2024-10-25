@@ -1,13 +1,8 @@
 package org.khatep.balaguide.services;
 
-import org.khatep.balaguide.dao.ChildDao;
-import org.khatep.balaguide.dao.CourseDao;
-import org.khatep.balaguide.dao.impl.ChildDaoImpl;
-import org.khatep.balaguide.dao.impl.CourseDaoImpl;
 import org.khatep.balaguide.models.entities.Child;
 import org.khatep.balaguide.models.entities.Course;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +14,7 @@ public interface CourseService {
      * @param course the {@link Course} to be added
      * @return the number of affected rows
      */
-    int addCourse(Course course);
+    Course addCourse(Course course);
 
     /**
      * Updates the information of an existing course.
@@ -28,7 +23,7 @@ public interface CourseService {
      * @param updatedCourse the {@link Course} object containing updated information
      * @return the number of affected rows
      */
-    int updateInformation(Long courseId, Course updatedCourse);
+    Course updateInformation(Long courseId, Course updatedCourse);
 
     /**
      * Retrieves a list of all available courses.
@@ -44,7 +39,7 @@ public interface CourseService {
      * @param childId the ID of the child to be added
      * @return true if the child is successfully added; false otherwise
      */
-    boolean addParticipant(Long courseId, Long childId);
+    boolean enrollChild(Long courseId, Long childId);
 
     /**
      * Removes a child as a participant from a specified course.

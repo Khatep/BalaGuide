@@ -1,5 +1,6 @@
 package org.khatep.balaguide.models.entities;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,11 +15,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
+@Table(name = "teacher")
 public class Teacher {
 
     /**
      * The unique identifier for the teacher.
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -55,11 +60,18 @@ public class Teacher {
     /**
      * The gender of the teacher.
      */
+    @Enumerated(EnumType.STRING)
     private Gender gender;
     
     /**
      * The list of courses taught by the teacher.
      * This list may contain multiple {@link Course} objects.
      */
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinTable(
+            name = "teacher_course",
+            joinColumns = @JoinColumn(name = "teacher_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
     private List<Course> myCourses;
 }

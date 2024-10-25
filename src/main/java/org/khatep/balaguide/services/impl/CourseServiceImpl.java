@@ -2,108 +2,116 @@ package org.khatep.balaguide.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.khatep.balaguide.aop.annotations.ForLog;
-import org.khatep.balaguide.dao.ChildDao;
-import org.khatep.balaguide.dao.CourseDao;
+import org.khatep.balaguide.exceptions.CourseFullException;
+import org.khatep.balaguide.exceptions.IneligibleChildException;
 import org.khatep.balaguide.models.entities.Child;
 import org.khatep.balaguide.models.entities.Course;
+import org.khatep.balaguide.repositories.ChildRepository;
+import org.khatep.balaguide.repositories.CourseRepository;
 import org.khatep.balaguide.services.CourseService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
-    private final CourseDao courseDao;
-    private final ChildDao childDao;
+    private final CourseRepository courseRepository;
+    private final ChildRepository childRepository;
 
     @Override
     @ForLog
-    public int addCourse(Course course) {
-        return courseDao.save(course);
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Course addCourse(Course course) {
+        return courseRepository.save(course);
     }
 
     @Override
     @ForLog
-    public int updateInformation(Long courseId, Course updatedCourse) {
-        Optional<Course> existingCourse = courseDao.findById(courseId);
-        if (existingCourse.isPresent()) {
-            Course course = existingCourse.get();
-            course.setName(updatedCourse.getName());
-            course.setDescription(updatedCourse.getDescription());
-            course.setEducationCenterId(updatedCourse.getEducationCenterId());
-            course.setCategory(updatedCourse.getCategory());
-            course.setAgeRange(updatedCourse.getAgeRange());
-            course.setPrice(updatedCourse.getPrice());
-            course.setDurability(updatedCourse.getDurability());
-            course.setAddress(updatedCourse.getAddress());
-            course.setMaxParticipants(updatedCourse.getMaxParticipants());
-            course.setCurrentParticipants(updatedCourse.getCurrentParticipants());
-            return courseDao.save(course);
-        }
-        return 0;
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    public Course updateInformation(Long courseId, Course updatedCourse) {
+        Course existingCourse = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+
+        existingCourse.setName(updatedCourse.getName());
+        existingCourse.setDescription(updatedCourse.getDescription());
+        existingCourse.setEducationCenter(updatedCourse.getEducationCenter());
+        existingCourse.setCategory(updatedCourse.getCategory());
+        existingCourse.setAgeRange(updatedCourse.getAgeRange());
+        existingCourse.setPrice(updatedCourse.getPrice());
+        existingCourse.setDurability(updatedCourse.getDurability());
+        existingCourse.setAddress(updatedCourse.getAddress());
+        existingCourse.setMaxParticipants(updatedCourse.getMaxParticipants());
+        existingCourse.setCurrentParticipants(updatedCourse.getCurrentParticipants());
+
+        return courseRepository.save(existingCourse);
     }
 
     @Override
     @ForLog
+    @Transactional(readOnly = true)
     public List<Course> getCourses() {
-            return courseDao.findAll();
-        }
+        return courseRepository.findAll();
+    }
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     @ForLog
-    public boolean addParticipant(Long courseId, Long childId) {
-        Optional<Course> courseOpt = courseDao.findById(courseId);
-        Optional<Child> childOpt = childDao.findById(childId);
+    public boolean enrollChild(Long courseId, Long childId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new RuntimeException("Child not found with id: " + childId));
 
-        if (courseOpt.isPresent() && childOpt.isPresent()) {
-            Course course = courseOpt.get();
-            Child child = childOpt.get();
-
-            if (isChildEligible(course, child) && !isCourseFull(course)) {
-                courseDao.addParticipant(childId, courseId);
-
-                course.setCurrentParticipants(course.getCurrentParticipants() + 1);
-                courseDao.update(course);
-                return true;
-            }
+        if (isCourseFull(course)) {
+            throw new CourseFullException("Course is full and cannot enroll more participants.");
         }
-        return false;
+
+        if (isChildEligible(course, child)) {
+            throw new IneligibleChildException("Child is not eligible for this course.");
+        }
+
+        courseRepository.enrollChildInCourse(childId, courseId);
+        course.setCurrentParticipants(course.getCurrentParticipants() + 1);
+        courseRepository.save(course);
+        return true;
     }
 
     @Override
     @ForLog
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public boolean removeParticipant(Long courseId, Long childId) {
-        Optional<Course> courseOpt = courseDao.findById(courseId);
-        Optional<Child> childOpt = childDao.findById(childId);
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new RuntimeException("Child not found with id: " + childId));
 
-        if (courseOpt.isPresent() && childOpt.isPresent()) {
-            Course course = courseOpt.get();
-            Child child = childOpt.get();
+        if (!child.getCoursesEnrolled().contains(course))
+            return false;
 
-            if (child.getCoursesEnrolled().contains(course)) {
-                course.setCurrentParticipants(course.getCurrentParticipants() - 1);
-                child.getCoursesEnrolled().remove(course);
-                return true;
-            }
-        }
-        return false;
+        course.setCurrentParticipants(course.getCurrentParticipants() - 1);
+        child.getCoursesEnrolled().remove(course);
+        return true;
     }
 
     @Override
     @ForLog
-    public boolean isCourseFull(Course course)  {
+    @Transactional(readOnly = true)
+    public boolean isCourseFull(Course course) {
         return course.getCurrentParticipants() >= course.getMaxParticipants();
     }
 
     @Override
     @ForLog
+    @Transactional(readOnly = true)
     public int getCurrentParticipants(Long courseId) {
-        Optional<Course> courseOpt = courseDao.findById(courseId);
-        return courseOpt.map(Course::getCurrentParticipants).orElse(-1);
+        return courseRepository.findById(courseId)
+                .map(Course::getCurrentParticipants)
+                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
     }
 
     @Override
@@ -112,8 +120,8 @@ public class CourseServiceImpl implements CourseService {
         String[] ageRangeParts = course.getAgeRange().split("-");
         int minAge = Integer.parseInt(ageRangeParts[0].trim());
         int maxAge = Integer.parseInt(ageRangeParts[1].trim());
-
         int childAge = LocalDate.now().getYear() - child.getBirthDate().getYear();
+
         return childAge >= minAge && childAge <= maxAge;
     }
 }

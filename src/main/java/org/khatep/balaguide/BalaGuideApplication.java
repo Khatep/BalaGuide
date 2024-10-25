@@ -1,18 +1,18 @@
 package org.khatep.balaguide;
 
 import lombok.RequiredArgsConstructor;
-import org.khatep.balaguide.dao.impl.CourseDaoImpl;
+import org.khatep.balaguide.dbinit.DatabaseInitializer;
 import org.khatep.balaguide.menu.MenuPrinter;
 import org.khatep.balaguide.models.entities.Child;
 import org.khatep.balaguide.models.entities.Course;
 import org.khatep.balaguide.models.entities.Parent;
 import org.khatep.balaguide.models.enums.Gender;
+import org.khatep.balaguide.repositories.ParentRepository;
 import org.khatep.balaguide.services.ChildService;
 import org.khatep.balaguide.services.ParentService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,10 +25,13 @@ import static org.khatep.balaguide.models.enums.Colors.*;
 @SpringBootApplication
 @RequiredArgsConstructor
 public class BalaGuideApplication implements CommandLineRunner {
+
+    private final ParentRepository parentRepository;
+    private final DatabaseInitializer databaseInitializer;
+
     private static final Scanner console = new Scanner(System.in);
     private static int command = -1;
-    private final CourseDaoImpl courseDaoImpl;
-    private MenuPrinter printer = new MenuPrinter();
+    private final MenuPrinter printer = new MenuPrinter();
 
     boolean isParentLogin = false;
     boolean isChildLogin = false;
@@ -61,7 +64,7 @@ public class BalaGuideApplication implements CommandLineRunner {
             if (command == 1) {
                 printer.printParentMenu();
                 try {
-                    System.out.print(GREEN.getCode() + "Enter command number: " + RESET.getCode());
+                    System.out.print(GREEN.getCode()    + "Enter command number: " + RESET.getCode());
                     command = console.nextInt();
                 } catch (Exception e) {
                     System.out.println(RED.getCode() + "Error: Enter a number! (1-15)" + RESET.getCode());
@@ -139,8 +142,8 @@ public class BalaGuideApplication implements CommandLineRunner {
                 .balance(BigDecimal.valueOf(0))
                 .build();
 
-        int rows = parentService.signUp(parent);
-        if (rows != 0)
+        Parent p = parentService.signUp(parent);
+        if (p != null)
             System.out.println(GREEN.getCode() + "Successfully added parent!" + RESET.getCode());
         else
             System.out.println(RED.getCode() + "Something went wrong!" + RESET.getCode());
@@ -190,6 +193,7 @@ public class BalaGuideApplication implements CommandLineRunner {
             System.out.print("Enter parent id: ");
             Long parentId = console.nextLong();
 
+            Parent parent = parentRepository.findById(parentId).orElse(null);
             System.out.print("Enter parent password: ");
             String parentPassword = console.next();
 
@@ -200,11 +204,11 @@ public class BalaGuideApplication implements CommandLineRunner {
                     .phoneNumber(phoneNumber)
                     .password(password)
                     .gender(gender)
-                    .parentId(parentId)
+                    .parent(parent)
                     .build();
 
-            int rows = parentService.addChild(child, parentPassword);
-            if (rows != 0)
+            Child c = parentService.addChild(child, parentPassword);
+            if (c != null)
                 System.out.println(GREEN.getCode() + "Successfully added child!" + RESET.getCode());
             else
                 System.out.println(RED.getCode() + "Something was wrong!" + RESET.getCode());
@@ -222,8 +226,8 @@ public class BalaGuideApplication implements CommandLineRunner {
             System.out.print("Enter parent password: ");
             String parentPassword = console.next();
 
-            int res = parentService.removeChild(childId, parentPassword);
-            if (res != 0)
+            boolean res = parentService.removeChild(childId, parentPassword);
+            if (res)
                 System.out.println(GREEN.getCode() + "Successfully removed child!" + RESET.getCode());
             else
                 System.out.println(RED.getCode() + "Something was wrong!" + RESET.getCode());
@@ -307,11 +311,15 @@ public class BalaGuideApplication implements CommandLineRunner {
             System.out.print("Enter course id: ");
             Long courseId = console.nextLong();
 
-            boolean isEnrolled = parentService.enrollChildToCourse(parentId, childId, courseId);
+            boolean isEnrolled = false;
+            try {
+                isEnrolled = parentService.enrollChildToCourse(parentId, childId, courseId);
+            } catch (RuntimeException e) {
+                System.out.println(RED.getCode() + e.getMessage() + RESET.getCode());
+            }
+
             if (isEnrolled)
                 System.out.println(GREEN.getCode() + "Successfully enrolled child!" + RESET.getCode());
-            else
-                System.out.println(RED.getCode() + "Something was wrong!" + RESET.getCode());
         }
     }
 

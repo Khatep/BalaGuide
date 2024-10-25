@@ -15,7 +15,7 @@ public interface ParentService {
      * @param parent The parent to be registered.
      * @return the number of affected rows.
      */
-    int signUp(Parent parent);
+    Parent signUp(Parent parent);
 
     /**
      * Logs in a parent by checking their credentials.
@@ -30,9 +30,9 @@ public interface ParentService {
      *
      * @param child  The child to be added.
      * @param parentPassword The parent`s password for confirmation.
-     * @return the number of affected rows.
+     * @return Child which was added.
      */
-    int addChild(Child child, String parentPassword);
+    Child addChild(Child child, String parentPassword);
 
     /**
      * Removes a child from a parent's list of children and deletes the child from the repository.
@@ -40,7 +40,7 @@ public interface ParentService {
      * @param parentPassword The parent`s password for confirmation.
      * @param childId  the number of affected rows.
      */
-    int removeChild(Long childId, String parentPassword);
+    boolean removeChild(Long childId, String parentPassword);
 
     /**
      * Retrieves a list of all children associated with a parent.
@@ -49,15 +49,6 @@ public interface ParentService {
      * @return A list of children associated with the given parent.
      */
     List<Child> getMyChildren(Long parentId, String parentPassword);
-
-    /**
-     * Retrieves a list of children associated with a parent, filtered by a given condition.
-     *
-     * @param parent    The parent whose children will be filtered.
-     * @param predicate A predicate to filter the children.
-     * @return A list of children that match the given condition.
-     */
-    List<Child> getChildren(Parent parent, Predicate<Child> predicate);
 
     /**
      * Searches for courses by name or a portion of the name.
