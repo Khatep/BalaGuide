@@ -97,7 +97,6 @@ BalaGuide/
      - **Password**: *(leave blank)*
 
 ## DataBase
-![ER](https://drive.google.com/file/d/1ODWZXmsHgDpOfJyV1T0ccByJSRfVNnd6/preview](https://drive.google.com/file/d/1ODWZXmsHgDpOfJyV1T0ccByJSRfVNnd6/preview)
 
 ### Enums
 - **Gender Enum**: This enum defines two possible values for gender—'MALE' and 'FEMALE'. It is used in the `teacher` and `child` tables to categorize individuals accordingly.
