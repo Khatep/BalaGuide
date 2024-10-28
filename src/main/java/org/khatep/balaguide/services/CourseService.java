@@ -1,77 +1,84 @@
 package org.khatep.balaguide.services;
 
+import org.khatep.balaguide.exceptions.CourseFullException;
+import org.khatep.balaguide.exceptions.IneligibleChildException;
 import org.khatep.balaguide.models.entities.Child;
 import org.khatep.balaguide.models.entities.Course;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CourseService {
 
     /**
-     * Adds a new course to the repository.
+     * Adds a new course to the system.
      *
-     * @param course the {@link Course} to be added
-     * @return the number of affected rows
+     * @param course the {@link Course} entity to be added
+     * @return the saved {@link Course} entity
      */
     Course addCourse(Course course);
 
     /**
      * Updates the information of an existing course.
      *
-     * @param courseId the ID of the course to be updated
-     * @param updatedCourse the {@link Course} object containing updated information
-     * @return the number of affected rows
+     * @param courseId the ID of the course to update
+     * @param updatedCourse the {@link Course} entity containing updated information
+     * @return the updated {@link Course} entity
+     * @throws RuntimeException if the course is not found
      */
     Course updateInformation(Long courseId, Course updatedCourse);
 
     /**
-     * Retrieves a list of all available courses.
+     * Retrieves a list of all courses available in the system.
      *
-     * @return a list of {@link Course} objects
+     * @return a {@link List} of {@link Course} entities
      */
     List<Course> getCourses();
 
     /**
-     * Adds a child as a participant in a specified course.
+     * Enrolls a child in a specified course.
      *
-     * @param courseId the ID of the course
-     * @param childId the ID of the child to be added
-     * @return true if the child is successfully added; false otherwise
+     * @param courseId the ID of the course to enroll the child in
+     * @param childId the ID of the child to enroll
+     * @return true if the enrollment is successful
+     * @throws CourseFullException if the course is full
+     * @throws IneligibleChildException if the child is not eligible for the course
+     * @throws RuntimeException if the course or child is not found
      */
     boolean enrollChild(Long courseId, Long childId);
 
     /**
-     * Removes a child as a participant from a specified course.
+     * Unenrolls a child from a specified course.
      *
-     * @param courseId the ID of the course
-     * @param childId the ID of the child to be removed
-     * @return true if the child is successfully removed; false otherwise
+     * @param courseId the ID of the course to unenroll the child from
+     * @param childId the ID of the child to unenroll
+     * @return true if the unenrollment is successful
+     * @throws RuntimeException if the course or child is not found, or if the child is not enrolled in any courses
      */
-    boolean removeParticipant(Long courseId, Long childId);
+    boolean unenrollChild(Long courseId, Long childId);
 
     /**
-     * Checks if a given course is full.
+     * Checks if a course is full.
      *
-     * @param course the {@link Course} to check
-     * @return true if the course is full; false otherwise
+     * @param course the {@link Course} entity to check
+     * @return true if the current number of participants is equal to or exceeds the maximum allowed
      */
     boolean isCourseFull(Course course);
 
     /**
-     * Gets the current number of participants in a specified course.
+     * Retrieves the current number of participants in a course.
      *
-     * @param courseId the ID of the course
-     * @return the number of participants, or -1 if the course is not found
+     * @param course the {@link Course} entity to check
+     * @return the current number of participants
+     * @throws RuntimeException if the course is not found
      */
-    int getCurrentParticipants(Long courseId);
+    int getCurrentParticipants(Course course);
 
     /**
-     * Checks if a child is eligible for a course based on age range.
+     * Checks if a child is eligible for a specified course based on age range.
      *
-     * @param course the {@link Course} to check against
-     * @param child the {@link Child} to check for eligibility
-     * @return true if the child is eligible; false otherwise
+     * @param course the {@link Course} entity to check against
+     * @param child the {@link Child} entity to verify eligibility
+     * @return true if the child is eligible for the course
      */
     boolean isChildEligible(Course course, Child child);
 }

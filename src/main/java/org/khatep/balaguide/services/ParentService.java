@@ -1,5 +1,7 @@
 package org.khatep.balaguide.services;
 
+import org.khatep.balaguide.exceptions.ChildNotBelongToParentException;
+import org.khatep.balaguide.exceptions.InsufficientFundsException;
 import org.khatep.balaguide.models.entities.Child;
 import org.khatep.balaguide.models.entities.Course;
 import org.khatep.balaguide.models.entities.Parent;
@@ -10,10 +12,10 @@ import java.util.function.Predicate;
 public interface ParentService {
 
     /**
-     * Registers a new parent and save to Database.
+     * Registers a new parent in the system.
      *
-     * @param parent The parent to be registered.
-     * @return the number of affected rows.
+     * @param parent the {@link Parent} entity to be registered
+     * @return the saved {@link Parent} entity
      */
     Parent signUp(Parent parent);
 
@@ -26,54 +28,53 @@ public interface ParentService {
     boolean login(Parent parent);
 
     /**
-     * Adds a new child to a parent's list of children and saves the child to the repository.
+     * Adds a child to the parent's account.
      *
-     * @param child  The child to be added.
-     * @param parentPassword The parent`s password for confirmation.
-     * @return Child which was added.
+     * @param child the {@link Child} entity to be added
+     * @param parentPassword the parent's password for verification
+     * @return the saved {@link Child} entity
+     * @throws IllegalArgumentException if the parent is not found or the password is incorrect
      */
     Child addChild(Child child, String parentPassword);
 
     /**
-     * Removes a child from a parent's list of children and deletes the child from the repository.
+     * Removes a child from the parent's account.
      *
-     * @param parentPassword The parent`s password for confirmation.
-     * @param childId  the number of affected rows.
+     * @param childId the ID of the {@link Child} entity to be removed
+     * @param parentPassword the parent's password for verification
+     * @return true if the child was successfully removed
+     * @throws IllegalArgumentException if the child or parent is not found or the password is incorrect
      */
     boolean removeChild(Long childId, String parentPassword);
 
     /**
-     * Retrieves a list of all children associated with a parent.
+     * Retrieves a list of children associated with the parent.
      *
-     * @param parentId The id of parent whose children will be retrieved.
-     * @return A list of children associated with the given parent.
+     * @param parentId the ID of the {@link Parent} entity
+     * @param parentPassword the parent's password for verification
+     * @return a {@link List} of {@link Child} entities associated with the parent
+     * @throws IllegalArgumentException if the parent is not found or the password is incorrect
      */
     List<Child> getMyChildren(Long parentId, String parentPassword);
 
     /**
-     * Searches for courses by name or a portion of the name.
+     * Searches for courses with a specific filter and sorting.
      *
-     * @param query The search term to match against course names.
-     * @return A list of courses whose names contain the search term, case-insensitive.
-     */
-    List<Course> searchCourses(String query);
-
-    /**
-     * Searches for courses by name or a portion of the name, then filters and sorts the results.
-     *
-     * @param query     The search term to match against course names.
-     * @param predicate A predicate to filter the courses.
-     * @return A list of filtered and sorted courses whose names contain the search term.
+     * @param query the search query string
+     * @param predicate the {@link Predicate} to apply as a filter
+     * @return a {@link List} of {@link Course} entities that match the filter and query
      */
     List<Course> searchCoursesWithFilter(String query, Predicate<Course> predicate);
 
     /**
-     * Enrolls a child in a course after verifying that the child belongs to the parent.
+     * Enrolls a child in a specified course and processes payment.
      *
-     * @param parentId The id of parent of the child.
-     * @param childId  The id of child to be enrolled.
-     * @param courseId The id of course.
-     * @return True if the child is successfully enrolled, otherwise false.
+     * @param parentId the ID of the {@link Parent} entity
+     * @param childId the ID of the {@link Child} entity to enroll
+     * @param courseId the ID of the {@link Course} entity
+     * @return true if enrollment is successful
+     * @throws ChildNotBelongToParentException if the child does not belong to the specified parent
+     * @throws InsufficientFundsException if the payment fails due to insufficient funds
      */
     boolean enrollChildToCourse(Long parentId, Long childId, Long courseId);
 
@@ -88,20 +89,22 @@ public interface ParentService {
     boolean unenrollChildFromCourse(Long parentId, Long courseId, Long childId);
 
     /**
-     * Processes payment for enrolling a child in a course.
+     * Processes payment for a course.
      *
-     * @param parentId  The id of parent making the payment.
-     * @param course  The course being paid for.
-     * @return True if the payment is successful and the child's enrollment is confirmed, otherwise false.
+     * @param parentId the ID of the {@link Parent} entity making the payment
+     * @param course the {@link Course} entity for which payment is being made
+     * @return true if the payment is successful
+     * @throws InsufficientFundsException if the parent has insufficient funds
      */
     boolean payForCourse(Long parentId, Course course);
 
     /**
-     * Adds a specified amount of money to the balance of a parent.
+     * Adds balance to the parent's account.
      *
-     * @param parentId the ID of the parent whose balance is to be updated
-     * @param amountOfMoney the amount of money to add to the parent's balance
-     * @return a message indicating the result of the operation, such as "Balance updated successfully" or an error message
+     * @param parentId the ID of the {@link Parent} entity
+     * @param amountOfMoney the amount to add to the balance
+     * @return a success message indicating the updated balance
+     * @throws IllegalArgumentException if the parent is not found
      */
     String addBalance(Long parentId, Integer amountOfMoney);
 }

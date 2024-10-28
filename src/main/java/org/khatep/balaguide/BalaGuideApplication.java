@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Predicate;
@@ -392,15 +393,17 @@ public class BalaGuideApplication implements CommandLineRunner {
             System.out.print("Enter child id: ");
             Long childId = console.nextLong();
 
-            List<Course> enrolledCourses = childService.getMyCourses(Child.builder().id(childId).build());
+            List<Course> enrolledCourses;
+            try {
+                enrolledCourses = childService.getMyCourses(Child.builder().id(childId).build());
+            } catch (RuntimeException e) {
+                System.out.println(RED.getCode() + e.getMessage() + RESET.getCode());
+                return;
+            }
 
-            if (enrolledCourses.isEmpty()) {
-                System.out.println(RED.getCode() + "This child is not enrolled in any courses." + RESET.getCode());
-            } else {
-                System.out.println(GREEN.getCode() + "Enrolled Courses:" + RESET.getCode());
-                for (Course course : enrolledCourses) {
-                    System.out.println("- " + course.getName() + " (ID: " + course.getId() + ")");
-                }
+            System.out.println(GREEN.getCode() + "Enrolled Courses:" + RESET.getCode());
+            for (Course course : enrolledCourses) {
+                System.out.println("- " + course.getName() + " (ID: " + course.getId() + ")");
             }
         }
     }

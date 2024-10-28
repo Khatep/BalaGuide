@@ -23,6 +23,12 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final ChildRepository childRepository;
 
+    /**
+     * Adds a new course to the system.
+     *
+     * @param course the {@link Course} entity to be added
+     * @return the saved {@link Course} entity
+     */
     @Override
     @ForLog
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -30,6 +36,14 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.save(course);
     }
 
+    /**
+     * Updates the information of an existing course.
+     *
+     * @param courseId the ID of the course to update
+     * @param updatedCourse the {@link Course} entity containing updated information
+     * @return the updated {@link Course} entity
+     * @throws RuntimeException if the course is not found
+     */
     @Override
     @ForLog
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
@@ -51,6 +65,11 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.save(existingCourse);
     }
 
+    /**
+     * Retrieves a list of all courses available in the system.
+     *
+     * @return a {@link List} of {@link Course} entities
+     */
     @Override
     @ForLog
     @Transactional(readOnly = true)
@@ -58,6 +77,16 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.findAll();
     }
 
+    /**
+     * Enrolls a child in a specified course.
+     *
+     * @param courseId the ID of the course to enroll the child in
+     * @param childId the ID of the child to enroll
+     * @return true if the enrollment is successful
+     * @throws CourseFullException if the course is full
+     * @throws IneligibleChildException if the child is not eligible for the course
+     * @throws RuntimeException if the course or child is not found
+     */
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     @ForLog
@@ -71,7 +100,7 @@ public class CourseServiceImpl implements CourseService {
             throw new CourseFullException("Course is full and cannot enroll more participants.");
         }
 
-        if (isChildEligible(course, child)) {
+        if (!isChildEligible(course, child)) {
             throw new IneligibleChildException("Child is not eligible for this course.");
         }
 
@@ -81,23 +110,40 @@ public class CourseServiceImpl implements CourseService {
         return true;
     }
 
+    /**
+     * Unenrolls a child from a specified course.
+     *
+     * @param courseId the ID of the course to unenroll the child from
+     * @param childId the ID of the child to unenroll
+     * @return true if the unenrollment is successful
+     * @throws RuntimeException if the course or child is not found, or if the child is not enrolled in any courses
+     */
     @Override
     @ForLog
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public boolean removeParticipant(Long courseId, Long childId) {
+    public boolean unenrollChild(Long courseId, Long childId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
-        Child child = childRepository.findById(childId)
+
+        childRepository.findById(childId)
                 .orElseThrow(() -> new RuntimeException("Child not found with id: " + childId));
 
-        if (!child.getCoursesEnrolled().contains(course))
-            return false;
+        List<Course> enrolledCourses = courseRepository.findAllByChildId(childId);
+
+        if (!enrolledCourses.isEmpty())
+            throw new RuntimeException("This child is not enrolled in any courses");
 
         course.setCurrentParticipants(course.getCurrentParticipants() - 1);
-        child.getCoursesEnrolled().remove(course);
+        courseRepository.unenrollChildInCourse(childId, courseId);
         return true;
     }
 
+    /**
+     * Checks if a course is full.
+     *
+     * @param course the {@link Course} entity to check
+     * @return true if the current number of participants is equal to or exceeds the maximum allowed
+     */
     @Override
     @ForLog
     @Transactional(readOnly = true)
@@ -105,15 +151,29 @@ public class CourseServiceImpl implements CourseService {
         return course.getCurrentParticipants() >= course.getMaxParticipants();
     }
 
+    /**
+     * Retrieves the current number of participants in a course.
+     *
+     * @param course the {@link Course} entity to check
+     * @return the current number of participants
+     * @throws RuntimeException if the course is not found
+     */
     @Override
     @ForLog
     @Transactional(readOnly = true)
-    public int getCurrentParticipants(Long courseId) {
-        return courseRepository.findById(courseId)
+    public int getCurrentParticipants(Course course) {
+        return courseRepository.findById(course.getId())
                 .map(Course::getCurrentParticipants)
-                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+                .orElseThrow(() -> new RuntimeException("Course not found with id: " + course.getId()));
     }
 
+    /**
+     * Checks if a child is eligible for a specified course based on age range.
+     *
+     * @param course the {@link Course} entity to check against
+     * @param child the {@link Child} entity to verify eligibility
+     * @return true if the child is eligible for the course
+     */
     @Override
     @ForLog
     public boolean isChildEligible(Course course, Child child) {

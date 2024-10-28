@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.khatep.balaguide.aop.annotations.ForLog;
 import org.khatep.balaguide.exceptions.ChildNotBelongToParentException;
 import org.khatep.balaguide.exceptions.InsufficientFundsException;
+import org.khatep.balaguide.kafka.producer.EmailProducer;
+import org.khatep.balaguide.models.entities.Receipt;
 import org.khatep.balaguide.repositories.ChildRepository;
 import org.khatep.balaguide.repositories.CourseRepository;
 import org.khatep.balaguide.repositories.EducationCenterRepository;
@@ -14,6 +16,7 @@ import org.khatep.balaguide.models.entities.Course;
 import org.khatep.balaguide.models.entities.Parent;
 import org.khatep.balaguide.services.CourseService;
 import org.khatep.balaguide.services.ParentService;
+import org.khatep.balaguide.services.ReceiptService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,14 +38,29 @@ public class ParentServiceImpl implements ParentService {
     private final ChildRepository childRepository;
     private final CourseRepository courseRepository;
     private final CourseService courseService;
+    private final ReceiptService receiptService;
     private final EducationCenterRepository educationCenterRepository;
+    private final EmailProducer emailProducer;
 
+    /**
+     * Registers a new parent in the system.
+     *
+     * @param parent the {@link Parent} entity to be registered
+     * @return the saved {@link Parent} entity
+     */
     @Override
     @ForLog
     public Parent signUp(Parent parent) {
         return parentRepository.save(parent);
     }
 
+    /**
+     * Logs in a parent by checking their credentials.
+     *
+     * @param parent the {@link Parent} entity with login credentials
+     * @return true if login is successful
+     * @throws IllegalArgumentException if the parent is not found or the password is incorrect
+     */
     @Override
     @ForLog
     public boolean login(Parent parent) {
@@ -61,6 +79,14 @@ public class ParentServiceImpl implements ParentService {
         return parent.getPassword().contentEquals(parentFromDatabase.get().getPassword());
     }
 
+    /**
+     * Adds a child to the parent's account.
+     *
+     * @param child the {@link Child} entity to be added
+     * @param parentPassword the parent's password for verification
+     * @return the saved {@link Child} entity
+     * @throws IllegalArgumentException if the parent is not found or the password is incorrect
+     */
     @Override
     @ForLog
     public Child addChild(Child child, String parentPassword)  {
@@ -74,6 +100,14 @@ public class ParentServiceImpl implements ParentService {
         return childRepository.save(child);
     }
 
+    /**
+     * Removes a child from the parent's account.
+     *
+     * @param childId the ID of the {@link Child} entity to be removed
+     * @param parentPassword the parent's password for verification
+     * @return true if the child was successfully removed
+     * @throws IllegalArgumentException if the child or parent is not found or the password is incorrect
+     */
     @Override
     @ForLog
     public boolean removeChild(Long childId, String parentPassword) {
@@ -92,6 +126,14 @@ public class ParentServiceImpl implements ParentService {
         return !childRepository.existsById(childId);
     }
 
+    /**
+     * Retrieves a list of children associated with the parent.
+     *
+     * @param parentId the ID of the {@link Parent} entity
+     * @param parentPassword the parent's password for verification
+     * @return a {@link List} of {@link Child} entities associated with the parent
+     * @throws IllegalArgumentException if the parent is not found or the password is incorrect
+     */
     @Override
     @ForLog
     public List<Child> getMyChildren(Long parentId, String parentPassword) {
@@ -106,12 +148,13 @@ public class ParentServiceImpl implements ParentService {
         return childRepository.findAllByParentId(parentId);
     }
 
-    @Override
-    @ForLog
-    public List<Course> searchCourses(String query)  {
-        return courseRepository.findByNameContainingIgnoreCase(query);
-    }
-
+    /**
+     * Searches for courses with a specific filter and sorting.
+     *
+     * @param query the search query string
+     * @param predicate the {@link Predicate} to apply as a filter
+     * @return a {@link List} of {@link Course} entities that match the filter and query
+     */
     @Override
     @ForLog
     public List<Course> searchCoursesWithFilter(String query, Predicate<Course> predicate)  {
@@ -122,6 +165,16 @@ public class ParentServiceImpl implements ParentService {
                 .toList();
     }
 
+    /**
+     * Enrolls a child in a specified course and processes payment.
+     *
+     * @param parentId the ID of the {@link Parent} entity
+     * @param childId the ID of the {@link Child} entity to enroll
+     * @param courseId the ID of the {@link Course} entity
+     * @return true if enrollment is successful
+     * @throws ChildNotBelongToParentException if the child does not belong to the specified parent
+     * @throws InsufficientFundsException if the payment fails due to insufficient funds
+     */
     @Override
     @ForLog
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -148,6 +201,47 @@ public class ParentServiceImpl implements ParentService {
             throw new InsufficientFundsException("Failed to pay for course");
     }
 
+    /**
+     * Unenrolls a child from a specified course.
+     *
+     * @param parentId the ID of the {@link Parent} entity
+     * @param childId the ID of the {@link Child} entity to unenroll
+     * @param courseId the ID of the {@link Course} entity
+     * @return true if unenrollment is successful, false if the child was not enrolled
+     * @throws ChildNotBelongToParentException if the child does not belong to the specified parent
+     */
+    @Override
+    @ForLog
+    public boolean unenrollChildFromCourse(Long parentId, Long childId, Long courseId) {
+        parentRepository.findById(parentId)
+                .orElseThrow(() -> new IllegalArgumentException("Parent not found"));
+
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new IllegalArgumentException("Child not found"));
+
+        if (!child.getParent().getId().equals(parentId)) {
+            log.error("Child ID {} does not belong to Parent ID {}", childId, parentId);
+            throw new ChildNotBelongToParentException("Child does not belong to the specified parent");
+        }
+
+        boolean isEnrolledInCourse = courseRepository.isChildEnrolledInCourse(courseId, childId);
+
+        if (isEnrolledInCourse)
+            return courseService.unenrollChild(courseId, childId);
+        else {
+            log.warn("Child ID {} is not enrolled in course ID {}", childId, courseId);
+            return false;
+        }
+    }
+    
+    /**
+     * Processes payment for a course.
+     *
+     * @param parentId the ID of the {@link Parent} entity making the payment
+     * @param course the {@link Course} entity for which payment is being made
+     * @return true if the payment is successful
+     * @throws InsufficientFundsException if the parent has insufficient funds
+     */
     @Override
     @ForLog
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -166,6 +260,10 @@ public class ParentServiceImpl implements ParentService {
         try {
             course.getEducationCenter().setBalance(course.getEducationCenter().getBalance().add(coursePrice));
             educationCenterRepository.save(course.getEducationCenter());
+
+            Receipt receipt = receiptService.createReceipt(parentId, course.getId());
+            emailProducer.sendMessage(receipt);
+
             return true;
         } catch (Exception e) {
             log.error("Failed to update balance for Education Center after parent ID {} payment", parentId, e);
@@ -175,10 +273,18 @@ public class ParentServiceImpl implements ParentService {
         }
     }
 
+    /**
+     * Adds balance to the parent's account.
+     *
+     * @param parentId the ID of the {@link Parent} entity
+     * @param amountOfMoney the amount to add to the balance
+     * @return a success message indicating the updated balance
+     * @throws IllegalArgumentException if the parent is not found
+     */
     @Override
     @ForLog
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public String addBalance(Long parentId, Integer amountOfMoney) {
+        public String addBalance(Long parentId, Integer amountOfMoney) {
         Parent parent = parentRepository.findById(parentId)
                 .orElseThrow(() -> new IllegalArgumentException("Parent not found"));
 
@@ -186,29 +292,5 @@ public class ParentServiceImpl implements ParentService {
         parent.setBalance(newBalance);
         parentRepository.save(parent);
         return GREEN.getCode() + "Balance updated successfully. New balance: " + newBalance + RESET.getCode();
-    }
-
-    @Override
-    @ForLog
-    public boolean unenrollChildFromCourse(Long parentId, Long childId, Long courseId) {
-        parentRepository.findById(parentId)
-                .orElseThrow(() -> new IllegalArgumentException("Parent not found"));
-
-        Child child = childRepository.findById(childId)
-                .orElseThrow(() -> new IllegalArgumentException("Child not found"));
-
-        if (!child.getParent().getId().equals(parentId)) {
-            log.error("Child ID {} does not belong to Parent ID {}", childId, parentId);
-            throw new ChildNotBelongToParentException("Child does not belong to the specified parent");
-        }
-
-        boolean isEnrolledInCourse = courseRepository.isChildEnrolledInCourse(courseId, childId);
-
-        if (isEnrolledInCourse)
-            return courseService.removeParticipant(courseId, childId);
-        else {
-            log.warn("Child ID {} is not enrolled in course ID {}", childId, courseId);
-            return false;
-        }
     }
 }

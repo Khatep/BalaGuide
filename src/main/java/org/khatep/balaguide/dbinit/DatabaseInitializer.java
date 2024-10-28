@@ -26,7 +26,6 @@
         @PostConstruct
         @Transactional
         public void init() {
-            // Initialize Education Centers
             EducationCenter center1 = EducationCenter.builder()
                     .name("ABC Learning Center")
                     .dateOfCreated(LocalDate.of(2022, 1, 15))
@@ -47,13 +46,12 @@
 
             educationCenterRepository.saveAll(List.of(center1, center2));
 
-            // Initialize Courses
             Course course1 = Course.builder()
                     .name("Math Course")
                     .description("Basic and advanced math lessons")
                     .category(Category.MATH)
                     .ageRange("6-16")
-                    .price(BigDecimal.valueOf(50.00))
+                    .price(BigDecimal.valueOf(20_000.00))
                     .durability(10)
                     .address("123 Learning Rd")
                     .maxParticipants(30)
@@ -66,7 +64,7 @@
                     .description("Python for everyone")
                     .category(Category.PROGRAMMING)
                     .ageRange("6-16")
-                    .price(BigDecimal.valueOf(60.00))
+                    .price(BigDecimal.valueOf(30_000.00))
                     .durability(12)
                     .address("456 Learning Rd")
                     .maxParticipants(25)
@@ -74,11 +72,9 @@
                     .educationCenter(center2)
                     .build();
 
-            // Save courses first to ensure they are managed
             courseRepository.saveAll(List.of(course1, course2));
             List<Course> managedCourses = courseRepository.findAll();
 
-            // Initialize Parents
             Parent parent1 = Parent.builder()
                     .firstName("John")
                     .lastName("Doe")
@@ -86,7 +82,7 @@
                     .email("johndoe@example.com")
                     .password("password123")
                     .address("123 Main St")
-                    .balance(BigDecimal.valueOf(100.00))
+                    .balance(BigDecimal.valueOf(100_000.00))
                     .build();
 
             Parent parent2 = Parent.builder()
@@ -96,17 +92,17 @@
                     .email("janesmith@example.com")
                     .password("password456")
                     .address("456 Maple Ave")
-                    .balance(BigDecimal.valueOf(150.00))
+                    .balance(BigDecimal.valueOf(150_000.00))
                     .build();
 
             Parent parent3 = Parent.builder()
                     .firstName("a")
                     .lastName("a")
                     .phoneNumber("a")
-                    .email("a@example.com")
+                    .email("nurgali.khatep@gmail.com")
                     .password("a")
                     .address("a")
-                    .balance(BigDecimal.valueOf(1500.00))
+                    .balance(BigDecimal.valueOf(120_000.00))
                     .build();
 
             parentRepository.saveAll(List.of(parent1, parent2, parent3));
@@ -146,7 +142,6 @@
 
             childRepository.saveAll(List.of(child1, child2, child3));
 
-            // Initialize Teachers
             Teacher teacher1 = Teacher.builder()
                     .firstName("Alice")
                     .lastName("Johnson")

@@ -21,9 +21,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.khatep.balaguide.models.enums.Colors.GREEN;
+import static org.khatep.balaguide.models.enums.Colors.RESET;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -164,6 +168,70 @@ class ParentServiceImplTest {
     }
 
     @Test
+    void testRemoveChildInvalidPassword() {
+        when(childRepository.findById(child.getId())).thenReturn(Optional.of(child));
+        when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                parentService.removeChild(child.getId(), "wrongPassword"));
+
+        assertEquals("Incorrect parent password", exception.getMessage());
+    }
+
+    @Test
+    void testRemoveChildNotFound() {
+        when(childRepository.findById(child.getId())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                parentService.removeChild(child.getId(), parent.getPassword()));
+
+        assertEquals("Child not found", exception.getMessage());
+    }
+
+    @Test
+    void testGetMyChildrenSuccess() {
+        when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
+        when(childRepository.findAllByParentId(parent.getId())).thenReturn(List.of(child));
+
+        List<Child> children = parentService.getMyChildren(parent.getId(), parent.getPassword());
+
+        assertEquals(1, children.size());
+        assertEquals(child, children.get(0));
+    }
+
+    @Test
+    void testGetMyChildrenInvalidPassword() {
+        when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                parentService.getMyChildren(parent.getId(), "wrongPassword"));
+
+        assertEquals("Incorrect parent password", exception.getMessage());
+    }
+
+    @Test
+    void testRemoveChildSuccess() {
+        when(childRepository.findById(child.getId())).thenReturn(Optional.of(child));
+        when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
+
+        boolean result = parentService.removeChild(child.getId(), parent.getPassword());
+
+        assertTrue(result);
+        verify(childRepository).deleteById(child.getId());
+    }
+
+    @Test
+    void testSearchCoursesWithFilter() {
+        Predicate<Course> predicate = c -> c.getCategory() == Category.PROGRAMMING;
+        when(courseRepository.findByNameContainingIgnoreCase("Java")).thenReturn(List.of(course));
+
+        List<Course> result = parentService.searchCoursesWithFilter("Java", predicate);
+
+        assertEquals(1, result.size());
+        assertEquals(course, result.get(0));
+    }
+
+    @Test
     void testEnrollChildToCourseSuccess() {
         when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
         when(childRepository.findById(child.getId())).thenReturn(Optional.of(child));
@@ -178,7 +246,6 @@ class ParentServiceImplTest {
         assertTrue(result);
         verify(courseService).enrollChild(course.getId(), child.getId());
     }
-
 
     @Test
     void testEnrollChildToCourseInsufficientFunds() {
@@ -198,12 +265,12 @@ class ParentServiceImplTest {
         when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
         when(childRepository.findById(child.getId())).thenReturn(Optional.of(child));
         when(courseRepository.isChildEnrolledInCourse(course.getId(), child.getId())).thenReturn(true);
-        when(courseService.removeParticipant(course.getId(), child.getId())).thenReturn(true);
+        when(courseService.unenrollChild(course.getId(), child.getId())).thenReturn(true);
 
         boolean result = parentService.unenrollChildFromCourse(parent.getId(), child.getId(), course.getId());
 
         assertTrue(result);
-        verify(courseService).removeParticipant(course.getId(), child.getId());
+        verify(courseService).unenrollChild(course.getId(), child.getId());
     }
 
     @Test
@@ -215,6 +282,47 @@ class ParentServiceImplTest {
         boolean result = parentService.unenrollChildFromCourse(parent.getId(), child.getId(), course.getId());
 
         assertFalse(result);
-        verify(courseService, never()).removeParticipant(anyLong(), anyLong());
+        verify(courseService, never()).unenrollChild(anyLong(), anyLong());
     }
+
+    @Test
+    void testPayForCourseSuccess() {
+        when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
+        when(educationCenterRepository.save(center)).thenReturn(center);
+
+        parent.setBalance(BigDecimal.valueOf(100));
+        course.setPrice(BigDecimal.valueOf(50));
+
+        boolean result = parentService.payForCourse(parent.getId(), course);
+
+        assertTrue(result);
+        assertEquals(BigDecimal.valueOf(50), parent.getBalance());
+        verify(parentRepository).save(parent);
+    }
+
+    @Test
+    void testPayForCourseInsufficientFunds() {
+        when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
+
+        parent.setBalance(BigDecimal.valueOf(30));
+        course.setPrice(BigDecimal.valueOf(50));
+
+        Exception exception = assertThrows(InsufficientFundsException.class, () ->
+                parentService.payForCourse(parent.getId(), course));
+
+        assertEquals("Insufficient funds for payment", exception.getMessage());
+        verify(parentRepository, never()).save(parent);
+    }
+
+    @Test
+    void testAddBalanceSuccess() {
+        when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
+
+        String result = parentService.addBalance(parent.getId(), 50);
+
+        assertEquals(GREEN.getCode() + "Balance updated successfully. New balance: " + BigDecimal.valueOf(150) + RESET.getCode(), result);
+        assertEquals(BigDecimal.valueOf(150), parent.getBalance());
+        verify(parentRepository).save(parent);
+    }
+
 }
