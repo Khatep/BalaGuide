@@ -2,35 +2,49 @@ package org.khatep.balaguide.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.khatep.balaguide.models.entities.Receipt;
-import org.khatep.balaguide.models.enums.PaymentMethod;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.khatep.balaguide.models.entities.Receipt;
+import org.khatep.balaguide.models.enums.PaymentMethod;
+import org.khatep.balaguide.repositories.ReceiptRepository;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
 public class ReceiptServiceImplTest {
 
-    private ReceiptServiceImpl receiptService;
+    @Mock
+    private ReceiptRepository receiptRepository;
 
-    @BeforeEach
-    public void setUp() {
-        receiptService = new ReceiptServiceImpl();
-    }
+    @InjectMocks
+    private ReceiptServiceImpl receiptService;
 
     @Test
     public void testCreateReceipt() {
-        Long parentId = 1L;
-        Long courseId = 2L;
+        Long parentId = 100L;
+        Long courseId = 100L;
+        Receipt receipt = Receipt.builder()
+                .parentId(parentId)
+                .courseId(courseId)
+                .percentOfVat(12)
+                .dateOfCreated(LocalDate.now())
+                .paymentMethod(PaymentMethod.BANK_CARD)
+                .build();
 
-        Receipt receipt = receiptService.createReceipt(parentId, courseId);
+        when(receiptRepository.save(receipt)).thenReturn(receipt);
 
-        assertNotNull(receipt, "Receipt should not be null");
-        assertEquals(parentId, receipt.getParentId(), "ParentId should match");
-        assertEquals(courseId, receipt.getCourseId(), "CourseId should match");
-        assertEquals(12, receipt.getPercentOfVat(), "VAT percent should be 12");
-        assertEquals(LocalDate.now(), receipt.getDateOfCreated(), "Creation date should be today");
-        assertEquals(PaymentMethod.BANK_CARD, receipt.getPaymentMethod(), "Payment method should be BANK_CARD");
+        Receipt createdReceipt = receiptService.createReceipt(parentId, courseId);
+
+        assertNotNull(createdReceipt);
+        assertEquals(parentId, createdReceipt.getParentId());
+        assertEquals(courseId, createdReceipt.getCourseId());
+        assertEquals(12, createdReceipt.getPercentOfVat());
+        assertEquals(LocalDate.now(), createdReceipt.getDateOfCreated());
+        assertEquals(PaymentMethod.BANK_CARD, createdReceipt.getPaymentMethod());
     }
 }

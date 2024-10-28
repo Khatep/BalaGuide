@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.khatep.balaguide.exceptions.InsufficientFundsException;
+import org.khatep.balaguide.kafka.producer.EmailProducer;
 import org.khatep.balaguide.models.entities.Child;
 import org.khatep.balaguide.models.entities.Course;
 import org.khatep.balaguide.models.entities.EducationCenter;
@@ -15,6 +16,7 @@ import org.khatep.balaguide.repositories.CourseRepository;
 import org.khatep.balaguide.repositories.EducationCenterRepository;
 import org.khatep.balaguide.repositories.ParentRepository;
 import org.khatep.balaguide.services.CourseService;
+import org.khatep.balaguide.services.ReceiptService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -51,6 +53,12 @@ class ParentServiceImplTest {
 
     @Mock
     private EducationCenterRepository educationCenterRepository;
+
+    @Mock
+    private ReceiptService receiptService;
+
+    @Mock
+    private EmailProducer emailProducer;
 
     private Course course;
     private Parent parent;
