@@ -94,6 +94,8 @@ BalaGuide/
 ### `EmailConsumer`
 - **Purpose**: listens for `receipt` messages from a Kafka topic and sends an email receipt to the parent who made the purchase.
 
+![Exmaple of receipt](receipt_example_post.jpg)
+
 <br></br>
 ### `ChildServiceImplTest`
 - **Purpose**: Testing the functionality of the Child Service Impl class, ensuring that the methods work correctly
