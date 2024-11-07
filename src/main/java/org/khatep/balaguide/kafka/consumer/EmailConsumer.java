@@ -22,6 +22,7 @@ public class EmailConsumer {
     private final JavaMailSender mailSender;
     private final ParentRepository parentRepository;
     private final CourseRepository courseRepository;
+    private final Random orderNumberGenerator = new Random();
 
     /**
      * Kafka listener that processes incoming {@link Receipt} messages from the "receipt" topic.
@@ -29,12 +30,12 @@ public class EmailConsumer {
      * <p>Retrieves the parent's email based on the {@code parentId} in the {@link Receipt},
      * fetches the course price and name, and sends an email to the parent with the receipt details.
      *
-     * @param record the incoming Kafka message containing a {@link Receipt} object
+     * @param receiptConsumerRecord the incoming Kafka message containing a {@link Receipt} object
      * @throws RuntimeException if the parent with the specified ID is not found
      */
     @KafkaListener(topics = "receipt", groupId = "email")
-    public void listen(ConsumerRecord<String, Receipt> record) {
-        Receipt receipt = record.value();
+    public void listen(ConsumerRecord<String, Receipt> receiptConsumerRecord) {
+        Receipt receipt = receiptConsumerRecord.value();
 
         String parentEmail = parentRepository.findById(receipt.getParentId())
                 .map(Parent::getEmail)
@@ -42,9 +43,9 @@ public class EmailConsumer {
 
         CourseDto courseDto = courseRepository.findCoursePriceAndNameById(receipt.getCourseId());
 
-        sendReceiptToParentEmail(parentEmail, courseDto.getPrice(), courseDto.getName(), receipt);
+        sendReceiptToParentEmail(parentEmail, courseDto.price(), courseDto.name(), receipt);
     }
-
+    
     /**
      * Sends an email containing receipt details to the specified parent email address.
      *
@@ -70,7 +71,7 @@ public class EmailConsumer {
                         String.format("%40s", "RECEIPT") +
                         "\n" +
                         "\n" +
-                        "Order number: " + new Random().nextInt(1001) +
+                        "Order number: " + orderNumberGenerator.nextInt(1001) +
                         '\n' +
                         "Date: " + receipt.getDateOfCreated() +
                         "\n" +

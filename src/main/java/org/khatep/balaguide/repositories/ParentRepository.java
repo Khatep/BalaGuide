@@ -16,4 +16,16 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
      * @return an {@link Optional} containing the found {@link Parent}, or empty if not found
      */
     Optional<Parent> findByPhoneNumber(String phoneNumber);
+
+    /**
+     * Retrieves a {@link Parent} entity by its email.
+     *
+     * @param email the email of the {@link Parent} entity to be retrieved
+     * @return an {@link Optional} containing the found {@link Parent}, or empty if not found
+     */
+    Optional<Parent> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhoneNumber(String phoneNumber);
 }

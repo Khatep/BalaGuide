@@ -10,7 +10,6 @@ import org.khatep.balaguide.models.enums.Category;
 import org.khatep.balaguide.models.enums.Gender;
 import org.khatep.balaguide.repositories.ChildRepository;
 import org.khatep.balaguide.repositories.CourseRepository;
-import org.khatep.balaguide.repositories.ParentRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -49,7 +48,6 @@ class ChildServiceImplTest {
                 .ageRange("6-16")
                 .price(BigDecimal.valueOf(50.00))
                 .durability(10)
-                .address("123 Learning Rd")
                 .maxParticipants(30)
                 .currentParticipants(0)
                 .build();
@@ -101,41 +99,6 @@ class ChildServiceImplTest {
         verify(courseRepository, never()).findAllByChildId(anyLong());
     }
 
-    @Test
-    void testLoginSuccess() {
-        when(childRepository.findByPhoneNumber(child.getPhoneNumber())).thenReturn(Optional.of(child));
 
-        boolean result = childService.login(child);
 
-        assertTrue(result);
-        verify(childRepository).findByPhoneNumber(child.getPhoneNumber());
-    }
-
-    @Test
-    void testLoginChildNotFound() {
-        when(childRepository.findByPhoneNumber(child.getPhoneNumber())).thenReturn(Optional.empty());
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                childService.login(child));
-
-        assertEquals("Child not found with phone number: " + child.getPhoneNumber(), exception.getMessage());
-        verify(childRepository).findByPhoneNumber(child.getPhoneNumber());
-    }
-
-    @Test
-    void testLoginWrongPassword() {
-        Child childFromDb = Child.builder()
-                .id(1L)
-                .phoneNumber(child.getPhoneNumber())
-                .password("wrongPassword")
-                .build();
-
-        when(childRepository.findByPhoneNumber(child.getPhoneNumber())).thenReturn(Optional.of(childFromDb));
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                childService.login(child));
-
-        assertEquals("Wrong child password with ID: " + child.getId(), exception.getMessage());
-        verify(childRepository).findByPhoneNumber(child.getPhoneNumber());
-    }
 }

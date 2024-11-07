@@ -1,4 +1,4 @@
-package org.khatep.balaguide.config;
+package org.khatep.balaguide.kafka.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;

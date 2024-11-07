@@ -1,16 +1,85 @@
 package org.khatep.balaguide.aop;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.khatep.balaguide.aop.annotations.ForLog;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import java.util.Arrays;
 
 @Aspect
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class LoggingAspect {
+
+    private final HttpServletRequest request;
+
+    // Log request details before the method executes
+    @Before("execution(* org.khatep.balaguide.controllers.*.*(..))")
+    public void logRequestDetails(JoinPoint joinPoint) {
+        String ipAddress = request.getRemoteAddr();
+        String requestUrl = request.getRequestURL().toString();
+        String username = getUsername();
+
+        log.info("REQUEST: Method = {}, URL = {}, IP Address = {}, Username = {}, Arguments = {}",
+                joinPoint.getSignature().getName(),
+                requestUrl,
+                ipAddress,
+                username,
+                Arrays.toString(joinPoint.getArgs()));
+    }
+
+    // Log response details after the method executes successfully
+    @AfterReturning(pointcut = "execution(* org.khatep.balaguide.controllers.*.*(..))", returning = "result")
+    public void logResponseDetails(JoinPoint joinPoint, Object result) {
+        String ipAddress = request.getRemoteAddr();
+        String requestUrl = request.getRequestURL().toString();
+        String username = getUsername();
+
+        HttpStatus status = result instanceof ResponseEntity ?
+                HttpStatus.resolve(((ResponseEntity<?>) result).getStatusCode().value()) : HttpStatus.OK;
+
+        log.info("RESPONSE: Method = {}, URL = {}, IP Address = {}, Username = {}, Status = {}, Response = {}",
+                joinPoint.getSignature().getName(),
+                requestUrl,
+                ipAddress,
+                username,
+                status,
+                result);
+    }
+
+    @AfterThrowing(pointcut = "execution(* org.khatep.balaguide.controllers.*.*(..))", throwing = "exception")
+    public void logException(JoinPoint joinPoint, Throwable exception) {
+        String ipAddress = request.getRemoteAddr();
+        String requestUrl = request.getRequestURL().toString();
+        String username = getUsername();
+
+        log.error("EXCEPTION: Method = {}, URL = {}, IP Address = {}, Username = {}, Exception = {}, Message = {}",
+                joinPoint.getSignature().getName(),
+                requestUrl,
+                ipAddress,
+                username,
+                exception.getClass().getName(),
+                exception.getMessage());
+    }
+
+
+    private String getUsername() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails userdetails) {
+            return userdetails.getUsername();
+        } else {
+            return principal.toString();
+        }
+    }
 
     /**
      * Logs information before the execution of methods annotated with {@link ForLog}.

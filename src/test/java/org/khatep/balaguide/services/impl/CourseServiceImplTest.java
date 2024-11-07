@@ -5,11 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.khatep.balaguide.exceptions.CourseFullException;
 import org.khatep.balaguide.exceptions.IneligibleChildException;
+import org.khatep.balaguide.mappers.CourseMapper;
 import org.khatep.balaguide.models.entities.Child;
 import org.khatep.balaguide.models.entities.Course;
+import org.khatep.balaguide.models.entities.EducationCenter;
 import org.khatep.balaguide.models.entities.Parent;
 import org.khatep.balaguide.models.enums.Category;
 import org.khatep.balaguide.models.enums.Gender;
+import org.khatep.balaguide.models.requests.CourseRequest;
 import org.khatep.balaguide.repositories.ChildRepository;
 import org.khatep.balaguide.repositories.CourseRepository;
 import org.mockito.InjectMocks;
@@ -35,11 +38,28 @@ class CourseServiceImplTest {
     @InjectMocks
     private CourseServiceImpl courseService;
 
+    @Mock
+    private CourseMapper courseMapper;
+
     private Course course;
     private Child child;
+    private Parent parent;
+    private EducationCenter educationCenter;
 
     @BeforeEach
     void setUp() {
+        educationCenter = EducationCenter.builder()
+                .id(100L)
+                .name("Learning Center")
+                .dateOfCreated(LocalDate.of(2022, 1, 15))
+                .phoneNumber("111-222")
+                .email("center@gmail.com")
+                .password("password12345")
+                .address("Abai 12")
+                .instagramLink("https://instagram.com/learning")
+                .balance(BigDecimal.valueOf(2000.00))
+                .build();
+
         course = Course.builder()
                 .id(100L)
                 .name("Java Course")
@@ -48,12 +68,11 @@ class CourseServiceImplTest {
                 .ageRange("6-16")
                 .price(BigDecimal.valueOf(50.00))
                 .durability(0)
-                .address("123 Learning Rd")
                 .maxParticipants(10)
                 .currentParticipants(0)
                 .build();
 
-        Parent parent = Parent.builder()
+        parent = Parent.builder()
                 .id(100L)
                 .firstName("Nurgali")
                 .lastName("Khatep")
@@ -78,7 +97,9 @@ class CourseServiceImplTest {
     void testAddCourse() {
         when(courseRepository.save(course)).thenReturn(course);
 
-        Course result = courseService.addCourse(course);
+        CourseRequest courseRequest = courseMapper.mapCourseToCourseRequest(course);
+
+        Course result = courseService.addCourse(courseRequest);
 
         assertNotNull(result);
         assertEquals(course, result);

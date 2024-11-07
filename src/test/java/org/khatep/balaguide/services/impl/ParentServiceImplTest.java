@@ -28,8 +28,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.khatep.balaguide.models.enums.Colors.GREEN;
-import static org.khatep.balaguide.models.enums.Colors.RESET;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -84,7 +82,6 @@ class ParentServiceImplTest {
                 .ageRange("6-16")
                 .price(BigDecimal.valueOf(50.00))
                 .durability(10)
-                .address("123 Learning Rd")
                 .maxParticipants(30)
                 .currentParticipants(0)
                 .educationCenter(center)
@@ -111,68 +108,16 @@ class ParentServiceImplTest {
                 .build();
     }
 
-    @Test
-    void testSignUp() {
-        when(parentRepository.save(any(Parent.class))).thenReturn(parent);
-
-        Parent result = parentService.signUp(parent);
-
-        assertEquals(parent, result);
-        verify(parentRepository).save(parent);
-    }
-
-    @Test
-    void testLoginSuccess() {
-        when(parentRepository.findByPhoneNumber(parent.getPhoneNumber())).thenReturn(Optional.of(parent));
-
-        boolean result = parentService.login(parent);
-
-        assertTrue(result);
-    }
-
-    @Test
-    void testLoginFailureNotFound() {
-        when(parentRepository.findByPhoneNumber(parent.getPhoneNumber())).thenReturn(Optional.empty());
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                parentService.login(parent));
-
-        assertEquals("Parent not found", exception.getMessage());
-    }
-
-    @Test
-    void testLoginFailureWrongPassword() {
-        when(parentRepository.findByPhoneNumber(parent.getPhoneNumber())).thenReturn(Optional.of(parent));
-
-        Parent wrongPasswordParent = new Parent();
-        wrongPasswordParent.setPassword("wrongPassword");
-        wrongPasswordParent.setPhoneNumber(parent.getPhoneNumber());
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                parentService.login(wrongPasswordParent));
-
-        assertEquals("Wrong password for parent", exception.getMessage());
-    }
 
     @Test
     void testAddChild() {
         when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
         when(childRepository.save(any(Child.class))).thenReturn(child);
 
-        Child result = parentService.addChild(child, parent.getPassword());
+        Child result = parentService.addChild(parent.getId(), child);
 
         assertEquals(child, result);
         verify(childRepository).save(child);
-    }
-
-    @Test
-    void testAddChildInvalidPassword() {
-        when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                parentService.addChild(child, "wrongPassword"));
-
-        assertEquals("Incorrect parent password", exception.getMessage());
     }
 
     @Test
@@ -181,7 +126,7 @@ class ParentServiceImplTest {
         when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                parentService.removeChild(child.getId(), "wrongPassword"));
+                parentService.removeChild(parent.getId(), child.getId()));
 
         assertEquals("Incorrect parent password", exception.getMessage());
     }
@@ -191,7 +136,7 @@ class ParentServiceImplTest {
         when(childRepository.findById(child.getId())).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                parentService.removeChild(child.getId(), parent.getPassword()));
+                parentService.removeChild(parent.getId(), child.getId()));
 
         assertEquals("Child not found", exception.getMessage());
     }
@@ -201,20 +146,20 @@ class ParentServiceImplTest {
         when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
         when(childRepository.findAllByParentId(parent.getId())).thenReturn(List.of(child));
 
-        List<Child> children = parentService.getMyChildren(parent.getId(), parent.getPassword());
+        List<Child> children = parentService.getMyChildren(parent.getId());
 
         assertEquals(1, children.size());
         assertEquals(child, children.get(0));
     }
 
     @Test
-    void testGetMyChildrenInvalidPassword() {
+    void testGetMyChildrenWrongId() {
         when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                parentService.getMyChildren(parent.getId(), "wrongPassword"));
+                parentService.getMyChildren(parent.getId()));
 
-        assertEquals("Incorrect parent password", exception.getMessage());
+        assertEquals("Parent with id: 9999 not found", exception.getMessage());
     }
 
     @Test
@@ -222,21 +167,10 @@ class ParentServiceImplTest {
         when(childRepository.findById(child.getId())).thenReturn(Optional.of(child));
         when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
 
-        boolean result = parentService.removeChild(child.getId(), parent.getPassword());
+        boolean result = parentService.removeChild(parent.getId(), child.getId());
 
         assertTrue(result);
         verify(childRepository).deleteById(child.getId());
-    }
-
-    @Test
-    void testSearchCoursesWithFilter() {
-        Predicate<Course> predicate = c -> c.getCategory() == Category.PROGRAMMING;
-        when(courseRepository.findByNameContainingIgnoreCase("Java")).thenReturn(List.of(course));
-
-        List<Course> result = parentService.searchCoursesWithFilter("Java", predicate);
-
-        assertEquals(1, result.size());
-        assertEquals(course, result.get(0));
     }
 
     @Test
@@ -326,9 +260,9 @@ class ParentServiceImplTest {
     void testAddBalanceSuccess() {
         when(parentRepository.findById(parent.getId())).thenReturn(Optional.of(parent));
 
-        String result = parentService.addBalance(parent.getId(), 50);
+        String result = parentService.addBalance(parent.getId(), 50, "99955562515313");
 
-        assertEquals(GREEN.getCode() + "Balance updated successfully. New balance: " + BigDecimal.valueOf(150) + RESET.getCode(), result);
+        assertEquals("Balance updated successfully. New balance: " + BigDecimal.valueOf(150), result);
         assertEquals(BigDecimal.valueOf(150), parent.getBalance());
         verify(parentRepository).save(parent);
     }

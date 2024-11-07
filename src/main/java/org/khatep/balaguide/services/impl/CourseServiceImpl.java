@@ -2,12 +2,15 @@ package org.khatep.balaguide.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.khatep.balaguide.aop.annotations.ForLog;
-import org.khatep.balaguide.exceptions.CourseFullException;
-import org.khatep.balaguide.exceptions.IneligibleChildException;
+import org.khatep.balaguide.exceptions.*;
+import org.khatep.balaguide.mappers.CourseMapper;
 import org.khatep.balaguide.models.entities.Child;
 import org.khatep.balaguide.models.entities.Course;
+import org.khatep.balaguide.models.entities.EducationCenter;
+import org.khatep.balaguide.models.requests.CourseRequest;
 import org.khatep.balaguide.repositories.ChildRepository;
 import org.khatep.balaguide.repositories.CourseRepository;
+import org.khatep.balaguide.repositories.EducationCenterRepository;
 import org.khatep.balaguide.services.CourseService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -22,17 +25,24 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final ChildRepository childRepository;
+    private final EducationCenterRepository educationCenterRepository;
+    private final CourseMapper courseMapper;
 
     /**
      * Adds a new course to the system.
      *
-     * @param course the {@link Course} entity to be added
+     * @param courseRequest the {@link CourseRequest} entity to be added
      * @return the saved {@link Course} entity
      */
     @Override
     @ForLog
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Course addCourse(Course course) {
+    public Course addCourse(CourseRequest courseRequest) {
+        EducationCenter educationCenter = educationCenterRepository.findById(courseRequest.educationCenterId())
+                .orElseThrow(() -> new EducationCenterNotFoundException("Education center with id: " + courseRequest.educationCenterId() + " not found") );
+
+        Course course = courseMapper.mapCourseRequestToCourse(courseRequest, educationCenter);
+
         return courseRepository.save(course);
     }
 
@@ -49,18 +59,9 @@ public class CourseServiceImpl implements CourseService {
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public Course updateInformation(Long courseId, Course updatedCourse) {
         Course existingCourse = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + courseId + " not found"));
 
-        existingCourse.setName(updatedCourse.getName());
-        existingCourse.setDescription(updatedCourse.getDescription());
-        existingCourse.setEducationCenter(updatedCourse.getEducationCenter());
-        existingCourse.setCategory(updatedCourse.getCategory());
-        existingCourse.setAgeRange(updatedCourse.getAgeRange());
-        existingCourse.setPrice(updatedCourse.getPrice());
-        existingCourse.setDurability(updatedCourse.getDurability());
-        existingCourse.setAddress(updatedCourse.getAddress());
-        existingCourse.setMaxParticipants(updatedCourse.getMaxParticipants());
-        existingCourse.setCurrentParticipants(updatedCourse.getCurrentParticipants());
+        courseMapper.mapUpdatedCourseToExisting(existingCourse, updatedCourse);
 
         return courseRepository.save(existingCourse);
     }
@@ -75,6 +76,18 @@ public class CourseServiceImpl implements CourseService {
     @Transactional(readOnly = true)
     public List<Course> getCourses() {
         return courseRepository.findAll();
+    }
+
+
+    @Override
+    @ForLog
+    public boolean removeCourse(Long courseId) {
+        childRepository.findById(courseId)
+                .orElseThrow(() -> new CourseNotFoundException("Course with id " + courseId + " not found"));
+
+        childRepository.deleteById(courseId);
+
+        return !childRepository.existsById(courseId);
     }
 
     /**
@@ -92,11 +105,11 @@ public class CourseServiceImpl implements CourseService {
     @ForLog
     public boolean enrollChild(Long courseId, Long childId) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + courseId + " not found "));
         Child child = childRepository.findById(childId)
-                .orElseThrow(() -> new RuntimeException("Child not found with id: " + childId));
+                .orElseThrow(() -> new ChildNotFoundException("Child not found with id: " + childId));
 
-        if (isCourseFull(course)) {
+        if (this.isCourseFull(course)) {
             throw new CourseFullException("Course is full and cannot enroll more participants.");
         }
 
@@ -108,6 +121,15 @@ public class CourseServiceImpl implements CourseService {
         course.setCurrentParticipants(course.getCurrentParticipants() + 1);
         courseRepository.save(course);
         return true;
+    }
+
+    @Override
+    @ForLog
+    public List<Course> searchCourses(String query)  {
+        return courseRepository.findByNameContainingIgnoreCase(query)
+                .stream()
+                .sorted()
+                .toList();
     }
 
     /**
@@ -123,15 +145,15 @@ public class CourseServiceImpl implements CourseService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public boolean unenrollChild(Long courseId, Long childId) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + courseId + " not found"));
 
         childRepository.findById(childId)
-                .orElseThrow(() -> new RuntimeException("Child not found with id: " + childId));
+                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + childId + " not found"));
 
         List<Course> enrolledCourses = courseRepository.findAllByChildId(childId);
 
         if (!enrolledCourses.isEmpty())
-            throw new RuntimeException("This child is not enrolled in any courses");
+            throw new ChildNotEnrolledException("Child with id: "+ childId + " is not enrolled in any courses");
 
         course.setCurrentParticipants(course.getCurrentParticipants() - 1);
         courseRepository.unenrollChildInCourse(childId, courseId);
@@ -146,7 +168,6 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     @ForLog
-    @Transactional(readOnly = true)
     public boolean isCourseFull(Course course) {
         return course.getCurrentParticipants() >= course.getMaxParticipants();
     }
@@ -160,11 +181,10 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     @ForLog
-    @Transactional(readOnly = true)
     public int getCurrentParticipants(Course course) {
         return courseRepository.findById(course.getId())
                 .map(Course::getCurrentParticipants)
-                .orElseThrow(() -> new RuntimeException("Course not found with id: " + course.getId()));
+                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + course.getId() + " not found"));
     }
 
     /**

@@ -2,6 +2,8 @@ package org.khatep.balaguide.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.khatep.balaguide.aop.annotations.ForLog;
+import org.khatep.balaguide.exceptions.ChildNotEnrolledException;
+import org.khatep.balaguide.exceptions.ChildNotFoundException;
 import org.khatep.balaguide.models.entities.Child;
 import org.khatep.balaguide.models.entities.Course;
 import org.khatep.balaguide.repositories.ChildRepository;
@@ -22,6 +24,82 @@ public class ChildServiceImpl implements ChildService {
     private final CourseRepository courseRepository;
 
     /**
+     * Retrieves all {@link Child} entities.
+     *
+     * @return a {@link List} of all {@link Child} entities.
+     */
+    @Override
+    public List<Child> findAll() {
+        return childRepository.findAll();
+    }
+
+    /**
+     * Retrieves a {@link Child} entity by its ID.
+     *
+     * @param id the ID of the {@link Child} entity to be retrieved.
+     * @return an {@link Optional} containing the {@link Child} if found, or empty if not found.
+     */
+    @Override
+    public Optional<Child> findById(Long id) {
+        return childRepository.findById(id);
+    }
+
+    /**
+     * Saves a new {@link Child} entity.
+     *
+     * @param child the {@link Child} entity to be saved.
+     * @return the saved {@link Child} entity.
+     */
+    @Override
+    public Child save(Child child) {
+        return childRepository.save(child);
+    }
+
+    /**
+     * Updates an existing {@link Child} entity by its ID.
+     *
+     * @param id    the ID of the {@link Child} entity to be updated.
+     * @param updatedChild the {@link Child} entity containing updated information.
+     * @return an {@link Optional} containing the updated {@link Child} if found and updated, or empty if not found.
+     */
+    @Override
+    public Optional<Child> update(Long id, Child updatedChild) {
+        return childRepository.findById(id).map(existingChild -> {
+            copyNonNullProperties(updatedChild, existingChild);
+            return childRepository.save(existingChild);
+        });
+    }
+
+    /**
+     * Copy non-null properties from source Child to target Child.
+     */
+    private void copyNonNullProperties(Child source, Child target) {
+        if (source.getFirstName() != null) target.setFirstName(source.getFirstName());
+        if (source.getLastName() != null) target.setLastName(source.getLastName());
+        if (source.getBirthDate() != null) target.setBirthDate(source.getBirthDate());
+        if (source.getPhoneNumber() != null) target.setPhoneNumber(source.getPhoneNumber());
+        if (source.getPassword() != null) target.setPassword(source.getPassword());
+        if (source.getGender() != null) target.setGender(source.getGender());
+        if (source.getParent() != null) target.setParent(source.getParent());
+        if (source.getCoursesEnrolled() != null) target.setCoursesEnrolled(source.getCoursesEnrolled());
+    }
+
+    /**
+     * Remove a {@link Child} entity by its ID.
+     *
+     * @param id the ID of the {@link Child} entity to be deleted.
+     * @return true if the deletion was successful, false if no entity was found with the specified ID.
+     */
+    @Override
+    public boolean removeChild(Long id) {
+        if (childRepository.existsById(id)) {
+            childRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Retrieves a list of courses that the specified child is enrolled in.
      *
      * @param child the {@link Child} entity for which to retrieve enrolled courses
@@ -35,37 +113,15 @@ public class ChildServiceImpl implements ChildService {
         Optional<Child> childFromDatabase = childRepository.findById(child.getId());
 
         if (childFromDatabase.isEmpty())
-            throw new RuntimeException("Child not found with ID: " + child.getId());
+            throw new ChildNotFoundException("Child not found with ID: " + child.getId());
 
         Optional<List<Course>> enrolledCoursesFromDatabase = childFromDatabase.map(childEntity ->
                 courseRepository.findAllByChildId(childFromDatabase.get().getId())
         );
 
         if (enrolledCoursesFromDatabase.isEmpty())
-            throw new RuntimeException("This child is not enrolled in any courses");
+            throw new ChildNotEnrolledException("Child with id: " + child + " is not enrolled in any courses");
 
         return enrolledCoursesFromDatabase.get();
-    }
-
-    /**
-     * Logs in a child by verifying their phone number and password.
-     *
-     * @param child the {@link Child} entity containing the phone number and password for authentication
-     * @return true if the login is successful
-     * @throws RuntimeException if the child is not found or if the password is incorrect
-     */
-    @Override
-    @ForLog
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public boolean login(Child child) {
-        Optional<Child> childFromDatabase = childRepository.findByPhoneNumber(child.getPhoneNumber());
-
-        if (childFromDatabase.isEmpty())
-            throw new RuntimeException("Child not found with phone number: " + child.getPhoneNumber());
-
-        if (!childFromDatabase.get().getPassword().contentEquals(child.getPassword()))
-            throw new RuntimeException("Wrong child password with ID: " + child.getId());
-
-        return true;
     }
 }

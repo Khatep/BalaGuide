@@ -1,6 +1,7 @@
 package org.khatep.balaguide.models.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.khatep.balaguide.models.enums.Gender;
@@ -26,25 +27,37 @@ public class Child implements Comparable<Child> {
     private Long id;
 
     /** The first name of the child. */
+    @NotNull(message = "First name must be not null")
+    @NotBlank(message = "First name must be not empty")
     private String firstName;
 
     /** The last name of the child. */
+    @NotNull(message = "Last name must be not null")
+    @NotBlank(message = "Last name must be not empty")
     private String lastName;
 
-    /** The birthdate of the child. */
-    private LocalDate birthDate;
-
     /** The phone number of the child. */
+    @NotNull(message = "Phone number must be not null")
+    @NotBlank(message = "Phone number must be not empty")
+    @Pattern(regexp = "\\+?\\d{10,15}", message = "Phone number must be valid and contain 10-15 digits")
     private String phoneNumber;
 
+    /** The birthdate of the child. */
+    @NotNull(message = "Birth date must be not null")
+    @Past(message = "Birth date must be in the past")
+    private LocalDate birthDate;
+
     /** The password for the child account. */
+    @NotNull(message = "Password must be not null")
+    @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
     private String password;
 
     /** The gender of the child. */
+    @NotNull(message = "Gender must not be null")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    /** The id of parent associated with the child. */
+    /** The parent associated with the child. */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name= "parent_id", referencedColumnName = "id")
     private Parent parent;
@@ -57,6 +70,7 @@ public class Child implements Comparable<Child> {
             inverseJoinColumns = @JoinColumn(name = "course_id")
     )
     @ToString.Exclude
+    @Builder.Default
     private List<Course> coursesEnrolled = new ArrayList<>();
 
     @Override
