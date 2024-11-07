@@ -6,8 +6,6 @@ The online platform for registering children for courses and sections is designe
 
 - [Project Structure](#project-structure)
 - [Updates](#Updates)
-- [Access the DataBase](#access-the-dataBase)
-- [DataBase](#dataBase)
 
 ## Project Structure
 
@@ -20,22 +18,31 @@ BalaGuide/
 │   │   │   │   │   └── annotations/
 │   │   │   │   │   │   └── ForLog
 │   │   │   │   │   └── LoggingAspect
-│   │   │   │   ├── config/
-│   │   │   │   │   └── KafkaConfiguration
-│   │   │   │   ├── dbinit/
-│   │   │   │   │   └── DatabaseInitializer
+│   │   │   │   ├── controllers/
+│   │   │   │   │   ├── ChildController
+│   │   │   │   │   ├── CourseContoller
+│   │   │   │   │   └── ParentController
 │   │   │   │   ├── exceptions/
+│   │   │   │   │   ├── BalanceUpdateException
 │   │   │   │   │   ├── ChildNotBelongToParentException
+│   │   │   │   │   ├── ChildNotEnrolledException
+│   │   │   │   │   ├── ChildNotFoundException
 │   │   │   │   │   ├── CourseFullException
+│   │   │   │   │   ├── CourseNotFoundException
+│   │   │   │   │   ├── EducationCenterNotFoundException
 │   │   │   │   │   ├── IneligibleChildException
-│   │   │   │   │   └── InsufficientFundsException
+│   │   │   │   │   ├── InsufficientFundsException
+│   │   │   │   │   ├── ParentNotFoundException
+│   │   │   │   │   └── UserAlreadyExistsException
 │   │   │   │   ├── kafka/
+│   │   │   │   │   ├── config/
+│   │   │   │   │   │   └── KafkaConfiguration
 │   │   │   │   │   └── consumer/
 │   │   │   │   │   │   └── EmailConsumer
 │   │   │   │   │   └── producer/
 │   │   │   │   │   │   └── EmailProducer
-│   │   │   │   ├── menu/
-│   │   │   │   │   └── MenuPrinter
+│   │   │   │   ├── mappers/
+│   │   │   │   │   ├── CourseMapper
 │   │   │   │   ├── models/
 │   │   │   │   │   └── dto/
 │   │   │   │   │   │   └── CourseDto
@@ -48,23 +55,42 @@ BalaGuide/
 │   │   │   │   │   │   └── Teacher
 │   │   │   │   │   └── enums/
 │   │   │   │   │   │   ├── Category
-│   │   │   │   │   │   ├── Colors
 │   │   │   │   │   │   ├── Gender
-│   │   │   │   │   │   └── PaymentMethod
+│   │   │   │   │   │   ├── PaymentMethod
+│   │   │   │   │   │   └── Role
+│   │   │   │   │   └── requests/
+│   │   │   │   │   │   ├── AddBalanceRequest
+│   │   │   │   │   │   └── CourseRequest
 │   │   │   │   ├── repositories/
 │   │   │   │   │   ├── ChildRepository
 │   │   │   │   │   ├── CourseRepository
 │   │   │   │   │   ├── EducationCenterRepository
 │   │   │   │   │   ├── ParentRepository
-│   │   │   │   │   └── TeacherRepository
+│   │   │   │   │   └── ReceiptRepository
+│   │   │   │   ├── security/
+│   │   │   │   │   ├── config/
+│   │   │   │   │   │   ├── JwtAuthenticationFilter
+│   │   │   │   │   │   └── SecurityConfiguration
+│   │   │   │   │   ├── controller/
+│   │   │   │   │   │   └── AuthenticationController
+│   │   │   │   │   ├── dto/
+│   │   │   │   │   │   ├── JwtAuthenticationResponse
+│   │   │   │   │   │   ├── SignInRequest
+│   │   │   │   │   │   ├── SignUpEduCenterRequest
+│   │   │   │   │   │   └── SignUpParentRequest
+│   │   │   │   │   ├── service/
+│   │   │   │   │   │   ├── AuthenticationService
+│   │   │   │   │   │   └── JwtService
 │   │   │   │   ├── services/
 │   │   │   │   │   └── impl/
 │   │   │   │   │   │   ├── ChildServiceImpl
 │   │   │   │   │   │   ├── CourseServiceImpl
+│   │   │   │   │   │   ├── EducationServiceImpl
 │   │   │   │   │   │   ├── ParentServiceImpl
 │   │   │   │   │   │   └── ReceiptServiceImpl
 │   │   │   │   │   ├── ChildService
 │   │   │   │   │   ├── CourseService
+│   │   │   │   │   ├── EducationCenterService
 │   │   │   │   │   ├── ParentService
 │   │   │   │   │   └── ReceiptService
 │   │   │   │   └── BalaGuideApplication.java
@@ -74,86 +100,120 @@ BalaGuide/
 ├──  pom.xml
 └── README.md
 ```
+
 ## Updates
 
-### `Receipt` entity
-- **Purpose**: save and send receipts to parents
-### `ReceiptRepository` 
-### `ReceiptService`
-- **Methods**:
-  - `createReceipt`
-<br></br>
-### `CourseDto`
-- **Purpose**: encapsulates the details of a course, including its name and price.
-<br></br>
+### `Spring Security`
+I added security to my project, added authentication and authorization using roles and json web token. Defined a custom `JwtAuthenticationFilter`  and a controller that accepts authentication requests <br>
+Endpoints:
+- POST: http://localhost:8081/auth/sign-up   (only Parent right now, but it can easily be customized for other types of users.)
+  ```json
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "phoneNumber": "+12345678901",
+    "birthDate": "2003-11-27",
+    "email": "nurgali.khatep@gmail.com",
+    "password": "password123"
+  }
 
-### `KafkaConfiguration`
-- **Purpose**: creating a new topic and kafkaTemplate bean
-### `EmailProducer`
-- **Purpose**: sends receipt messages to the Kafka `receipt` topic. It uses Kafka to publish these messages, which can then be used by consumers
-### `EmailConsumer`
-- **Purpose**: listens for `receipt` messages from a Kafka topic and sends an email receipt to the parent who made the purchase.
+- POST: http://localhost:8081/auth/sign-up-edu-center (For Education Center)
+  ```json
+  {
+    "name": "IT easy",
+    "dateOfCreated": "2023-11-02",
+    "phoneNumber": "87711134898",
+    "email": "aserty663qer@gmail.com",
+    "password": "password1234",
+    "address": "Manasa 34/1",
+    "instagramLink": "it_easy_school"
+  }
 
-![Exmaple of receipt](receipt_example_post.jpg)
+The response will be a generated JWT 
+<br>
+- POST: http://localhost:8081/auth/sign-in
+  ```json
+  {
+    "email": "nurgali.khatep@gmail.com",
+    "password": "password123"
+  }
 
-<br></br>
-### `ChildServiceImplTest`
-- **Purpose**: Testing the functionality of the Child Service Impl class, ensuring that the methods work correctly
-### `CourseServiceImplTest`
-- **Purpose**: Testing the functionality of the Course Service Impl class, ensuring that the methods work correctly
-### `ReceiptServiceImplTest`
-- **Purpose**: Testing the functionality of the Receipt Service Impl class, ensuring that the methods work correctly
+### `ParentController`
 
-Total coverage: 92%
-<br></br>
-## Access the DataBase
-   - Open your web browser and go to `http://localhost:8081/h2-console` to access the H2 console.
-   - Use the following credentials to log in:
-     - **JDBC URL**: `jdbc:h2:mem:testdb`
-     - **Username**: `sa`
-     - **Password**: *(leave blank)*
+firstly you should sign up, and save jwt for next requests
+<br>
 
-## DataBase
+Choose Bearer token in Postman for Authorization config then input token
+<br>
+Endpoints:
 
-### Enums
-- **Gender Enum**: This enum defines two possible values for gender—'MALE' and 'FEMALE'. It is used in the `teacher` and `child` tables to categorize individuals accordingly.
-- **Category Enum**: This enum encompasses various educational categories, including 'PROGRAMMING', 'SPORT', 'LANGUAGES', 'ART', and 'MATH'. It is applied in the `course` table to classify courses.
 
-## Tables
-
-### 1. Education Center
-- **Table Name**: `education_center`
-- **Purpose**: Stores information about educational institutions offering courses. Key attributes include the center's name, creation date, contact information, and social media links.
-
-### 2. Course
-- **Table Name**: `course`
-- **Purpose**: Contains details about the courses available at education centers. Attributes include course name, description, category (linked to the Category Enum), pricing, and participant details. It also establishes a foreign key relationship with the `education_center` table to associate each course with a specific center.
-
-### 3. Teacher
-- **Table Name**: `teacher`
-- **Purpose**: Captures information about teachers, including their personal details and gender. This table allows for managing teachers who conduct courses.
-
-### 4. Parent
-- **Table Name**: `parent`
-- **Purpose**: Manages parent information, including contact details and account credentials. This table supports features related to parent accounts and their interaction with courses.
-
-### 5. Child
-- **Table Name**: `child`
-- **Purpose**: Holds data regarding children enrolled in courses. Each child can be linked to a parent via a foreign key, allowing for structured access to parental information.
-
-### 6. Receipt
-- **Table Name**: `receipt`
-- **Purpose**: Stores information about payments for courses. It also includes foreign keys that link it to a parent table (indicating who made the payment) and a course table (indicating which course the payment was made for). This table allows you to track the history of payments and ensures that the courses are linked to the corresponding transactions.
+- POST: http://localhost:8081/api/v1/parents/1/add-child
+  ```json
+  {
+    "firstName": "Ali",
+    "lastName": "Utepov",
+    "phoneNumber": "+12345678901",
+    "birthDate": "2014-11-27",
+    "email": "ali.utepov@gmail.com",
+    "password": "password123",
+    "gender": "MALE"
+  }
   
-### 7. Teacher-Course Relationship
-- **Table Name**: `teacher_course`
-- **Purpose**: Establishes a many-to-many relationship between teachers and courses, allowing multiple teachers to be associated with multiple courses. This is essential for course management and instructor assignments.
+- DELETE: http://localhost:8081/api/v1/parents/1/remove-child/1
+  ```json
+    none
 
-### 8. Child-Course Relationship
-- **Table Name**: `child_course`
-- **Purpose**: Facilitates a many-to-many relationship between children and courses, enabling tracking of which children are enrolled in which courses.
+- GET: http://localhost:8081/api/v1/parents/1/my-children
+  ```json
+    none
 
+- POST: http://localhost:8081/api/v1/parents/1/add-balance
+  ```json
+  {
+    "amountOfMoney": 1000000,
+    "numberOfBankCard": "4405444044404400"
+  }
 
+Before next requests you must do `sign-up-edu-center` and execute `http://localhost:8081/api/v1/courses/add-course` (With the token for edu center) and `http://localhost:8081/api/v1/parents/1/add-balance` (parent`s token) 
+- POST: http://localhost:8081/api/v1/courses/1/enroll/1
+  ```json
+  none
+
+### `CourseController`
+
+Before next requests you must do `sign-up-edu-center`
+- POST: http://localhost:8081/api/v1/courses/add-course
+  ```json
+  {
+  "educationCenterId": 1,
+  "name": "Programming for Kids",
+  "description": "An introductory course for kids to learn programming basics.",
+  "category": "PROGRAMMING",
+  "ageRange": "6-10",
+  "price": 150.00,
+  "durability": 8,
+  "maxParticipants": 20,
+  "currentParticipants": 0
+  }
+
+- GET: http://localhost:8081/api/v1/courses/search-courses?query=Program
+  ```json
+  none
+
+- POST: http://localhost:8081/api/v1/courses/1/enroll/1
+  ```json
+  none
+- POST: http://localhost:8081/api/v1/courses/1/unenroll/1
+  ```json
+  none
+
+<br></br>
+### AOP for controllers
+I added some methods to the LoggingAspect class, where previously there were already methods that did logging via my @ForLog annotation. The new methods do Log every request and response and their (ip address, url, username) duties  
+<br>
+### Create a lot of custom exceptions
+### I use some functional interfaces, Stream API, records
 
 
 
