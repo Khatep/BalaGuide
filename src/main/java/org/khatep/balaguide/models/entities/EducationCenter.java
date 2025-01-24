@@ -1,7 +1,7 @@
 package org.khatep.balaguide.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -25,73 +25,81 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "parent")
-public class Parent implements Comparable<Parent>, UserDetails {
+@Table(name = "education_center")
+public class EducationCenter implements UserDetails {
 
-    /** The unique identifier for the parent. */
+    /**
+     * The unique identifier for the education center.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** The first name of the parent. */
-    @NotNull(message = "First name must be not null")
-    @NotBlank(message = "First name must be not empty")
-    private String firstName;
+    /**
+     * The name of the education center.
+     */
+    @NotNull(message = "Name must be not null")
+    @NotBlank(message = "Name must be not empty")
+    private String name;
 
-    /** The last name of the parent. */
-    @NotNull(message = "Last name must be not null")
-    @NotBlank(message = "Last name must be not empty")
-    private String lastName;
-
-    /** The phone number of the parent. */
+    /**
+     * The date when the education center was created.
+     */
+    @NotNull(message = "Date of created must be not null")
+    @Past(message = "Date of created must be in the past")
+    private LocalDate dateOfCreated;
+    
+    /**
+     * The contact phone number of the education center.
+     */
     @NotNull(message = "Phone number must be not null")
     @NotBlank(message = "Phone number must be not empty")
+    @Pattern(regexp = "\\+?\\d{10,15}", message = "Phone number must be valid and contain 10-15 digits")
     @Column(unique = true)
     private String phoneNumber;
 
-    /**
-     * The date of birth of the parent.
-     */
-    @NotNull(message = "Birth date must be not null")
-    @Past(message = "Birth date must be in the past")
-    private LocalDate birthDate;
-
-    /** The email address of the parent. */
     @NotNull(message = "Email must be not null")
     @NotBlank(message = "Email must be not empty")
-    @Email(message = "Email must be in format: user@example.com")
+    @Email(message = "Email must be valid")
     @Column(unique = true)
     private String email;
 
-    /** The password for the parent account. */
+    /** The password for the education center account. */
     @NotNull(message = "Password must be not null")
-    @NotBlank(message = "Password must be not empty")
     @Size(min = 8, max = 255, message = "Password must be between 8 and 255 characters")
-    @JsonIgnore
     private String password;
 
-    /** The physical address of the parent. */
-    @Size(max = 255, message = "Address must be less than 255 characters")
+    /**
+     * The physical address of the education center.
+     */
+    @NotNull(message = "Address must be not null")
+    @NotBlank(message = "Address must be not empty")
     private String address;
 
-    /** The cash balance of parent, to be removed after integration with online payment. */
-    @NotNull(message = "Balance must not be null")
-    @PositiveOrZero(message = "Balance must be greater than zero")
-    private BigDecimal balance;
-
-    /** A list of children associated with the parent. */
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @ToString.Exclude
-    @JsonIgnore
-    private List<Child> myChildren;
+    /**
+     * The Instagram link for the education center's social media page.
+     */
+    @NotNull(message = "Instagram link must be not null")
+    @NotBlank(message = "Instagram link must be not empty")
+    private String instagramLink;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Override
-    public int compareTo(Parent o) {
-        return this.getId().compareTo(o.getId());
-    }
+    /**
+     * The Balance of Education center
+     * */
+    @NotNull(message = "Balance must not be null")
+    @PositiveOrZero(message = "Balance must be greater than zero or equal to zero")
+    private BigDecimal balance;
+
+    /**
+     * The list of courses offered by the education center.
+     */
+    @OneToMany(mappedBy = "educationCenter")
+    @ToString.Exclude
+    @JsonIgnore
+    private List<Course> courses;
 
     @Override
     public final boolean equals(Object o) {
@@ -100,8 +108,8 @@ public class Parent implements Comparable<Parent>, UserDetails {
         Class<?> oEffectiveClass = o instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        Parent parent = (Parent) o;
-        return getId() != null && Objects.equals(getId(), parent.getId());
+        EducationCenter that = (EducationCenter) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
     }
 
     @Override
