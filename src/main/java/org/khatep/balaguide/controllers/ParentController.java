@@ -2,7 +2,6 @@ package org.khatep.balaguide.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.khatep.balaguide.exceptions.ChildNotBelongToParentException;
 import org.khatep.balaguide.models.entities.Child;
 import org.khatep.balaguide.models.entities.Course;
 import org.khatep.balaguide.models.entities.Parent;
@@ -30,12 +29,9 @@ public class ParentController {
      */
     @PostMapping("{parentId}/add-child")
     public ResponseEntity<Child> addChild(@PathVariable Long parentId, @RequestBody @Valid Child child) {
-        try {
-            Child addedChild = parentService.addChild(parentId, child);
-            return ResponseEntity.status(HttpStatus.CREATED).body(addedChild);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
+        Child addedChild = parentService.addChild(parentId, child);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addedChild);
+
     }
 
     /**
@@ -47,12 +43,9 @@ public class ParentController {
      */
     @DeleteMapping("{parentId}/remove-child/{childId}")
     public ResponseEntity<String> removeChild(@PathVariable Long parentId, @PathVariable Long childId) {
-        try {
-            parentService.removeChild(parentId, childId);
-            return ResponseEntity.ok("Child removed successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+        parentService.removeChild(parentId, childId);
+        return ResponseEntity.ok("Child removed successfully");
+
     }
 
     /**
@@ -63,12 +56,9 @@ public class ParentController {
      */
     @GetMapping("/{parentId}/my-children")
     public ResponseEntity<List<Child>> getMyChildren(@PathVariable Long parentId) {
-        try {
-            List<Child> children = parentService.getMyChildren(parentId);
-            return ResponseEntity.ok(children);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
+        List<Child> children = parentService.getMyChildren(parentId);
+        return ResponseEntity.ok(children);
+
     }
 
     /**
@@ -81,12 +71,8 @@ public class ParentController {
      */
     @PostMapping("/{parentId}/children/{childId}/enroll/{courseId}")
     public ResponseEntity<String> enrollChild(@PathVariable Long parentId, @PathVariable Long childId, @PathVariable Long courseId) {
-        try {
-            parentService.enrollChildToCourse(parentId, childId, courseId);
-            return ResponseEntity.ok("Child enrolled successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        parentService.enrollChildToCourse(parentId, childId, courseId);
+        return ResponseEntity.ok("Child enrolled successfully");
     }
 
     /**
@@ -99,12 +85,8 @@ public class ParentController {
      */
     @DeleteMapping("/{parentId}/children/{childId}/unenroll/{courseId}")
     public ResponseEntity<String> unenrollChild(@PathVariable Long parentId, @PathVariable Long childId, @PathVariable Long courseId) {
-        try {
-            parentService.unenrollChildFromCourse(parentId, childId, courseId);
-            return ResponseEntity.ok("Child unenrolled successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        parentService.unenrollChildFromCourse(parentId, childId, courseId);
+        return ResponseEntity.ok("Child unenrolled successfully");
     }
 
     /**
@@ -116,12 +98,9 @@ public class ParentController {
      */
     @PostMapping("/{parentId}/add-balance")
     public ResponseEntity<String> addBalance(@PathVariable Long parentId, @RequestBody AddBalanceRequest addBalanceRequest) {
-        try {
-            String message = parentService.addBalance(parentId, addBalanceRequest.amountOfMoney(), addBalanceRequest.numberOfBankCard());
-            return ResponseEntity.ok(message);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        String message = parentService.addBalance(parentId, addBalanceRequest.amountOfMoney(), addBalanceRequest.numberOfBankCard());
+        return ResponseEntity.ok(message);
+
     }
 
     /**
@@ -132,12 +111,8 @@ public class ParentController {
      */
     @DeleteMapping("/{parentId}")
     public ResponseEntity<String> removeParent(@PathVariable Long parentId) {
-        try {
-            parentService.removeParent(parentId);
-            return ResponseEntity.ok("Parent removed successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        parentService.removeParent(parentId);
+        return ResponseEntity.ok("Parent removed successfully");
     }
 
     /**
@@ -149,11 +124,7 @@ public class ParentController {
      */
     @PutMapping("/{parentId}")
     public ResponseEntity<Parent> updateParent(@PathVariable Long parentId, @RequestBody @Valid Parent parent) {
-        try {
-            Parent updatedParent = parentService.updateParent(parentId, parent);
-            return ResponseEntity.ok(updatedParent);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        Parent updatedParent = parentService.updateParent(parentId, parent);
+        return ResponseEntity.ok(updatedParent);
     }
 }
