@@ -21,7 +21,7 @@ Course organizers will have access to tools for program management, including th
 BalaGuide/
 ├── src/
 │   ├── main
-│   ├── java/org/khatep/balaguide/
+│   ├── java/kz/balaguide/
 │   │   │   │   ├── aop/
 │   │   │   │   │   └── annotations/
 │   │   │   │   │   │   └── ForLog
@@ -46,9 +46,9 @@ BalaGuide/
 │   │   │   │   │   ├── config/
 │   │   │   │   │   │   └── KafkaConfiguration
 │   │   │   │   │   └── consumer/
-│   │   │   │   │   │   └── EmailConsumer
+│   │   │   │   │   │   └── EmailConsumerService
 │   │   │   │   │   └── producer/
-│   │   │   │   │   │   └── EmailProducer
+│   │   │   │   │   │   └── EmailProducerService
 │   │   │   │   ├── mappers/
 │   │   │   │   │   ├── CourseMapper
 │   │   │   │   ├── models/
