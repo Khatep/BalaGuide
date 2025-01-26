@@ -8,7 +8,7 @@
         <version>3.3.4</version>
         <relativePath/>
     </parent>
-    <groupId>org.khatep</groupId>
+    <groupId>kz.balaguide</groupId>
     <artifactId>BalaGuide</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>BalaGuide</name>
