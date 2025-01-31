@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import kz.balaguide.core.enums.PaymentMethod;
+import kz.balaguide.core.enums.PaymentStatus;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -33,6 +34,7 @@ public class Receipt {
      * Percentage of VAT applied to the transaction.
      */
     @NotNull(message = "Percent of vat must be not null")
+    @Column(name = "percent_of_vat")
     private Integer percentOfVat;
 
     /**
@@ -40,6 +42,7 @@ public class Receipt {
      */
     @NotNull(message = "Date of created must be not null")
     @PastOrPresent(message = "Date of created must be in the past or in present")
+    @Column(name = "date_of_created")
     private LocalDate dateOfCreated;
 
     /**
@@ -47,7 +50,13 @@ public class Receipt {
      */
     @NotNull(message = "Payment method must not be null")
     @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status")
+    private PaymentStatus paymentStatus;
 
     /**
      * The parent id associated with this receipt.

@@ -33,6 +33,7 @@ public class Teacher {
      */
     @NotNull(message = "First name must be not null")
     @NotBlank(message = "First name must be not empty")
+    @Column(name = "first_name")
     private String firstName;
 
     /**
@@ -40,6 +41,7 @@ public class Teacher {
      */
     @NotNull(message = "Last name must be not null")
     @NotBlank(message = "Last name must be not empty")
+    @Column(name = "last_name")
     private String lastName;
 
     /**
@@ -47,6 +49,7 @@ public class Teacher {
      */
     @NotNull(message = "Birth date must be not null")
     @Past(message = "Birth date must be in the past")
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
     /**
@@ -55,6 +58,7 @@ public class Teacher {
     @NotNull(message = "Phone number must be not null")
     @NotBlank(message = "Phone number must be not empty")
     @Pattern(regexp = "\\+?\\d{10,15}", message = "Phone number must be valid and contain 10-15 digits")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     /**
@@ -63,6 +67,7 @@ public class Teacher {
      */
     @NotNull(message = "Password must be not null")
     @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
+    @Column(name = "password", nullable = false, length = 60)
     private String password;
 
     /**

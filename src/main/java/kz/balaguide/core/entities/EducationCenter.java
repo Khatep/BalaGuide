@@ -9,6 +9,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -45,6 +46,7 @@ public class EducationCenter implements UserDetails {
      */
     @NotNull(message = "Date of created must be not null")
     @Past(message = "Date of created must be in the past")
+    @Column(name = "date_of_created")
     private LocalDate dateOfCreated;
     
     /**
@@ -53,7 +55,7 @@ public class EducationCenter implements UserDetails {
     @NotNull(message = "Phone number must be not null")
     @NotBlank(message = "Phone number must be not empty")
     @Pattern(regexp = "\\+?\\d{10,15}", message = "Phone number must be valid and contain 10-15 digits")
-    @Column(unique = true)
+    @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
     @NotNull(message = "Email must be not null")
@@ -65,6 +67,7 @@ public class EducationCenter implements UserDetails {
     /** The password for the education center account. */
     @NotNull(message = "Password must be not null")
     @Size(min = 8, max = 255, message = "Password must be between 8 and 255 characters")
+    @Column(name = "password", nullable = false, length = 60)
     private String password;
 
     /**
@@ -79,6 +82,7 @@ public class EducationCenter implements UserDetails {
      */
     @NotNull(message = "Instagram link must be not null")
     @NotBlank(message = "Instagram link must be not empty")
+    @Column(name = "instagram_link")
     private String instagramLink;
 
     @Enumerated(EnumType.STRING)
@@ -120,6 +124,11 @@ public class EducationCenter implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
+    public void setPassword(String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        this.password = encoder.encode(password);
+    }
+
     @Override
     public String getUsername() {
         return email;
@@ -144,4 +153,9 @@ public class EducationCenter implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+//    @AssertTrue(message = "Date of created must be in the past")
+//    public boolean isDateOfCreatedValid() {
+//        return dateOfCreated != null && dateOfCreated.isBefore(LocalDate.now());
+//    }
 }

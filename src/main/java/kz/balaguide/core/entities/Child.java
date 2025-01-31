@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import kz.balaguide.core.enums.Gender;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,27 +30,32 @@ public class Child implements Comparable<Child> {
     /** The first name of the child. */
     @NotNull(message = "First name must be not null")
     @NotBlank(message = "First name must be not empty")
+    @Column(name = "first_name")
     private String firstName;
 
     /** The last name of the child. */
     @NotNull(message = "Last name must be not null")
     @NotBlank(message = "Last name must be not empty")
+    @Column(name = "last_name")
     private String lastName;
 
     /** The phone number of the child. */
     @NotNull(message = "Phone number must be not null")
     @NotBlank(message = "Phone number must be not empty")
     @Pattern(regexp = "\\+?\\d{10,15}", message = "Phone number must be valid and contain 10-15 digits")
+    @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
     /** The birthdate of the child. */
     @NotNull(message = "Birth date must be not null")
     @Past(message = "Birth date must be in the past")
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
     /** The password for the child account. */
     @NotNull(message = "Password must be not null")
     @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
+    @Column(name = "password", nullable = false, length = 60)
     private String password;
 
     /** The gender of the child. */
@@ -72,6 +78,12 @@ public class Child implements Comparable<Child> {
     @ToString.Exclude
     @Builder.Default
     private List<Course> coursesEnrolled = new ArrayList<>();
+
+    //TODO перенести хеширования на уровень сервиса
+    public void setPassword(String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        this.password = encoder.encode(password);
+    }
 
     @Override
     public int compareTo(Child o) {

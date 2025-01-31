@@ -35,6 +35,7 @@ public class Course implements Comparable<Course> {
      */
     @NotNull(message = "Name must be not null")
     @NotBlank(message = "Name must be not empty")
+    @Column(name = "course_name", length = 100)
     private String name;
 
     /**
@@ -42,6 +43,7 @@ public class Course implements Comparable<Course> {
      */
     @NotNull(message = "Description must be not null")
     @NotBlank(message = "Description must be not empty")
+    @Column(name = "description", length = 500)
     private String description;
 
     /**
@@ -56,6 +58,7 @@ public class Course implements Comparable<Course> {
      */
     @NotNull(message = "Age range must be not null")
     @Pattern(regexp = "^\\d{1,2}-\\d{1,2}", message = "Age range must be in the format 'X-Y', where X and Y are numbers")
+    @Column(name = "age_range")
     private String ageRange;
 
     /**
@@ -77,12 +80,14 @@ public class Course implements Comparable<Course> {
      */
     @NotNull(message = "Max participants must not be null")
     @Positive(message = "Max participants must be greater than zero")
+    @Column(name = "max_participants", nullable = false)
     private int maxParticipants;
     
     /**
      * The current number of participants in the course.
      */
     @NotNull(message = "Current participants must not be null")
+    @Column(name = "current_participants", nullable = false)
     private int currentParticipants;
 
     @ManyToOne(fetch = FetchType.EAGER)
