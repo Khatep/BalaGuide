@@ -9,6 +9,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,17 +35,19 @@ public class Parent implements Comparable<Parent>, UserDetails {
     /** The first name of the parent. */
     @NotNull(message = "First name must be not null")
     @NotBlank(message = "First name must be not empty")
+    @Column(name = "first_name")
     private String firstName;
 
     /** The last name of the parent. */
     @NotNull(message = "Last name must be not null")
     @NotBlank(message = "Last name must be not empty")
+    @Column(name = "last_name")
     private String lastName;
 
     /** The phone number of the parent. */
     @NotNull(message = "Phone number must be not null")
     @NotBlank(message = "Phone number must be not empty")
-    @Column(unique = true)
+    @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
     /**
@@ -52,6 +55,7 @@ public class Parent implements Comparable<Parent>, UserDetails {
      */
     @NotNull(message = "Birth date must be not null")
     @Past(message = "Birth date must be in the past")
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
     /** The email address of the parent. */
@@ -66,6 +70,7 @@ public class Parent implements Comparable<Parent>, UserDetails {
     @NotBlank(message = "Password must be not empty")
     @Size(min = 8, max = 255, message = "Password must be between 8 and 255 characters")
     @JsonIgnore
+    @Column(name = "password", nullable = false, length = 60)
     private String password;
 
     /** The physical address of the parent. */
@@ -110,6 +115,11 @@ public class Parent implements Comparable<Parent>, UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    public void setPassword(String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        this.password = encoder.encode(password);
     }
 
     @Override
