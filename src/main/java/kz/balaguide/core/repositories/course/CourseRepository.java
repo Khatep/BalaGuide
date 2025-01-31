@@ -72,6 +72,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
      * @param courseId the ID of the course to retrieve
      * @return a {@link CourseDto} containing the course's name and price
      */
-    @Query("SELECT new kz.balaguide.utils.dtos.CourseDto(c.name, c.price) FROM Course c WHERE c.id = :courseId")
+    @Query("SELECT new kz.balaguide.core.dtos.CourseDto(c.name, c.price) FROM Course c WHERE c.id = :courseId")
     CourseDto findCoursePriceAndNameById(@Param("courseId") Long courseId);
 }

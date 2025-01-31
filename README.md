@@ -103,7 +103,7 @@ BalaGuide/
 │   │   │   │   │   └── ReceiptService
 │   │   │   │   └── BalaGuideApplication.java
 │   ├── resources/
-│   │   │   │  └── application.properties
+│   │   │   │  └── application.yaml
 ├── .gitignore
 ├──  pom.xml
 └── README.md
