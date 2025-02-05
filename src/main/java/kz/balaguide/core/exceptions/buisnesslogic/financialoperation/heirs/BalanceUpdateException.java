@@ -1,4 +1,4 @@
-package kz.balaguide.core.exceptions.buisnesslogic.financialoperation;
+package kz.balaguide.core.exceptions.buisnesslogic.financialoperation.heirs;
 
 /**
  * Exception thrown when a failure occurs during the balance update process for an Education Center,
@@ -8,6 +8,7 @@ package kz.balaguide.core.exceptions.buisnesslogic.financialoperation;
  * transaction has been rolled back.
  * </p>
  */
+//TODO удалить абстрактное исключение и заменить на более конкретные
 public class BalanceUpdateException extends RuntimeException {
     /**
      * Constructs a new BalanceUpdateException with the specified detail message.

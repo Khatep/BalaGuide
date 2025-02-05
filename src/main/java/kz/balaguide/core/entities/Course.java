@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import kz.balaguide.core.enums.Category;
+import kz.balaguide.core.enums.CourseCategory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -47,11 +47,11 @@ public class Course implements Comparable<Course> {
     private String description;
 
     /**
-     * The category of the course: Programming, Sport, Languages, Art, Math
+     * The courseCategory of the course: Programming, Sport, Languages, Art, Math
      */
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "Category must be not null")
-    private Category category;
+    @NotNull(message = "CourseCategory must be not null")
+    private CourseCategory courseCategory;
 
     /**
      * The age range suitable for the course (e.g., "6-10 years").

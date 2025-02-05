@@ -1,6 +1,6 @@
 package kz.balaguide.core.exceptions.buisnesslogic.notfound;
 
-import kz.balaguide.core.exceptions.buisnesslogic.generic.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 /**
  * Exception thrown when a specified child entity is not found in the system.

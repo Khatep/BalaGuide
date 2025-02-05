@@ -9,4 +9,7 @@ public class LoggingPointcuts {
 
     @Pointcut("@annotation(kz.balaguide.core.annotations.ForLog)")
     public final void loggingMethodsWhichAnnotatedByForLogAnnotationPointcut() {}
+
+    @Pointcut("@annotation(org.springframework.web.bind.annotation.ExceptionHandler)")
+    public final void loggingExceptionHandlers() {}
 }

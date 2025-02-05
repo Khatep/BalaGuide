@@ -13,20 +13,20 @@ import java.util.List;
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
     /**
-     * Retrieves a list of {@link Course} entities whose names contain the specified substring,
+     * Retrieves a list of {@link Course} heirs whose names contain the specified substring,
      * ignoring case.
      *
      * @param courseName the substring to search for in course names
-     * @return a {@link List} of {@link Course} entities matching the search criteria
+     * @return a {@link List} of {@link Course} heirs matching the search criteria
      */
     @Query("SELECT c FROM Course c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :courseName, '%'))")
     List<Course> findByNameContainingIgnoreCase(@Param("courseName") String courseName);
 
     /**
-     * Retrieves all {@link Course} entities associated with a given child ID.
+     * Retrieves all {@link Course} heirs associated with a given child ID.
      *
      * @param childId the ID of the child whose enrolled courses are to be retrieved
-     * @return a {@link List} of {@link Course} entities associated with the specified child ID
+     * @return a {@link List} of {@link Course} heirs associated with the specified child ID
      */
     @Query("SELECT c FROM Course c JOIN c.children ch WHERE ch.id = :childId")
     List<Course> findAllByChildId(@Param("childId") Long childId);

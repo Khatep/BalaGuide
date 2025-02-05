@@ -2,8 +2,8 @@ package kz.balaguide.services.parent;
 
 import kz.balaguide.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
 import kz.balaguide.core.exceptions.buisnesslogic.generic.ChildNotBelongToParentException;
-import kz.balaguide.core.exceptions.buisnesslogic.financialoperation.BalanceUpdateException;
-import kz.balaguide.core.exceptions.buisnesslogic.financialoperation.InsufficientFundsException;
+import kz.balaguide.core.exceptions.buisnesslogic.financialoperation.heirs.BalanceUpdateException;
+import kz.balaguide.core.exceptions.buisnesslogic.financialoperation.heirs.InsufficientFundsException;
 import kz.balaguide.core.exceptions.buisnesslogic.notfound.ChildNotFoundException;
 import kz.balaguide.core.exceptions.buisnesslogic.notfound.CourseNotFoundException;
 import kz.balaguide.core.exceptions.buisnesslogic.notfound.ParentNotFoundException;

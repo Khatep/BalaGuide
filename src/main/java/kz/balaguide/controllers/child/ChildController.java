@@ -1,10 +1,15 @@
 package kz.balaguide.controllers.child;
 
 import jakarta.validation.Valid;
+import kz.balaguide.core.dtos.responses.ApiResponse;
+import kz.balaguide.core.entities.ResponseMetadata;
+import kz.balaguide.core.enums.ResponseCode;
+import kz.balaguide.services.responsemetadata.ResponseMetadataService;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.core.entities.Child;
 import kz.balaguide.core.entities.Course;
 import kz.balaguide.services.child.ChildService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +21,7 @@ import java.util.List;
 public class ChildController {
 
     private final ChildService childService;
+    private final ResponseMetadataService responseMetadataService;
 
     /**
      * Retrieve all children.
@@ -23,10 +29,22 @@ public class ChildController {
      * @return a list of all children
      */
     @GetMapping
-    public ResponseEntity<List<Child>> getAllChildren() {
-        List<Child> children = childService.findAll();
-        return ResponseEntity.ok(children);
+    public ResponseEntity<ApiResponse<Page<Child>>> getAllChildren(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<Child> children = childService.findAll(page, size);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1000);
+        ApiResponse<Page<Child>> response = new ApiResponse<>(
+                responseMetadata,
+                children
+        );
+
+        return ResponseEntity.ok(response);
     }
+
+    //TODO: Переделать все контроллеры с сервисами под ApiResponse
 
     /**
      * Retrieve a child by ID.
@@ -64,7 +82,7 @@ public class ChildController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteChild(@PathVariable Long id) {
         if (childService.removeChild(id)) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }

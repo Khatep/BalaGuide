@@ -1,4 +1,6 @@
-package kz.balaguide.core.exceptions.buisnesslogic.financialoperation;
+package kz.balaguide.core.exceptions.buisnesslogic.financialoperation.heirs;
+
+import kz.balaguide.core.exceptions.buisnesslogic.financialoperation.FinancialOperationException;
 
 /**
  * Exception thrown to indicate that an account has insufficient funds to complete an operation.

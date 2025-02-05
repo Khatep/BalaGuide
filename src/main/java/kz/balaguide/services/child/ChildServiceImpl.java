@@ -1,13 +1,17 @@
 package kz.balaguide.services.child;
 
+import kz.balaguide.core.enums.ResponseCode;
+import kz.balaguide.core.exceptions.buisnesslogic.notfound.ChildrenNotFoundException;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.core.annotations.ForLog;
-import kz.balaguide.core.exceptions.buisnesslogic.generic.ChildNotEnrolledException;
+import kz.balaguide.core.exceptions.buisnesslogic.generic.ChildNotEnrolledToCourseException;
 import kz.balaguide.core.exceptions.buisnesslogic.notfound.ChildNotFoundException;
 import kz.balaguide.core.entities.Child;
 import kz.balaguide.core.entities.Course;
 import kz.balaguide.core.repositories.child.ChildRepository;
 import kz.balaguide.core.repositories.course.CourseRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +27,20 @@ public class ChildServiceImpl implements ChildService {
     private final CourseRepository courseRepository;
 
     /**
-     * Retrieves all {@link Child} entities.
+     * Retrieves all {@link Child} heirs.
      *
-     * @return a {@link List} of all {@link Child} entities.
+     * @return a {@link List} of all {@link Child} heirs.
      */
     @Override
-    public List<Child> findAll() {
-        return childRepository.findAll();
+    public Page<Child> findAll(int page, int size) {
+
+        throw new RuntimeException();
+//        Page<Child> children = childRepository.findAll(PageRequest.of(page, size));
+//        if (children.getTotalElements() == 0) {
+//            throw new ChildrenNotFoundException(ResponseCode._0002.getMessage());
+//        };
+//
+//        return children;
     }
 
     /**
@@ -102,7 +113,7 @@ public class ChildServiceImpl implements ChildService {
      * Retrieves a list of courses that the specified child is enrolled in.
      *
      * @param child the {@link Child} entity for which to retrieve enrolled courses
-     * @return a {@link List} of {@link Course} entities that the child is enrolled in
+     * @return a {@link List} of {@link Course} heirs that the child is enrolled in
      * @throws RuntimeException if the child is not found or if the child is not enrolled in any courses
      */
     @Override
@@ -119,7 +130,7 @@ public class ChildServiceImpl implements ChildService {
         );
 
         if (enrolledCoursesFromDatabase.isEmpty())
-            throw new ChildNotEnrolledException("Child with id: " + child + " is not enrolled in any courses");
+            throw new ChildNotEnrolledToCourseException("Child with id: " + child + " is not enrolled in any courses");
 
         return enrolledCoursesFromDatabase.get();
     }

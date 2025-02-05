@@ -1,5 +1,6 @@
 package shared.services.impl;
 
+import kz.balaguide.core.enums.CourseCategory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +11,6 @@ import kz.balaguide.core.entities.Child;
 import kz.balaguide.core.entities.Course;
 import kz.balaguide.core.entities.EducationCenter;
 import kz.balaguide.core.entities.Parent;
-import kz.balaguide.core.enums.Category;
 import kz.balaguide.core.enums.Gender;
 import kz.balaguide.core.dtos.requests.CourseRequest;
 import kz.balaguide.core.repositories.child.ChildRepository;
@@ -65,7 +65,7 @@ class CourseServiceImplTest {
                 .id(100L)
                 .name("Java Course")
                 .description("Java core and 1.8")
-                .category(Category.PROGRAMMING)
+                .courseCategory(CourseCategory.PROGRAMMING)
                 .ageRange("6-16")
                 .price(BigDecimal.valueOf(50.00))
                 .durability(0)

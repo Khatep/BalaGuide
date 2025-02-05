@@ -22,7 +22,7 @@ public class CourseMapper {
         return Course.builder()
                 .name(courseRequest.name())
                 .description(courseRequest.description())
-                .category(courseRequest.category())
+                .courseCategory(courseRequest.courseCategory())
                 .ageRange(courseRequest.ageRange())
                 .price(courseRequest.price())
                 .durability(courseRequest.durability())
@@ -43,7 +43,7 @@ public class CourseMapper {
                 .educationCenterId(course.getEducationCenter().getId())
                 .name(course.getName())
                 .description(course.getDescription())
-                .category(course.getCategory())
+                .courseCategory(course.getCourseCategory())
                 .ageRange(course.getAgeRange())
                 .price(course.getPrice())
                 .durability(course.getDurability())
@@ -62,7 +62,7 @@ public class CourseMapper {
         existingCourse.setName(updatedCourse.getName());
         existingCourse.setDescription(updatedCourse.getDescription());
         existingCourse.setEducationCenter(updatedCourse.getEducationCenter());
-        existingCourse.setCategory(updatedCourse.getCategory());
+        existingCourse.setCourseCategory(updatedCourse.getCourseCategory());
         existingCourse.setAgeRange(updatedCourse.getAgeRange());
         existingCourse.setPrice(updatedCourse.getPrice());
         existingCourse.setDurability(updatedCourse.getDurability());
