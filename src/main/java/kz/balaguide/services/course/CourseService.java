@@ -1,6 +1,6 @@
 package kz.balaguide.services.course;
 
-import kz.balaguide.core.exceptions.buisnesslogic.generic.ChildNotEnrolledException;
+import kz.balaguide.core.exceptions.buisnesslogic.generic.ChildNotEnrolledToCourseException;
 import kz.balaguide.core.exceptions.buisnesslogic.generic.CourseFullException;
 import kz.balaguide.core.exceptions.buisnesslogic.generic.IneligibleChildException;
 import kz.balaguide.core.exceptions.buisnesslogic.notfound.ChildNotFoundException;
@@ -28,7 +28,7 @@ public interface CourseService {
     List<Course> searchCourses(String query);
 
     boolean unenrollChild(Long courseId, Long childId)
-            throws ChildNotFoundException, ChildNotEnrolledException;
+            throws ChildNotFoundException, ChildNotEnrolledToCourseException;
 
     boolean isCourseFull(Course course);
 

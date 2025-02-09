@@ -1,8 +1,8 @@
 package kz.balaguide.services.course;
 
+import kz.balaguide.core.exceptions.buisnesslogic.generic.ChildNotEnrolledToCourseException;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.core.annotations.ForLog;
-import kz.balaguide.core.exceptions.buisnesslogic.generic.ChildNotEnrolledException;
 import kz.balaguide.core.exceptions.buisnesslogic.generic.CourseFullException;
 import kz.balaguide.core.exceptions.buisnesslogic.generic.IneligibleChildException;
 import kz.balaguide.core.exceptions.buisnesslogic.notfound.ChildNotFoundException;
@@ -73,7 +73,7 @@ public class CourseServiceImpl implements CourseService {
     /**
      * Retrieves a list of all courses available in the system.
      *
-     * @return a {@link List} of {@link Course} entities
+     * @return a {@link List} of {@link Course} heirs
      */
     @Override
     @ForLog
@@ -157,7 +157,7 @@ public class CourseServiceImpl implements CourseService {
         List<Course> enrolledCourses = courseRepository.findAllByChildId(childId);
 
         if (!enrolledCourses.isEmpty())
-            throw new ChildNotEnrolledException("Child with id: "+ childId + " is not enrolled in any courses");
+            throw new ChildNotEnrolledToCourseException("Child with id: "+ childId + " is not enrolled in any courses");
 
         course.setCurrentParticipants(course.getCurrentParticipants() - 1);
         courseRepository.unenrollChildInCourse(childId, courseId);

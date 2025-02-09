@@ -3,8 +3,8 @@ package kz.balaguide.core.dtos.requests;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import kz.balaguide.core.enums.CourseCategory;
 import lombok.Builder;
-import kz.balaguide.core.enums.Category;
 
 import java.math.BigDecimal;
 
@@ -21,8 +21,8 @@ public record CourseRequest(
         @NotBlank(message = "Description must be not empty")
         String description,
 
-        @NotNull(message = "Category must be not null")
-        Category category,
+        @NotNull(message = "CourseCategory must be not null")
+        CourseCategory courseCategory,
 
         @NotNull(message = "Age range must be not null")
         String ageRange,

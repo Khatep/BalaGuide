@@ -1,6 +1,6 @@
 package kz.balaguide.core.enums;
 
-public enum Category {
+public enum CourseCategory {
     PROGRAMMING,
     SPORT,
     LANGUAGES,

@@ -5,6 +5,5 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public interface EducationCenterService {
 
-    UserDetailsService userDetailsService() throws UsernameNotFoundException;
 
 }

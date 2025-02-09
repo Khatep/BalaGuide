@@ -25,7 +25,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "parent")
-public class Parent implements Comparable<Parent>, UserDetails {
+public class Parent implements Comparable<Parent> {
 
     /** The unique identifier for the parent. */
     @Id
@@ -65,14 +65,6 @@ public class Parent implements Comparable<Parent>, UserDetails {
     @Column(unique = true)
     private String email;
 
-    /** The password for the parent account. */
-    @NotNull(message = "Password must be not null")
-    @NotBlank(message = "Password must be not empty")
-    @Size(min = 8, max = 255, message = "Password must be between 8 and 255 characters")
-    @JsonIgnore
-    @Column(name = "password", nullable = false, length = 60)
-    private String password;
-
     /** The physical address of the parent. */
     @Size(max = 255, message = "Address must be less than 255 characters")
     private String address;
@@ -81,6 +73,11 @@ public class Parent implements Comparable<Parent>, UserDetails {
     @NotNull(message = "Balance must not be null")
     @PositiveOrZero(message = "Balance must be greater than zero")
     private BigDecimal balance;
+
+    //TODO: Также надо добавить authUser в education center, Teacher
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
+    private AuthUser authUser;
 
     /** A list of children associated with the parent. */
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -110,40 +107,5 @@ public class Parent implements Comparable<Parent>, UserDetails {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    public void setPassword(String password) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        this.password = encoder.encode(password);
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 }

@@ -1,4 +1,4 @@
-package shared.services.impl;
+package kz.balaguide.services.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import kz.balaguide.core.entities.Child;
 import kz.balaguide.core.entities.Course;
 import kz.balaguide.core.entities.Parent;
-import kz.balaguide.core.enums.Category;
+import kz.balaguide.core.enums.CourseCategory;
 import kz.balaguide.core.enums.Gender;
 import kz.balaguide.core.repositories.child.ChildRepository;
 import kz.balaguide.core.repositories.course.CourseRepository;
@@ -45,7 +45,7 @@ class ChildServiceImplTest {
                 .id(100L)
                 .name("Java Course")
                 .description("Java core and 1.8")
-                .category(Category.PROGRAMMING)
+                .courseCategory(CourseCategory.PROGRAMMING)
                 .ageRange("6-16")
                 .price(BigDecimal.valueOf(50.00))
                 .durability(10)
@@ -59,7 +59,6 @@ class ChildServiceImplTest {
                 .firstName("Nurgali")
                 .lastName("Khatep")
                 .phoneNumber("123456789")
-                .password("password")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 

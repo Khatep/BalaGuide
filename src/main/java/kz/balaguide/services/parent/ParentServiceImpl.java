@@ -1,27 +1,26 @@
 package kz.balaguide.services.parent;
 
+import kz.balaguide.core.dtos.auth.CreateParentRequest;
+import kz.balaguide.core.entities.*;
+import kz.balaguide.core.exceptions.buisnesslogic.financialoperation.heirs.BalanceUpdateException;
+import kz.balaguide.core.exceptions.buisnesslogic.financialoperation.heirs.InsufficientFundsException;
+import kz.balaguide.services.auth.AuthUserService;
 import kz.balaguide.services.course.CourseService;
 import kz.balaguide.services.receipt.ReceiptService;
+import kz.balaguide.utils.mappers.ParentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import kz.balaguide.core.annotations.ForLog;
 import kz.balaguide.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
 import kz.balaguide.core.exceptions.buisnesslogic.generic.ChildNotBelongToParentException;
-import kz.balaguide.core.exceptions.buisnesslogic.financialoperation.BalanceUpdateException;
-import kz.balaguide.core.exceptions.buisnesslogic.financialoperation.InsufficientFundsException;
 import kz.balaguide.core.exceptions.buisnesslogic.notfound.ChildNotFoundException;
 import kz.balaguide.core.exceptions.buisnesslogic.notfound.CourseNotFoundException;
 import kz.balaguide.core.exceptions.buisnesslogic.notfound.ParentNotFoundException;
-import kz.balaguide.core.entities.Child;
-import kz.balaguide.core.entities.Course;
-import kz.balaguide.core.entities.Parent;
-import kz.balaguide.core.entities.Receipt;
 import kz.balaguide.core.repositories.child.ChildRepository;
 import kz.balaguide.core.repositories.course.CourseRepository;
 import kz.balaguide.core.repositories.educationcenter.EducationCenterRepository;
 import kz.balaguide.core.repositories.parent.ParentRepository;
 import kz.balaguide.services.kafka.email.EmailProducerService;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -43,6 +42,8 @@ public class ParentServiceImpl implements ParentService {
     private final ReceiptService receiptService;
     private final EducationCenterRepository educationCenterRepository;
     private final EmailProducerService emailProducerService;
+    private final ParentMapper parentMapper;
+    private final AuthUserService authUserService;
 
     /**
      * Adds a child to the parent's account.
@@ -239,47 +240,38 @@ public class ParentServiceImpl implements ParentService {
         return "Balance updated successfully. New balance: " + newBalance;
     }
 
-    /**
-     * Provides a custom {@link UserDetailsService} implementation for Spring Security
-     * that retrieves user details based on the user's email.
-     * <p>
-     * This method overrides the default {@code userDetailsService} to enable email-based
-     * authentication, replacing the typical username-based approach.
-     * <p>
-     * It uses the {@code getByEmail} method to find and return the user details.
-     *
-     * @return a {@link UserDetailsService} instance that retrieves user details by email.
-     */
-    @Override
-    public UserDetailsService userDetailsService() throws UsernameNotFoundException {
-        return this::getByEmail;
-    }
-
-
-    private Parent getByEmail(String email) throws UsernameNotFoundException {
-        return parentRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Parent not found with email: " + email));
+    //TODO add UsernameNotFoundException to GlobalExceptionHandler
+    private Parent getByPhoneNumber(String phoneNumber) throws UsernameNotFoundException {
+        return parentRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new UsernameNotFoundException("Parent not found with phone number: " + phoneNumber));
     }
 
     /**
      * Save a new parent in the system.
      *
-     * @param parent the {@link Parent} entity to be saved
+     * @param createParentRequest the {@link Parent} entity to be saved
      * @return the saved {@link Parent} entity
      */
     @Override
-    public Parent save(Parent parent) {
-        if (parentRepository.existsByEmail(parent.getEmail())) {
-            log.warn("Parent with email: {} already exists", parent.getEmail());
-            throw new UserAlreadyExistsException("Parent with email: " + parent.getEmail() + " already exists");
+    public Parent save(CreateParentRequest createParentRequest) {
+        if (parentRepository.existsByEmail(createParentRequest.email())) {
+            log.warn("Parent with email: {} already exists", createParentRequest.email());
+            throw new UserAlreadyExistsException("Parent with email: " + createParentRequest.email() + " already exists");
         }
 
-        if (parentRepository.existsByPhoneNumber(parent.getPhoneNumber())) {
-            log.warn("Parent with phone number: {} already exists", parent.getPhoneNumber());
-            throw new UserAlreadyExistsException("Parent with phone number: " + parent.getPhoneNumber() + " already exists");
-        }
+        Parent parent = parentMapper.mapCreateParentRequestToParent(createParentRequest);
 
-        return parentRepository.save(parent);
+        //Связываем Parent с зарегистрированным authUser с помощью phone number
+        //TODO: Возможно есть риск отсутсвтие клиента в authUser
+        AuthUser authUser = (AuthUser) authUserService
+                .userDetailsService()
+                .loadUserByUsername(createParentRequest.phoneNumber());
+        parent.setAuthUser(authUser);
+
+        //Save parent
+        parentRepository.save(parent);
+
+        return parent;
     }
 
     /**

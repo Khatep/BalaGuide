@@ -1,10 +1,15 @@
 package kz.balaguide.controllers.child;
 
 import jakarta.validation.Valid;
+import kz.balaguide.core.dtos.responses.ApiResponse;
+import kz.balaguide.core.entities.ResponseMetadata;
+import kz.balaguide.core.enums.ResponseCode;
+import kz.balaguide.services.responsemetadata.ResponseMetadataService;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.core.entities.Child;
 import kz.balaguide.core.entities.Course;
 import kz.balaguide.services.child.ChildService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +21,7 @@ import java.util.List;
 public class ChildController {
 
     private final ChildService childService;
+    private final ResponseMetadataService responseMetadataService;
 
     /**
      * Retrieve all children.
@@ -23,9 +29,19 @@ public class ChildController {
      * @return a list of all children
      */
     @GetMapping
-    public ResponseEntity<List<Child>> getAllChildren() {
-        List<Child> children = childService.findAll();
-        return ResponseEntity.ok(children);
+    public ResponseEntity<ApiResponse<Page<Child>>> getAllChildren(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<Child> children = childService.findAll(page, size);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1000);
+        ApiResponse<Page<Child>> apiResponse = ApiResponse.<Page<Child>>builder()
+                .responseMetadata(responseMetadata)
+                .data(children)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     /**
@@ -35,10 +51,18 @@ public class ChildController {
      * @return the child if found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Child> getChildById(@PathVariable Long id) {
-        return childService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<Child>> getChildById(
+            @PathVariable Long id
+    ) {
+        Child child = childService.findById(id);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1001);
+        ApiResponse<Child> apiResponse = ApiResponse.<Child>builder()
+                .responseMetadata(responseMetadata)
+                .data(child)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     /**
@@ -49,10 +73,19 @@ public class ChildController {
      * @return the updated child if found, otherwise a not found status
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Child> updateChild(@PathVariable Long id, @RequestBody @Valid Child child) {
-        return childService.update(id, child)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<Child>> updateChild(
+            @PathVariable Long id,
+            @RequestBody @Valid Child child
+    ) {
+        Child updatedChild = childService.update(id, child);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1002);
+        ApiResponse<Child> apiResponse = ApiResponse.<Child>builder()
+                .responseMetadata(responseMetadata)
+                .data(updatedChild)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     /**
@@ -62,12 +95,18 @@ public class ChildController {
      * @return no content status if deletion is successful
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteChild(@PathVariable Long id) {
-        if (childService.removeChild(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<ApiResponse<Void>> deleteChild(
+            @PathVariable Long id
+    ) {
+
+        childService.removeChild(id);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1003);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     /**
@@ -77,9 +116,18 @@ public class ChildController {
      * @return list of courses the child is enrolled in
      */
     @GetMapping("/{id}/my-courses")
-    public ResponseEntity<List<Course>> getChildCourses(@PathVariable Long id) {
-        return childService.findById(id)
-                .map(child -> ResponseEntity.ok(childService.getMyCourses(child)))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<List<Course>>> getChildCourses(
+            @PathVariable Long id
+    ) {
+        Child child = childService.findById(id);
+        List<Course> childCourses = childService.getMyCourses(child);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1004);
+        ApiResponse<List<Course>> apiResponse = ApiResponse.<List<Course>>builder()
+                .responseMetadata(responseMetadata)
+                .data(childCourses)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 }

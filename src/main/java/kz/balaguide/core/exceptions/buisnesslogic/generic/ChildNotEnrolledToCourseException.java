@@ -7,13 +7,13 @@ package kz.balaguide.core.exceptions.buisnesslogic.generic;
  * preventing the intended action.
  * </p>
  */
-public class ChildNotEnrolledException extends RuntimeException {
+public class ChildNotEnrolledToCourseException extends RuntimeException {
     /**
-     * Constructs a new ChildNotEnrolledException with the specified detail message.
+     * Constructs a new ChildNotEnrolledToCourseException with the specified detail message.
      *
      * @param message the detail message explaining the reason for the exception.
      */
-    public ChildNotEnrolledException(String message) {
+    public ChildNotEnrolledToCourseException(String message) {
         super(message);
     }
 }

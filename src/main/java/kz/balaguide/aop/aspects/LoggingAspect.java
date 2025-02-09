@@ -58,6 +58,7 @@ public class LoggingAspect {
         );
     }
 
+    //TODO: Нужна ли она?
     @AfterThrowing(pointcut = "kz.balaguide.aop.pointcuts.LoggingPointcuts.loggingAllControllersPointcut()", throwing = "exception")
     public void logException(JoinPoint joinPoint, Throwable exception) {
         String ipAddress = request.getRemoteAddr();
@@ -74,6 +75,7 @@ public class LoggingAspect {
         );
     }
 
+    //TODO: Нужна ли она?
     /**
      * Logs information before the execution of methods annotated with {@link kz.balaguide.core.annotations.ForLog}.
      *
@@ -87,6 +89,7 @@ public class LoggingAspect {
         log.info("Parameters: {}", param != null ? param.toString() : "No parameters");
     }
 
+    //TODO: Нужна ли она?
     /**
      * Logs execution time for methods annotated with {@link kz.balaguide.core.annotations.ForLog}.
      *
@@ -107,6 +110,7 @@ public class LoggingAspect {
         }
     }
 
+    //TODO: Нужна ли она?
     /**
      * Logs information when a method annotated with {@link kz.balaguide.core.annotations.ForLog} throws an exception.
      *

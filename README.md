@@ -33,7 +33,7 @@ BalaGuide/
 │   │   │   │   ├── exceptions/
 │   │   │   │   │   ├── BalanceUpdateException
 │   │   │   │   │   ├── ChildNotBelongToParentException
-│   │   │   │   │   ├── ChildNotEnrolledException
+│   │   │   │   │   ├── ChildNotEnrolledToCourseException
 │   │   │   │   │   ├── ChildNotFoundException
 │   │   │   │   │   ├── CourseFullException
 │   │   │   │   │   ├── CourseNotFoundException
@@ -54,7 +54,7 @@ BalaGuide/
 │   │   │   │   ├── models/
 │   │   │   │   │   └── dto/
 │   │   │   │   │   │   └── CourseDto
-│   │   │   │   │   └── entities/
+│   │   │   │   │   └── heirs/
 │   │   │   │   │   │   ├── Child
 │   │   │   │   │   │   ├── Course
 │   │   │   │   │   │   ├── EducationCenter
@@ -62,7 +62,7 @@ BalaGuide/
 │   │   │   │   │   │   ├── Receipt
 │   │   │   │   │   │   └── Teacher
 │   │   │   │   │   └── enums/
-│   │   │   │   │   │   ├── Category
+│   │   │   │   │   │   ├── CourseCategory
 │   │   │   │   │   │   ├── Gender
 │   │   │   │   │   │   ├── PaymentMethod
 │   │   │   │   │   │   └── Role
@@ -83,9 +83,9 @@ BalaGuide/
 │   │   │   │   │   │   └── AuthenticationController
 │   │   │   │   │   ├── dto/
 │   │   │   │   │   │   ├── JwtAuthenticationResponse
-│   │   │   │   │   │   ├── SignInRequest
-│   │   │   │   │   │   ├── SignUpEduCenterRequest
-│   │   │   │   │   │   └── SignUpParentRequest
+│   │   │   │   │   │   ├── SignInUserRequest
+│   │   │   │   │   │   ├── CreateEduCenterRequest
+│   │   │   │   │   │   └── CreateParentRequest
 │   │   │   │   │   ├── service/
 │   │   │   │   │   │   ├── AuthenticationService
 │   │   │   │   │   │   └── JwtService

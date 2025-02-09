@@ -27,21 +27,20 @@ public class JwtService {
      * @param token token
      * @return username
      */
-    public String extractEmail(String token) {
+    public String extractPhoneNumber(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
     /**
      * Token generation
      *
-     * @param userDetails
      * @return token
      */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof Parent customUserDetails) {
             claims.put("id", customUserDetails.getId());
-            claims.put("email", customUserDetails.getEmail());
+            claims.put("phoneNumber", customUserDetails.getEmail());
             claims.put("role", customUserDetails.getRole());
         }
         return generateToken(claims, userDetails);
@@ -55,8 +54,8 @@ public class JwtService {
      * @return true, if token is valid
      */
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String email = extractEmail(token);
-        return (email.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        final String phoneNumber = extractPhoneNumber(token);
+        return (phoneNumber.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
     /**

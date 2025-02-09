@@ -16,9 +16,10 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
   # Config Kafka-server
@@ -43,6 +44,7 @@ spring:
               packages: "*"
 
   # Config email
+  #TODO: скрыть  mail.host, mail.port перенести в .env файл
   mail:
     host: smtp.gmail.com
     port: 465

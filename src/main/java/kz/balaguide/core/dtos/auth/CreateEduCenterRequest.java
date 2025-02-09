@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class SignUpEduCenterRequest {
+public class CreateEduCenterRequest {
 
     @NotNull(message = "Name must be not null")
     @NotBlank(message = "Name must be not empty")
@@ -25,10 +25,6 @@ public class SignUpEduCenterRequest {
     @NotBlank(message = "Email must be not empty")
     @Email(message = "Email must be valid")
     private String email;
-
-    @NotNull(message = "Password must be not null")
-    @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
-    private String password;
 
     @NotNull(message = "Address must be not null")
     @NotBlank(message = "Address must be not empty")

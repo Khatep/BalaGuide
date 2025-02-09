@@ -1,6 +1,11 @@
 package kz.balaguide.controllers.parent;
 
 import jakarta.validation.Valid;
+import kz.balaguide.core.dtos.auth.CreateParentRequest;
+import kz.balaguide.core.dtos.responses.ApiResponse;
+import kz.balaguide.core.entities.ResponseMetadata;
+import kz.balaguide.core.enums.ResponseCode;
+import kz.balaguide.services.responsemetadata.ResponseMetadataService;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.core.entities.Child;
 import kz.balaguide.core.entities.Course;
@@ -18,7 +23,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ParentController {
 
+    //TODO: Переделать все контроллеры с сервисами под ApiResponse
+
     private final ParentService parentService;
+    private final ResponseMetadataService responseMetadataService;
+
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<Parent>> createParent(@RequestBody @Valid CreateParentRequest createParentRequest) {
+        Parent parent = parentService.save(createParentRequest);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1300);
+        ApiResponse<Parent> apiResponse = ApiResponse.<Parent>builder()
+                .responseMetadata(responseMetadata)
+                .data(parent)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
 
     /**
      * Endpoint to add a child to the parent's account.

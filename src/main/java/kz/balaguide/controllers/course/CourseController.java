@@ -18,6 +18,8 @@ import java.util.List;
 @Slf4j
 public class CourseController {
 
+    //TODO: Переделать все контроллеры с сервисами под ApiResponse
+
     private final CourseService courseService;
 
     /**
