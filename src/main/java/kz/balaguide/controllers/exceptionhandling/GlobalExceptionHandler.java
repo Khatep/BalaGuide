@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiResponse<String>> handleBadRequestException(BadRequestException ex) {
 
-        String cause = ex.getCause().toString();
+        String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0000);
         ApiResponse<String> apiResponse = new ApiResponse<>(responseMetadata, cause);
@@ -45,12 +45,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<String>> handleRuntimeException(RuntimeException ex) {
 
-        String cause = ex.getCause().toString();
+        String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
 
-        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0100);
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0001);
+        ApiResponse<String> apiResponse = new ApiResponse<>(responseMetadata, cause);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+
+        String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0001);
         ApiResponse<String> apiResponse = new ApiResponse<>(responseMetadata, cause);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+
     }
 
 

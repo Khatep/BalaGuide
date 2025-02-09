@@ -34,13 +34,12 @@ public class ChildServiceImpl implements ChildService {
     @Override
     public Page<Child> findAll(int page, int size) {
 
-        throw new RuntimeException();
-//        Page<Child> children = childRepository.findAll(PageRequest.of(page, size));
-//        if (children.getTotalElements() == 0) {
-//            throw new ChildrenNotFoundException(ResponseCode._0002.getMessage());
-//        };
-//
-//        return children;
+        Page<Child> children = childRepository.findAll(PageRequest.of(page, size));
+        if (children.getTotalElements() == 0) {
+            throw new ChildrenNotFoundException(ResponseCode._0101.getMessage());
+        }
+
+        return children;
     }
 
     /**
@@ -50,8 +49,14 @@ public class ChildServiceImpl implements ChildService {
      * @return an {@link Optional} containing the {@link Child} if found, or empty if not found.
      */
     @Override
-    public Optional<Child> findById(Long id) {
-        return childRepository.findById(id);
+    public Child findById(Long id) {
+
+        Optional<Child> child = childRepository.findById(id);
+        if (child.isEmpty()) {
+            throw new ChildNotFoundException(ResponseCode._0100.getMessage());
+        }
+
+        return child.get();
     }
 
     /**
@@ -73,11 +78,60 @@ public class ChildServiceImpl implements ChildService {
      * @return an {@link Optional} containing the updated {@link Child} if found and updated, or empty if not found.
      */
     @Override
-    public Optional<Child> update(Long id, Child updatedChild) {
-        return childRepository.findById(id).map(existingChild -> {
-            copyNonNullProperties(updatedChild, existingChild);
-            return childRepository.save(existingChild);
-        });
+    public Child update(Long id, Child updatedChild) {
+
+        Optional<Child> existingChildOpt = childRepository.findById(id);
+
+        if (existingChildOpt.isEmpty()) {
+            throw new ChildNotFoundException(ResponseCode._0100.getMessage());
+        }
+
+        copyNonNullProperties(updatedChild, existingChildOpt.get());
+
+        return childRepository.save(existingChildOpt.get());
+    }
+
+    /**
+     * Remove a {@link Child} entity by its ID.
+     *
+     * @param id the ID of the {@link Child} entity to be deleted.
+     * @return true if the deletion was successful, false if no entity was found with the specified ID.
+     */
+    @Override
+    public void removeChild(Long id) {
+        if (childRepository.existsById(id)) {
+            childRepository.deleteById(id);
+        } else {
+            throw new ChildNotFoundException(ResponseCode._0100.getMessage());
+        }
+    }
+
+    /**
+     * Retrieves a list of courses that the specified child is enrolled in.
+     *
+     * @param child the {@link Child} entity for which to retrieve enrolled courses
+     * @return a {@link List} of {@link Course} heirs that the child is enrolled in
+     * @throws RuntimeException if the child is not found or if the child is not enrolled in any courses
+     */
+    @Override
+    @ForLog
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public List<Course> getMyCourses(Child child) {
+        Optional<Child> childOpt = childRepository.findById(child.getId());
+
+        if (childOpt.isEmpty()) {
+            throw new ChildNotFoundException(ResponseCode._0100.getMessage());
+        }
+
+        Optional<List<Course>> enrolledCoursesOpt = childOpt.map(childEntity ->
+                    courseRepository.findAllByChildId(childOpt.get().getId())
+        );
+
+        if (enrolledCoursesOpt.isEmpty()) {
+            throw new ChildNotEnrolledToCourseException(ResponseCode._0401.getMessage());
+        }
+
+        return enrolledCoursesOpt.get();
     }
 
     /**
@@ -92,46 +146,5 @@ public class ChildServiceImpl implements ChildService {
         if (source.getGender() != null) target.setGender(source.getGender());
         if (source.getParent() != null) target.setParent(source.getParent());
         if (source.getCoursesEnrolled() != null) target.setCoursesEnrolled(source.getCoursesEnrolled());
-    }
-
-    /**
-     * Remove a {@link Child} entity by its ID.
-     *
-     * @param id the ID of the {@link Child} entity to be deleted.
-     * @return true if the deletion was successful, false if no entity was found with the specified ID.
-     */
-    @Override
-    public boolean removeChild(Long id) {
-        if (childRepository.existsById(id)) {
-            childRepository.deleteById(id);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Retrieves a list of courses that the specified child is enrolled in.
-     *
-     * @param child the {@link Child} entity for which to retrieve enrolled courses
-     * @return a {@link List} of {@link Course} heirs that the child is enrolled in
-     * @throws RuntimeException if the child is not found or if the child is not enrolled in any courses
-     */
-    @Override
-    @ForLog
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<Course> getMyCourses(Child child) {
-        Optional<Child> childFromDatabase = childRepository.findById(child.getId());
-
-        if (childFromDatabase.isEmpty())
-            throw new ChildNotFoundException("Child not found with ID: " + child.getId());
-
-        Optional<List<Course>> enrolledCoursesFromDatabase = childFromDatabase.map(childEntity ->
-                courseRepository.findAllByChildId(childFromDatabase.get().getId())
-        );
-
-        if (enrolledCoursesFromDatabase.isEmpty())
-            throw new ChildNotEnrolledToCourseException("Child with id: " + child + " is not enrolled in any courses");
-
-        return enrolledCoursesFromDatabase.get();
     }
 }

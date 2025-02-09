@@ -13,7 +13,7 @@ public enum ResponseCode {
     //0000 - 0099
     _0000("Bad request exception"),
     _0001("Runtime exception"),
-
+    _0002("Illegal argument exception"),
 
     // NOT FOUND: 0100 - 0199
     _0100("Child not found"),
@@ -42,8 +42,17 @@ public enum ResponseCode {
     // Teacher's exception 0900 - 0999
 
     // Успешные операции (1XXX)
-    _1000("Children retrieved successfully");
+    // Успешные операции по ребенку 1000 - 1299
+    _1000("Children retrieved successfully"),
+    _1001("Child retrieved successfully"),
+    _1002("Child updated successfully"),
+    _1003("Child removed successfully"),
+    _1004("Child's courses retrieved successfully"),
 
+    // Успешные операции по родителю 1300 - 1600
+    _1300("Parent created successfully"),
+
+    ;
     private final String message;
 }
 

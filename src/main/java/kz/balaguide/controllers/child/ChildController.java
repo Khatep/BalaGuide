@@ -36,15 +36,13 @@ public class ChildController {
         Page<Child> children = childService.findAll(page, size);
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1000);
-        ApiResponse<Page<Child>> response = new ApiResponse<>(
-                responseMetadata,
-                children
-        );
+        ApiResponse<Page<Child>> apiResponse = ApiResponse.<Page<Child>>builder()
+                .responseMetadata(responseMetadata)
+                .data(children)
+                .build();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(apiResponse);
     }
-
-    //TODO: Переделать все контроллеры с сервисами под ApiResponse
 
     /**
      * Retrieve a child by ID.
@@ -53,10 +51,18 @@ public class ChildController {
      * @return the child if found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Child> getChildById(@PathVariable Long id) {
-        return childService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<Child>> getChildById(
+            @PathVariable Long id
+    ) {
+        Child child = childService.findById(id);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1001);
+        ApiResponse<Child> apiResponse = ApiResponse.<Child>builder()
+                .responseMetadata(responseMetadata)
+                .data(child)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     /**
@@ -67,10 +73,19 @@ public class ChildController {
      * @return the updated child if found, otherwise a not found status
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Child> updateChild(@PathVariable Long id, @RequestBody @Valid Child child) {
-        return childService.update(id, child)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<Child>> updateChild(
+            @PathVariable Long id,
+            @RequestBody @Valid Child child
+    ) {
+        Child updatedChild = childService.update(id, child);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1002);
+        ApiResponse<Child> apiResponse = ApiResponse.<Child>builder()
+                .responseMetadata(responseMetadata)
+                .data(updatedChild)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     /**
@@ -80,12 +95,18 @@ public class ChildController {
      * @return no content status if deletion is successful
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteChild(@PathVariable Long id) {
-        if (childService.removeChild(id)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<ApiResponse<Void>> deleteChild(
+            @PathVariable Long id
+    ) {
+
+        childService.removeChild(id);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1003);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     /**
@@ -95,9 +116,18 @@ public class ChildController {
      * @return list of courses the child is enrolled in
      */
     @GetMapping("/{id}/my-courses")
-    public ResponseEntity<List<Course>> getChildCourses(@PathVariable Long id) {
-        return childService.findById(id)
-                .map(child -> ResponseEntity.ok(childService.getMyCourses(child)))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<List<Course>>> getChildCourses(
+            @PathVariable Long id
+    ) {
+        Child child = childService.findById(id);
+        List<Course> childCourses = childService.getMyCourses(child);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1004);
+        ApiResponse<List<Course>> apiResponse = ApiResponse.<List<Course>>builder()
+                .responseMetadata(responseMetadata)
+                .data(childCourses)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 }

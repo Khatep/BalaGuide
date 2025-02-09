@@ -1,4 +1,4 @@
-package shared.services.impl;
+package kz.balaguide.services.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,7 +92,6 @@ class ParentServiceImplTest {
                 .firstName("Nurgali")
                 .lastName("Khatep")
                 .phoneNumber("123456789")
-                .password("password")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 

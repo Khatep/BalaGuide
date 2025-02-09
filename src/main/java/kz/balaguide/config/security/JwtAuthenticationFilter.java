@@ -4,12 +4,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kz.balaguide.services.auth.AuthUserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import kz.balaguide.services.auth.JwtService;
-import kz.balaguide.services.educationcenter.EducationCenterService;
-import kz.balaguide.services.parent.ParentService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,9 +24,10 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String HEADER_NAME = "Authorization";
+
     private final JwtService jwtService;
-    private final ParentService parentService;
-    private final EducationCenterService educationCenterService;
+    private final AuthUserService authUserService;
+
 
     @Override
     protected void doFilterInternal(
@@ -36,8 +36,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String uriPath = request.getRequestURI();
-
         var authHeader = request.getHeader(HEADER_NAME);
         if ((authHeader == null || authHeader.isEmpty()) || !authHeader.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
@@ -45,18 +43,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         var jwt = authHeader.substring(BEARER_PREFIX.length());
-        var email = jwtService.extractEmail(jwt);
 
-        if (!(email == null || email.isEmpty()) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        var phoneNumber = jwtService.extractPhoneNumber(jwt);
+
+        if (!(phoneNumber == null || phoneNumber.isEmpty()) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = null;
 
             try {
-                if (uriPath.contains("courses"))
-                    userDetails = educationCenterService.userDetailsService().loadUserByUsername(email);
-                else if (uriPath.contains("parents") || uriPath.contains("children") )
-                    userDetails = parentService.userDetailsService().loadUserByUsername(email);
+                userDetails = authUserService.userDetailsService().loadUserByUsername(phoneNumber);
             } catch (RuntimeException e) {
-                log.warn("An exception occurred for email {}: {}", email, e.getMessage());
+                log.warn("An exception occurred for phoneNumber {}: {}", phoneNumber, e.getMessage());
             }
 
             // Authenticate if userDetails were found and token is valid

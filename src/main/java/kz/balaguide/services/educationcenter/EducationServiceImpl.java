@@ -26,13 +26,9 @@ public class EducationServiceImpl implements EducationCenterService {
      *
      * @return a {@link UserDetailsService} instance that retrieves user details by email.
      */
-    @Override
-    public UserDetailsService userDetailsService() throws UsernameNotFoundException {
-        return this::getByEmail;
-    }
 
-    private EducationCenter getByEmail(String email) throws UsernameNotFoundException {
-        return educationCenterRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Education center with email: " + email + " not found"));
+    private EducationCenter getByPhoneNumber(String phoneNumber) throws UsernameNotFoundException {
+        return educationCenterRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new UsernameNotFoundException("Education center with phone number: " + phoneNumber + " not found"));
     }
 }

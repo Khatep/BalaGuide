@@ -83,9 +83,9 @@ BalaGuide/
 │   │   │   │   │   │   └── AuthenticationController
 │   │   │   │   │   ├── dto/
 │   │   │   │   │   │   ├── JwtAuthenticationResponse
-│   │   │   │   │   │   ├── SignInRequest
-│   │   │   │   │   │   ├── SignUpEduCenterRequest
-│   │   │   │   │   │   └── SignUpParentRequest
+│   │   │   │   │   │   ├── SignInUserRequest
+│   │   │   │   │   │   ├── CreateEduCenterRequest
+│   │   │   │   │   │   └── CreateParentRequest
 │   │   │   │   │   ├── service/
 │   │   │   │   │   │   ├── AuthenticationService
 │   │   │   │   │   │   └── JwtService

@@ -1,5 +1,6 @@
 package kz.balaguide.config.security;
 
+import kz.balaguide.services.auth.AuthUserService;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.services.educationcenter.EducationCenterService;
 import kz.balaguide.services.parent.ParentService;
@@ -33,8 +34,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final ParentService parentService;
-    private final EducationCenterService educationCenterService;
+    private final AuthUserService authUserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -51,7 +51,6 @@ public class SecurityConfiguration {
                 // Configuring access to endpoints
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/courses/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
@@ -67,23 +66,15 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationProvider parentAuthenticationProvider() {
+    public AuthenticationProvider authUserAuthenticationProvider(PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(parentService.userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Bean
-    public AuthenticationProvider educationCenterAuthenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(educationCenterService.userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setUserDetailsService(authUserService.userDetailsService());
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return new ProviderManager(List.of(parentAuthenticationProvider(), educationCenterAuthenticationProvider()));
+        return new ProviderManager(List.of(authUserAuthenticationProvider(passwordEncoder())));
     }
 }

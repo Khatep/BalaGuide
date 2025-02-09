@@ -6,14 +6,9 @@ import jakarta.validation.constraints.*;
 import kz.balaguide.core.enums.Role;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,7 +20,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "educationcenter")
-public class EducationCenter implements UserDetails {
+public class EducationCenter {
 
     /**
      * The unique identifier for the education center.
@@ -63,12 +58,6 @@ public class EducationCenter implements UserDetails {
     @Email(message = "Email must be valid")
     @Column(unique = true)
     private String email;
-
-    /** The password for the education center account. */
-    @NotNull(message = "Password must be not null")
-    @Size(min = 8, max = 255, message = "Password must be between 8 and 255 characters")
-    @Column(name = "password", nullable = false, length = 60)
-    private String password;
 
     /**
      * The physical address of the education center.
@@ -118,44 +107,4 @@ public class EducationCenter implements UserDetails {
     public final int hashCode() {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    public void setPassword(String password) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        this.password = encoder.encode(password);
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-//    @AssertTrue(message = "Date of created must be in the past")
-//    public boolean isDateOfCreatedValid() {
-//        return dateOfCreated != null && dateOfCreated.isBefore(LocalDate.now());
-//    }
 }

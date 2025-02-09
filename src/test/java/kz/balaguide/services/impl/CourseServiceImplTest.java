@@ -1,4 +1,4 @@
-package shared.services.impl;
+package kz.balaguide.services.impl;
 
 import kz.balaguide.core.enums.CourseCategory;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +55,6 @@ class CourseServiceImplTest {
                 .dateOfCreated(LocalDate.of(2022, 1, 15))
                 .phoneNumber("111-222")
                 .email("center@gmail.com")
-                .password("password12345")
                 .address("Abai 12")
                 .instagramLink("https://instagram.com/learning")
                 .balance(BigDecimal.valueOf(2000.00))
@@ -78,7 +77,6 @@ class CourseServiceImplTest {
                 .firstName("Nurgali")
                 .lastName("Khatep")
                 .phoneNumber("123456789")
-                .password("password")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 

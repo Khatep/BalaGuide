@@ -13,14 +13,14 @@ public interface ChildService {
 
     Page<Child> findAll(int page, int size);
 
-    Optional<Child> findById(Long id);
+    Child findById(Long id);
 
     Child save(Child child);
 
-    Optional<Child> update(Long id, Child child);
+    Child update(Long id, Child child);
 
-    boolean removeChild(Long childId);
+    void removeChild(Long childId);
 
-    List<Course> getMyCourses(Child child) throws ChildNotFoundException, ChildNotEnrolledToCourseException;
+    List<Course> getMyCourses(Child child);
 
 }

@@ -1,5 +1,6 @@
 package kz.balaguide.services.parent;
 
+import kz.balaguide.core.dtos.auth.CreateParentRequest;
 import kz.balaguide.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
 import kz.balaguide.core.exceptions.buisnesslogic.generic.ChildNotBelongToParentException;
 import kz.balaguide.core.exceptions.buisnesslogic.financialoperation.heirs.BalanceUpdateException;
@@ -10,8 +11,6 @@ import kz.balaguide.core.exceptions.buisnesslogic.notfound.ParentNotFoundExcepti
 import kz.balaguide.core.entities.Child;
 import kz.balaguide.core.entities.Course;
 import kz.balaguide.core.entities.Parent;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 
@@ -35,9 +34,7 @@ public interface ParentService {
 
     String addBalance(Long parentId, Integer amountOfMoney, String bankCardNumber) throws ParentNotFoundException;
 
-    UserDetailsService userDetailsService() throws UsernameNotFoundException;
-
-    Parent save(Parent parent) throws UserAlreadyExistsException;
+    Parent save(CreateParentRequest createParentRequest) throws UserAlreadyExistsException;
 
     boolean removeParent(Long parentId) throws ParentNotFoundException;
 

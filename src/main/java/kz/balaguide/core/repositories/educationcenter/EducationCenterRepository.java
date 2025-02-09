@@ -13,4 +13,5 @@ public interface EducationCenterRepository extends JpaRepository<EducationCenter
      * @return an {@link Optional} containing the {@link EducationCenter} if found, or empty if not found
      */
     Optional<EducationCenter> findByEmail(String email);
+    Optional<EducationCenter> findByPhoneNumber(String phoneNumber);
 }
