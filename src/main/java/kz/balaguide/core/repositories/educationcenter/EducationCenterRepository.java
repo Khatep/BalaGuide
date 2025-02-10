@@ -2,9 +2,11 @@ package kz.balaguide.core.repositories.educationcenter;
 
 import kz.balaguide.core.entities.EducationCenter;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public interface EducationCenterRepository extends JpaRepository<EducationCenter, Long> {
     /**
      * Retrieves an {@link EducationCenter} entity by its email.

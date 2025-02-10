@@ -3,13 +3,11 @@ package kz.balaguide.core.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import kz.balaguide.core.enums.PaymentMethod;
 import kz.balaguide.core.enums.PaymentStatus;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 @Getter

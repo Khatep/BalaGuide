@@ -74,12 +74,6 @@ public class Child extends AbstractEntity implements Comparable<Child> {
     @Builder.Default
     private List<Course> coursesEnrolled = new ArrayList<>();
 
-    //TODO перенести хеширования на уровень сервиса
-    public void setPassword(String password) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        this.password = encoder.encode(password);
-    }
-
     @Override
     public int compareTo(Child o) {
         return this.getId().compareTo(o.getId());

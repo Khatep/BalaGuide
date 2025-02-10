@@ -78,6 +78,7 @@ public class Teacher extends AbstractEntity implements Comparable<Teacher> {
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
+    @ToString.Exclude
     private AuthUser authUser;
     
     /**
