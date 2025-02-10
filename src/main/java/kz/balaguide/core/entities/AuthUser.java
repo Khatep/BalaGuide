@@ -22,10 +22,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 //Its also must be extended from AbstractEntity
-public class AuthUser implements Comparable<AuthUser>, UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+public class AuthUser extends AbstractEntity implements Comparable<AuthUser>, UserDetails {
 
     /**
      * Used like unique username in Security

@@ -25,12 +25,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "parent")
-public class Parent implements Comparable<Parent> {
-
-    /** The unique identifier for the parent. */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Parent extends AbstractEntity implements Comparable<Parent> {
 
     /** The first name of the parent. */
     @NotNull(message = "First name must be not null")

@@ -20,12 +20,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "child")
-public class Child implements Comparable<Child> {
-
-    /** The unique identifier for the child. */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Child extends AbstractEntity implements Comparable<Child> {
 
     /** The first name of the child. */
     @NotNull(message = "First name must be not null")

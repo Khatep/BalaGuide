@@ -13,6 +13,7 @@ import kz.balaguide.core.repositories.receipt.ReceiptRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +44,6 @@ public class ReceiptServiceImpl implements ReceiptService {
                 .parentId(parent.getId())
                 .courseId(course.getId())
                 .percentOfVat(12)
-                .dateOfCreated(LocalDate.now())
                 .paymentMethod(PaymentMethod.BANK_CARD)
                 .build();
         return receiptRepository.save(receipt);

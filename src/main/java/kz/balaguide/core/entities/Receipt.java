@@ -21,14 +21,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "receipt")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Receipt {
-
-    /**
-     * Unique identifier for the receipt.
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Receipt extends AbstractEntity{
 
     /**
      * Percentage of VAT applied to the transaction.
@@ -37,13 +30,6 @@ public class Receipt {
     @Column(name = "percent_of_vat")
     private Integer percentOfVat;
 
-    /**
-     * Date when the receipt was created.
-     */
-    @NotNull(message = "Date of created must be not null")
-    @PastOrPresent(message = "Date of created must be in the past or in present")
-    @Column(name = "date_of_created")
-    private LocalDate dateOfCreated;
 
     /**
      * Payment method used for the transaction.

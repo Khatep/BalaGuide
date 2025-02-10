@@ -19,15 +19,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "teacher")
-public class Teacher {
-
-    /**
-     * The unique identifier for the teacher.
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Teacher extends AbstractEntity implements Comparable<Teacher> {
     /**
      * The first name of the teacher.
      */
@@ -83,6 +75,10 @@ public class Teacher {
     @NotNull(message = "Gender must not be null")
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
+    private AuthUser authUser;
     
     /**
      * The list of courses taught by the teacher.
@@ -95,6 +91,11 @@ public class Teacher {
             inverseJoinColumns = @JoinColumn(name = "course_id")
     )
     private List<Course> myCourses;
+
+    @Override
+    public int compareTo(Teacher o) {
+        return getId().compareTo(o.getId());
+    }
 
     @Override
     public final boolean equals(Object o) {
@@ -111,4 +112,5 @@ public class Teacher {
     public final int hashCode() {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+
 }
