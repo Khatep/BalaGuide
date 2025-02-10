@@ -21,7 +21,6 @@ import kz.balaguide.core.repositories.course.CourseRepository;
 import kz.balaguide.core.repositories.educationcenter.EducationCenterRepository;
 import kz.balaguide.core.repositories.parent.ParentRepository;
 import kz.balaguide.services.kafka.email.EmailProducerService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -238,12 +237,6 @@ public class ParentServiceImpl implements ParentService {
         parent.setBalance(newBalance);
         parentRepository.save(parent);
         return "Balance updated successfully. New balance: " + newBalance;
-    }
-
-    //TODO add UsernameNotFoundException to GlobalExceptionHandler
-    private Parent getByPhoneNumber(String phoneNumber) throws UsernameNotFoundException {
-        return parentRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new UsernameNotFoundException("Parent not found with phone number: " + phoneNumber));
     }
 
     /**

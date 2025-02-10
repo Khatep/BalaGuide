@@ -25,7 +25,7 @@ public class AuthenticationController {
     public ResponseEntity<JwtAuthenticationResponse> signUp(@RequestBody @Valid SignUpUserRequest request) {
         JwtAuthenticationResponse jwtAuthenticationResponse = authenticationService.signUpUser(request);
         //TODO: delete next log, cuz token must be confidential
-        log.info("new token registered: {}", jwtAuthenticationResponse.getToken());
+        //log.info("new token registered: {}", jwtAuthenticationResponse.getToken());
         return ResponseEntity.status(HttpStatus.OK).body(jwtAuthenticationResponse);
     }
 
@@ -33,7 +33,7 @@ public class AuthenticationController {
     public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInUserRequest request) {
         JwtAuthenticationResponse jwtAuthenticationResponse = authenticationService.signIn(request);
         //TODO: delete next log, cuz token must be confidential
-        log.info("new token registered: {}", jwtAuthenticationResponse.getToken());
+        //log.info("new token registered: {}", jwtAuthenticationResponse.getToken());
         return authenticationService.signIn(request);
     }
 }

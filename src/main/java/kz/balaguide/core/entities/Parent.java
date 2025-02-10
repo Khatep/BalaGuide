@@ -6,14 +6,9 @@ import jakarta.validation.constraints.*;
 import kz.balaguide.core.enums.Role;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,12 +20,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "parent")
-public class Parent implements Comparable<Parent> {
-
-    /** The unique identifier for the parent. */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Parent extends AbstractEntity implements Comparable<Parent> {
 
     /** The first name of the parent. */
     @NotNull(message = "First name must be not null")
@@ -74,9 +64,9 @@ public class Parent implements Comparable<Parent> {
     @PositiveOrZero(message = "Balance must be greater than zero")
     private BigDecimal balance;
 
-    //TODO: Также надо добавить authUser в education center, Teacher
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
+    @ToString.Exclude
     private AuthUser authUser;
 
     /** A list of children associated with the parent. */

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController("api/v1/education-centers")
 @RequiredArgsConstructor
 public class EducationCenterController {
+
     private final EducationCenterService educationCenterService;
 
 

@@ -11,7 +11,6 @@ import java.math.BigDecimal;
  * its name and price. This record is used to transfer course data between
  * different layers of the application.
  */
-//TODO delete
 @Builder
 public record CourseDto(String name, BigDecimal price) {
 

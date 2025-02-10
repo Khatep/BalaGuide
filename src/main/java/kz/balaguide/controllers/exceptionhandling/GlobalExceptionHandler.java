@@ -36,7 +36,10 @@ public class GlobalExceptionHandler {
         String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0000);
-        ApiResponse<String> apiResponse = new ApiResponse<>(responseMetadata, cause);
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
+                .responseMetadata(responseMetadata)
+                .data(cause)
+                .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
@@ -48,7 +51,10 @@ public class GlobalExceptionHandler {
         String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0001);
-        ApiResponse<String> apiResponse = new ApiResponse<>(responseMetadata, cause);
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
+                .responseMetadata(responseMetadata)
+                .data(cause)
+                .build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
     }
@@ -59,7 +65,10 @@ public class GlobalExceptionHandler {
         String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0001);
-        ApiResponse<String> apiResponse = new ApiResponse<>(responseMetadata, cause);
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
+                .responseMetadata(responseMetadata)
+                .data(cause)
+                .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
 
@@ -74,7 +83,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleBalanceUpdateException(BalanceUpdateException ex) {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0300);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .data(null)
+                .build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
     }
@@ -83,7 +95,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleInsufficientFundsException(InsufficientFundsException ex) {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0301);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .data(null)
+                .build();
 
         return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(apiResponse);
     }
@@ -95,7 +110,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleChildNotBelongToParentException(ChildNotBelongToParentException ex) {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0400);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .data(null)
+                .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
@@ -105,7 +123,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleChildNotEnrolledToCourseException(ChildNotEnrolledToCourseException ex) {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0401);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .data(null)
+                .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
@@ -114,7 +135,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleCourseFullException(CourseFullException ex) {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0800);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .data(null)
+                .build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
 
@@ -135,7 +159,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleChildNotFoundException(ChildNotFoundException ex) {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0100);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .data(null)
+                .build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -145,7 +172,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleChildrenNotFoundException(ChildrenNotFoundException ex) {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0101);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .data(null)
+                .build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -155,7 +185,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleCourseNotFoundException(CourseNotFoundException ex) {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0103);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .data(null)
+                .build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -165,7 +198,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleEducationCenterNotFoundException(EducationCenterNotFoundException ex) {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0104);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .data(null)
+                .build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -175,7 +211,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleParentNotFoundException(ParentNotFoundException ex) {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0102);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .data(null)
+                .build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -187,7 +226,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0200);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .data(null)
+                .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }

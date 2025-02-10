@@ -3,13 +3,11 @@ package kz.balaguide.core.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import kz.balaguide.core.enums.PaymentMethod;
 import kz.balaguide.core.enums.PaymentStatus;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 @Getter
@@ -21,14 +19,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "receipt")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Receipt {
-
-    /**
-     * Unique identifier for the receipt.
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Receipt extends AbstractEntity{
 
     /**
      * Percentage of VAT applied to the transaction.
@@ -37,13 +28,6 @@ public class Receipt {
     @Column(name = "percent_of_vat")
     private Integer percentOfVat;
 
-    /**
-     * Date when the receipt was created.
-     */
-    @NotNull(message = "Date of created must be not null")
-    @PastOrPresent(message = "Date of created must be in the past or in present")
-    @Column(name = "date_of_created")
-    private LocalDate dateOfCreated;
 
     /**
      * Payment method used for the transaction.

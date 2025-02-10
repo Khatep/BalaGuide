@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: ${SERVER_PORT}
 
 spring:
   application:
@@ -24,7 +24,7 @@ spring:
 
   # Config Kafka-server
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
 
     # Config Kafka producer
     producer:
@@ -44,12 +44,11 @@ spring:
               packages: "*"
 
   # Config email
-  #TODO: скрыть  mail.host, mail.port перенести в .env файл
   mail:
-    host: smtp.gmail.com
-    port: 465
-    username: ${EMAIL_USERNAME}
-    password: ${EMAIL_PASSWORD}
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     test-connection: true
     properties:
       mail:
@@ -58,7 +57,7 @@ spring:
           starttls:
             enable: true
           socketFactory:
-            port: 465
+            port: ${MAIL_PORT}
             class: javax.net.ssl.SSLSocketFactory
 
 # Token key

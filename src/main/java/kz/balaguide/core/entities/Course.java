@@ -21,14 +21,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "course")
-public class Course implements Comparable<Course> {
-
-    /**
-     * The unique identifier of the course.
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Course extends AbstractEntity implements Comparable<Course> {
 
     /**
      * The name of the course.

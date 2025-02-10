@@ -21,11 +21,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//Its also must be extended from AbstractEntity
-public class AuthUser implements Comparable<AuthUser>, UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+public class AuthUser extends AbstractEntity implements Comparable<AuthUser>, UserDetails {
 
     /**
      * Used like unique username in Security
@@ -36,8 +32,6 @@ public class AuthUser implements Comparable<AuthUser>, UserDetails {
     @Column(name = "password")
     @JsonIgnore
     private String password;
-
-    //updated date and created date
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")

@@ -20,7 +20,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "educationcenter")
-public class EducationCenter {
+public class EducationCenter extends AbstractEntity implements Comparable<EducationCenter>{
 
     /**
      * The unique identifier for the education center.
@@ -36,14 +36,7 @@ public class EducationCenter {
     @NotBlank(message = "Name must be not empty")
     private String name;
 
-    /**
-     * The date when the education center was created.
-     */
-    @NotNull(message = "Date of created must be not null")
-    @Past(message = "Date of created must be in the past")
-    @Column(name = "date_of_created")
-    private LocalDate dateOfCreated;
-    
+
     /**
      * The contact phone number of the education center.
      */
@@ -84,6 +77,11 @@ public class EducationCenter {
     @PositiveOrZero(message = "Balance must be greater than zero or equal to zero")
     private BigDecimal balance;
 
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
+    @ToString.Exclude
+    private AuthUser authUser;
+
     /**
      * The list of courses offered by the education center.
      */
@@ -91,6 +89,11 @@ public class EducationCenter {
     @ToString.Exclude
     @JsonIgnore
     private List<Course> courses;
+
+    @Override
+    public int compareTo(EducationCenter o) {
+        return getId().compareTo(o.getId());
+    }
 
     @Override
     public final boolean equals(Object o) {
@@ -107,4 +110,5 @@ public class EducationCenter {
     public final int hashCode() {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+
 }

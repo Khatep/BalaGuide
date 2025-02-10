@@ -27,7 +27,6 @@ public class EmailMessageSenderService implements MessageSenderService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(parentEmail);
 
-        //todo перенести текста для сообщений в базу данных
         message.setSubject("Receipt");
         message.setText(
                 "Bala Guide Ltd.\n" +
@@ -41,7 +40,7 @@ public class EmailMessageSenderService implements MessageSenderService {
                         "\n" +
                         "Order number: " + orderNumberGenerator.nextInt(1001) +
                         '\n' +
-                        "Date: " + receipt.getDateOfCreated() +
+                        "Date: " + receipt.getCreatedDate() +
                         "\n" +
                         "\n" +
                         "Name: " + courseName +
