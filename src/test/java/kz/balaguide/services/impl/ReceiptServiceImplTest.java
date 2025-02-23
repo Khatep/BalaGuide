@@ -2,10 +2,10 @@ package kz.balaguide.services.impl;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import kz.balaguide.core.entities.Receipt;
-import kz.balaguide.core.enums.PaymentMethod;
-import kz.balaguide.core.repositories.receipt.ReceiptRepository;
-import kz.balaguide.services.receipt.ReceiptServiceImpl;
+import kz.balaguide.common_module.core.entities.Receipt;
+import kz.balaguide.common_module.core.enums.PaymentMethod;
+import kz.balaguide.payment_module.repository.ReceiptRepository;
+import kz.balaguide.payment_module.services.receipt.ReceiptServiceImpl;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;

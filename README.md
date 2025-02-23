@@ -79,7 +79,7 @@ BalaGuide/
 │   │   │   │   │   ├── config/
 │   │   │   │   │   │   ├── JwtAuthenticationFilter
 │   │   │   │   │   │   └── SecurityConfiguration
-│   │   │   │   │   ├── controller/
+│   │   │   │   │   ├── controllers/
 │   │   │   │   │   │   └── AuthenticationController
 │   │   │   │   │   ├── dto/
 │   │   │   │   │   │   ├── JwtAuthenticationResponse
