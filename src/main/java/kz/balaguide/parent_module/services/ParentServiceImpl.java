@@ -2,7 +2,6 @@ package kz.balaguide.parent_module.services;
 
 import kz.balaguide.auth_module.dtos.CreateParentRequest;
 import kz.balaguide.common_module.core.entities.*;
-import kz.balaguide.core.entities.*;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.BalanceUpdateException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.InsufficientFundsException;
 import kz.balaguide.auth_module.services.AuthUserService;
