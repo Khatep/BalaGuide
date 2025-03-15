@@ -1,4 +1,4 @@
-package kz.balaguide.auth_module.dtos;
+package kz.balaguide.education_center_module.dtos;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;

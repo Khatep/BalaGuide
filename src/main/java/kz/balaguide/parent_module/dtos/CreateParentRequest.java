@@ -1,8 +1,7 @@
-package kz.balaguide.auth_module.dtos;
+package kz.balaguide.parent_module.dtos;
 
 import jakarta.validation.constraints.*;
 import lombok.Builder;
-import lombok.Data;
 
 import java.time.LocalDate;
 
@@ -19,6 +18,7 @@ public record CreateParentRequest(
 
         @NotNull(message = "Phone number must be not null")
         @NotBlank(message = "Phone number must be not empty")
+        @Pattern(regexp = "\\+?\\d{10,15}", message = "Phone number must be valid and contain 10-15 digits")
         String phoneNumber,
 
         @NotNull(message = "Birth date must be not null")

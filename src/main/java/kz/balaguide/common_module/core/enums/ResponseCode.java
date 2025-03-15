@@ -48,6 +48,7 @@ public enum ResponseCode {
     _1002("Child updated successfully"),
     _1003("Child removed successfully"),
     _1004("Child's courses retrieved successfully"),
+    _1005("Child enrolled successfully"),
 
     // Успешные операции по родителю 1300 - 1600
     _1300("Parent created successfully"),
