@@ -48,6 +48,7 @@ public class ResponseMessageRepositoryTemp {
             case _1004 -> new ResponseMetadata(20L, code, "Child's courses retrieved successfully");
 
             case _1300 -> new ResponseMetadata(20L, code, "Parent created successfully");
+            default -> new ResponseMetadata(99L, code, "Default message");
         };
     }
 
