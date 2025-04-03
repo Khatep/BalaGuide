@@ -1,6 +1,8 @@
 package kz.balaguide.parent_module.services;
 
-import kz.balaguide.auth_module.dtos.CreateParentRequest;
+import kz.balaguide.common_module.core.entities.Card;
+import kz.balaguide.parent_module.dtos.CreateChildRequest;
+import kz.balaguide.parent_module.dtos.CreateParentRequest;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotBelongToParentException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.BalanceUpdateException;
@@ -16,12 +18,13 @@ import java.util.List;
 
 public interface ParentService {
 
-    Child addChild(Long parentId, Child child) throws ParentNotFoundException;
+    Parent save(CreateParentRequest createParentRequest);
 
-    boolean removeChild(Long parentId, Long childId)
-            throws ChildNotFoundException, ParentNotFoundException, ChildNotBelongToParentException;
+    Child addChild(Long parentId, CreateChildRequest createChildRequest);
 
-    List<Child> getMyChildren(Long parentId) throws ParentNotFoundException;
+    boolean removeChild(Long parentId, Long childId);
+
+    List<Child> getMyChildren(Long parentId);
 
     boolean enrollChildToCourse(Long parentId, Long childId, Long courseId)
             throws ParentNotFoundException, ChildNotFoundException, CourseNotFoundException, ChildNotBelongToParentException;
@@ -32,9 +35,7 @@ public interface ParentService {
     boolean payForCourse(Long parentId, Course course)
             throws ParentNotFoundException, InsufficientFundsException, BalanceUpdateException;
 
-    String addBalance(Long parentId, Integer amountOfMoney, String bankCardNumber) throws ParentNotFoundException;
-
-    Parent save(CreateParentRequest createParentRequest) throws UserAlreadyExistsException;
+    String addBalance(Long parentId, Integer amountOfMoney, Card card) throws ParentNotFoundException;
 
     boolean removeParent(Long parentId) throws ParentNotFoundException;
 

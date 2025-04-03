@@ -1,7 +1,8 @@
 package kz.balaguide.parent_module.controllers;
 
 import jakarta.validation.Valid;
-import kz.balaguide.auth_module.dtos.CreateParentRequest;
+import kz.balaguide.parent_module.dtos.CreateChildRequest;
+import kz.balaguide.parent_module.dtos.CreateParentRequest;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
@@ -38,24 +39,31 @@ public class ParentController {
                 .data(parent)
                 .build();
 
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     /**
      * Endpoint to add a child to the parent's account.
      *
      * @param parentId the id of parent
-     * @param child the {@link Child} entity to be added
+     * @param createChildRequest the {@link Child} entity to be added
      * @return the saved {@link Child} entity
      */
     @PostMapping("{parentId}/add-child")
-    public ResponseEntity<Child> addChild(@PathVariable Long parentId, @RequestBody @Valid Child child) {
-        Child addedChild = parentService.addChild(parentId, child);
-        return ResponseEntity.status(HttpStatus.CREATED).body(addedChild);
+    public ResponseEntity<ApiResponse<Child>> addChild(@PathVariable Long parentId, @RequestBody @Valid CreateChildRequest createChildRequest) {
+        Child child = parentService.addChild(parentId, createChildRequest);
 
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1300);
+        ApiResponse<Child> apiResponse = ApiResponse.<Child>builder()
+                .responseMetadata(responseMetadata)
+                .data(child)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     /**
+     * TODO - Пока не нужный метод
      * Endpoint to remove a child from the parent's account.
      *
      * @param parentId the ID of the {@link Parent} entity which child will be removed
@@ -76,9 +84,16 @@ public class ParentController {
      * @return a {@link List} of {@link Child} entities
      */
     @GetMapping("/{parentId}/my-children")
-    public ResponseEntity<List<Child>> getMyChildren(@PathVariable Long parentId) {
+    public ResponseEntity<ApiResponse<List<Child>>> getMyChildren(@PathVariable Long parentId) {
         List<Child> children = parentService.getMyChildren(parentId);
-        return ResponseEntity.ok(children);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1000);
+        ApiResponse<List<Child>> apiResponse = ApiResponse.<List<Child>>builder()
+                .responseMetadata(responseMetadata)
+                .data(children)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
 
     }
 
@@ -91,14 +106,21 @@ public class ParentController {
      * @return a message indicating enrollment success or failure
      */
     @PostMapping("/{parentId}/children/{childId}/enroll/{courseId}")
-    public ResponseEntity<String> enrollChild(@PathVariable Long parentId, @PathVariable Long childId, @PathVariable Long courseId) {
+    public ResponseEntity<ApiResponse<Boolean>> enrollChild(@PathVariable Long parentId, @PathVariable Long childId, @PathVariable Long courseId) {
         parentService.enrollChildToCourse(parentId, childId, courseId);
-        return ResponseEntity.ok("Child enrolled successfully");
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1005);
+        ApiResponse<Boolean> apiResponse = ApiResponse.<Boolean>builder()
+                .responseMetadata(responseMetadata)
+                .data(Boolean.TRUE)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     /**
      * Endpoint to unenroll a child from a course.
-     *
+     * TODO Нужно подумать как правильно реализовать отказ от курса
      * @param parentId the ID of the {@link Parent} entity
      * @param childId the ID of the {@link Child} entity
      * @param courseId the ID of the {@link Course} entity
@@ -119,12 +141,18 @@ public class ParentController {
      */
     @PostMapping("/{parentId}/add-balance")
     public ResponseEntity<String> addBalance(@PathVariable Long parentId, @RequestBody AddBalanceRequest addBalanceRequest) {
-        String message = parentService.addBalance(parentId, addBalanceRequest.amountOfMoney(), addBalanceRequest.numberOfBankCard());
-        return ResponseEntity.ok(message);
 
+        String message = parentService.addBalance(
+                parentId,
+                addBalanceRequest.amountOfMoney(),
+                addBalanceRequest.card()
+        );
+
+        return ResponseEntity.ok(message);
     }
 
     /**
+     * TODO - Пока не нужный метод
      * Endpoint to remove a parent account.
      *
      * @param parentId the ID of the {@link Parent} entity to be removed

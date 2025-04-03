@@ -1,9 +1,9 @@
 package kz.balaguide.common_module.core.dtos.requests;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
-import lombok.Builder;
+import kz.balaguide.common_module.core.entities.Card;
+import lombok.*;
 
 @Builder
 public record AddBalanceRequest(
@@ -11,7 +11,6 @@ public record AddBalanceRequest(
         @Positive(message = "Amount of money must be greater than zero")
         Integer amountOfMoney,
 
-        @NotNull(message = "Bank card number must not be null")
-        @Pattern(regexp = "\\d{16}", message = "Bank card number must be a 16-digit number")
-        String numberOfBankCard
+        @NotNull(message = "Card must not be null")
+        Card card
 ) {}

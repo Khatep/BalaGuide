@@ -1,6 +1,10 @@
 package kz.balaguide.parent_module.services;
 
-import kz.balaguide.auth_module.dtos.CreateParentRequest;
+import kz.balaguide.child_module.mappers.ChildMapper;
+import kz.balaguide.common_module.core.enums.Role;
+import kz.balaguide.course_module.mappers.CourseMapper;
+import kz.balaguide.parent_module.dtos.CreateChildRequest;
+import kz.balaguide.parent_module.dtos.CreateParentRequest;
 import kz.balaguide.common_module.core.entities.*;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.BalanceUpdateException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.InsufficientFundsException;
@@ -41,24 +45,63 @@ public class ParentServiceImpl implements ParentService {
     private final ReceiptService receiptService;
     private final EducationCenterRepository educationCenterRepository;
     private final EmailProducerService emailProducerService;
-    private final ParentMapper parentMapper;
+
+    //TODO: Добавил authenticationService так как родитель регистрирует своего ребенка, но это hardcode
     private final AuthUserService authUserService;
+
+    private final ParentMapper parentMapper;
+    private final ChildMapper childMapper;
+
+
+    /**
+     * Save a new parent in the system.
+     *
+     * @param createParentRequest the {@link Parent} entity to be saved
+     * @return the saved {@link Parent} entity
+     */
+    @Override
+    public Parent save(CreateParentRequest createParentRequest) {
+        if (parentRepository.existsByEmail(createParentRequest.email())) {
+            log.warn("Parent with email: {} already exists", createParentRequest.email());
+            throw new UserAlreadyExistsException("Parent with email: " + createParentRequest.email() + " already exists");
+        }
+
+        Parent parent = parentMapper.mapCreateParentRequestToParent(createParentRequest);
+
+        //Связываем Parent с зарегистрированным authUser с помощью phone number
+        //TODO: Возможно есть риск отсутсвтие клиента в authUser
+        AuthUser authUser = (AuthUser) authUserService
+                .userDetailsService()
+                .loadUserByUsername(createParentRequest.phoneNumber());
+        parent.setAuthUser(authUser);
+
+        //Save parent
+        parentRepository.save(parent);
+
+        return parent;
+    }
 
     /**
      * Adds a child to the parent's account.
      *
      * @param parentId the id of {@link Parent} entity
-     * @param child the {@link Child} entity to be added
+     * @param createChildRequest the {@link Child} entity to be added
      * @return the saved {@link Child} entity
      * @throws IllegalArgumentException if the parent is not found or the password is incorrect
      */
     @Override
     @ForLog
-    public Child addChild(Long parentId, Child child)  {
+    public Child addChild(Long parentId, CreateChildRequest createChildRequest)  {
         Parent parent = parentRepository.findById(parentId)
                 .orElseThrow(() -> new ParentNotFoundException("Parent with id" + parentId + " not found"));
 
+        Child child = childMapper.mapCreateChildRequestToChild(createChildRequest);
         child.setParent(parent);
+
+        //TODO hardcode
+        AuthUser newAuthUserForChild = new AuthUser(createChildRequest.phoneNumber(), createChildRequest.password(), Role.CHILD);
+        authUserService.save(newAuthUserForChild);
+
         return childRepository.save(child);
     }
 
@@ -200,13 +243,16 @@ public class ParentServiceImpl implements ParentService {
             throw new InsufficientFundsException("Insufficient funds for payment");
 
         parent.setBalance(parent.getBalance().subtract(coursePrice));
+        //TODO Use update instead of save
         parentRepository.save(parent);
 
         try {
             course.getEducationCenter().setBalance(course.getEducationCenter().getBalance().add(coursePrice));
+            //TODO Use update instead of save
             educationCenterRepository.save(course.getEducationCenter());
         } catch (Exception e) {
             parent.setBalance(parent.getBalance().add(coursePrice));
+            //TODO Use update instead of save
             parentRepository.save(parent);
             throw new BalanceUpdateException("Failed to update balance for Education Center after parent ID: " + parentId +
                     " payment, transaction rolled back");
@@ -222,14 +268,14 @@ public class ParentServiceImpl implements ParentService {
      *
      * @param parentId the ID of the {@link Parent} entity
      * @param amountOfMoney the amount to add to the balance
-     * @param bankCardNumber the bank card number from where the balance is replenished
+     * @param card the bank card where the balance is replenished
      * @return a success message indicating the updated balance
      * @throws ParentNotFoundException if the parent is not found
      */
     @Override
     @ForLog
     @Transactional(isolation = Isolation.READ_COMMITTED)
-        public String addBalance(Long parentId, Integer amountOfMoney, String bankCardNumber) {
+        public String addBalance(Long parentId, Integer amountOfMoney, Card card) {
         Parent parent = parentRepository.findById(parentId)
                 .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
 
@@ -239,33 +285,6 @@ public class ParentServiceImpl implements ParentService {
         return "Balance updated successfully. New balance: " + newBalance;
     }
 
-    /**
-     * Save a new parent in the system.
-     *
-     * @param createParentRequest the {@link Parent} entity to be saved
-     * @return the saved {@link Parent} entity
-     */
-    @Override
-    public Parent save(CreateParentRequest createParentRequest) {
-        if (parentRepository.existsByEmail(createParentRequest.email())) {
-            log.warn("Parent with email: {} already exists", createParentRequest.email());
-            throw new UserAlreadyExistsException("Parent with email: " + createParentRequest.email() + " already exists");
-        }
-
-        Parent parent = parentMapper.mapCreateParentRequestToParent(createParentRequest);
-
-        //Связываем Parent с зарегистрированным authUser с помощью phone number
-        //TODO: Возможно есть риск отсутсвтие клиента в authUser
-        AuthUser authUser = (AuthUser) authUserService
-                .userDetailsService()
-                .loadUserByUsername(createParentRequest.phoneNumber());
-        parent.setAuthUser(authUser);
-
-        //Save parent
-        parentRepository.save(parent);
-
-        return parent;
-    }
 
     /**
      * Removes a parent from the system.
