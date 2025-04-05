@@ -142,7 +142,7 @@ public class ChildServiceImpl implements ChildService {
         if (source.getLastName() != null) target.setLastName(source.getLastName());
         if (source.getBirthDate() != null) target.setBirthDate(source.getBirthDate());
         if (source.getPhoneNumber() != null) target.setPhoneNumber(source.getPhoneNumber());
-        if (source.getPassword() != null) target.setPassword(source.getPassword());
+        //if (source.getPassword() != null) target.setPassword(source.getPassword());
         if (source.getGender() != null) target.setGender(source.getGender());
         if (source.getParent() != null) target.setParent(source.getParent());
         if (source.getCoursesEnrolled() != null) target.setCoursesEnrolled(source.getCoursesEnrolled());

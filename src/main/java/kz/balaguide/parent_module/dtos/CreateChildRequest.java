@@ -1,6 +1,7 @@
 package kz.balaguide.parent_module.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -26,7 +27,7 @@ public record CreateChildRequest(
 
         @NotNull(message = "Password must be not null")
         @NotBlank(message = "Password must be not empty")
-        @JsonIgnore
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
         String password,
 
         @NotNull(message = "Birth date must be not null")

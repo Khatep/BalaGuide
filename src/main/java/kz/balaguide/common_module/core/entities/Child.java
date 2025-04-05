@@ -53,11 +53,11 @@ public class Child extends AbstractEntity implements Comparable<Child> {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    /** The password for the child account. */
+/*    *//** The password for the child account. *//*
     @NotNull(message = "Password must be not null")
     @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
     @Column(name = "password", nullable = false, length = 60)
-    private String password;
+    private String password;*/
 
     /** The gender of the child. */
     @NotNull(message = "Gender must not be null")

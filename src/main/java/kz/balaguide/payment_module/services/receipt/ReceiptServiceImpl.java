@@ -32,10 +32,10 @@ public class ReceiptServiceImpl implements ReceiptService {
     @Override
     public Receipt createReceipt(Long parentId, Long courseId) {
         Parent parent = parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id " + parentId + " not found"));
+                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
 
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException("Course with id " + courseId + " not found"));
+                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + courseId + " not found"));
 
         Receipt receipt = Receipt.builder()
                 .parentId(parent.getId())

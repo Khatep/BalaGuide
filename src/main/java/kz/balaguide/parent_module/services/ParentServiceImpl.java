@@ -93,14 +93,15 @@ public class ParentServiceImpl implements ParentService {
     @ForLog
     public Child addChild(Long parentId, CreateChildRequest createChildRequest)  {
         Parent parent = parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id" + parentId + " not found"));
+                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
+
+        AuthUser newAuthUserForChild = new AuthUser(createChildRequest.phoneNumber(), createChildRequest.password(), Role.CHILD);
+        authUserService.save(newAuthUserForChild);
 
         Child child = childMapper.mapCreateChildRequestToChild(createChildRequest);
         child.setParent(parent);
 
         //TODO hardcode
-        AuthUser newAuthUserForChild = new AuthUser(createChildRequest.phoneNumber(), createChildRequest.password(), Role.CHILD);
-        authUserService.save(newAuthUserForChild);
 
         return childRepository.save(child);
     }
@@ -142,7 +143,7 @@ public class ParentServiceImpl implements ParentService {
     @ForLog
     public List<Child> getMyChildren(Long parentId) {
         parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id" + parentId + " not found"));
+                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
 
         return childRepository.findAllByParentId(parentId);
     }
@@ -297,7 +298,7 @@ public class ParentServiceImpl implements ParentService {
     @ForLog
     public boolean removeParent(Long parentId) {
         parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id " + parentId + " not found"));
+                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
 
         parentRepository.deleteById(parentId);
 
@@ -316,7 +317,7 @@ public class ParentServiceImpl implements ParentService {
     @ForLog
     public Parent updateParent(Long parentId, UpdateParentRequest updatedParent) {
         Parent existingParent = parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id " + parentId + " not found"));
+                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
 
         existingParent.setFirstName(updatedParent.getFirstName());
         existingParent.setLastName(updatedParent.getLastName());
