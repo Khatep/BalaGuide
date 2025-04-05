@@ -13,6 +13,7 @@ import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ParentN
 import kz.balaguide.common_module.core.entities.Child;
 import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.Parent;
+import kz.balaguide.parent_module.dtos.UpdateParentRequest;
 
 import java.util.List;
 
@@ -39,6 +40,6 @@ public interface ParentService {
 
     boolean removeParent(Long parentId) throws ParentNotFoundException;
 
-    Parent updateParent(Long parentId, Parent updatedParent) throws ParentNotFoundException;
+    Parent updateParent(Long parentId, UpdateParentRequest updatedParent) throws ParentNotFoundException;
 
 }

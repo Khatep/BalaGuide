@@ -7,6 +7,7 @@ import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
+import kz.balaguide.parent_module.dtos.UpdateParentRequest;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.common_module.core.entities.Child;
 import kz.balaguide.common_module.core.entities.Course;
@@ -40,6 +41,19 @@ public class ParentController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    /**
+     * Endpoint to update a parent's information.
+     *
+     * @param parentId the ID of the {@link Parent} entity to be updated
+     * @param parent the {@link Parent} entity with updated information
+     * @return the updated {@link Parent} entity
+     */
+    @PutMapping("/{parentId}")
+    public ResponseEntity<Parent> updateParent(@PathVariable Long parentId, @RequestBody @Valid UpdateParentRequest parent) {
+        Parent updatedParent = parentService.updateParent(parentId, parent);
+        return ResponseEntity.ok(updatedParent);
     }
 
     /**
@@ -94,7 +108,6 @@ public class ParentController {
                 .build();
 
         return ResponseEntity.ok(apiResponse);
-
     }
 
     /**
@@ -132,6 +145,8 @@ public class ParentController {
         return ResponseEntity.ok("Child unenrolled successfully");
     }
 
+
+    //TODO нужно пополнение сделать по другому
     /**
      * Endpoint to add balance to a parent's account.
      *
@@ -151,29 +166,22 @@ public class ParentController {
         return ResponseEntity.ok(message);
     }
 
-    /**
+
+
+
+
+
+    /* /**
      * TODO - Пока не нужный метод
      * Endpoint to remove a parent account.
      *
      * @param parentId the ID of the {@link Parent} entity to be removed
      * @return a message indicating removal success or failure
-     */
+     *//*
     @DeleteMapping("/{parentId}")
     public ResponseEntity<String> removeParent(@PathVariable Long parentId) {
         parentService.removeParent(parentId);
         return ResponseEntity.ok("Parent removed successfully");
     }
-
-    /**
-     * Endpoint to update a parent's information.
-     *
-     * @param parentId the ID of the {@link Parent} entity to be updated
-     * @param parent the {@link Parent} entity with updated information
-     * @return the updated {@link Parent} entity
-     */
-    @PutMapping("/{parentId}")
-    public ResponseEntity<Parent> updateParent(@PathVariable Long parentId, @RequestBody @Valid Parent parent) {
-        Parent updatedParent = parentService.updateParent(parentId, parent);
-        return ResponseEntity.ok(updatedParent);
-    }
+    */
 }

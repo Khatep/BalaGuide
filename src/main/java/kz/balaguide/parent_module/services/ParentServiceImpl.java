@@ -2,7 +2,6 @@ package kz.balaguide.parent_module.services;
 
 import kz.balaguide.child_module.mappers.ChildMapper;
 import kz.balaguide.common_module.core.enums.Role;
-import kz.balaguide.course_module.mappers.CourseMapper;
 import kz.balaguide.parent_module.dtos.CreateChildRequest;
 import kz.balaguide.parent_module.dtos.CreateParentRequest;
 import kz.balaguide.common_module.core.entities.*;
@@ -10,6 +9,7 @@ import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperati
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.InsufficientFundsException;
 import kz.balaguide.auth_module.services.AuthUserService;
 import kz.balaguide.course_module.services.CourseService;
+import kz.balaguide.parent_module.dtos.UpdateParentRequest;
 import kz.balaguide.payment_module.services.receipt.ReceiptService;
 import kz.balaguide.parent_module.mappers.ParentMapper;
 import lombok.RequiredArgsConstructor;
@@ -314,7 +314,7 @@ public class ParentServiceImpl implements ParentService {
      */
     @Override
     @ForLog
-    public Parent updateParent(Long parentId, Parent updatedParent) {
+    public Parent updateParent(Long parentId, UpdateParentRequest updatedParent) {
         Parent existingParent = parentRepository.findById(parentId)
                 .orElseThrow(() -> new ParentNotFoundException("Parent with id " + parentId + " not found"));
 
