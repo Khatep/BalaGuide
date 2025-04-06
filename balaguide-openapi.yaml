@@ -1,0 +1,198 @@
+openapi: 3.0.3
+info:
+  title: BalaGuide API
+  description: API для автоматизированной платформы записи детей на образовательные курсы
+  version: 1.0.0
+
+servers:
+  - url: https://balaguide.kz
+    description: Основной сервер
+  - url: http://localhost:8081
+    description: Локально
+
+tags:
+  - name: Authentication
+    description: Эндпоинты для аутентификации пользователей
+  - name: Parent
+    description: Эндпоинты для родителей
+
+paths:
+  /auth/sign-up:
+    post:
+      tags: 
+        - Authentication
+      summary: Регистрация пользователя
+      description: Регистрация родителя и его ребенка
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpUserRequest'
+      responses:
+        '201':
+          description: Ok
+        '400':
+          description: Ошибка валидации данных
+        '409':
+          description: User already exists
+  
+
+  /auth/sign-in:
+    post:
+      tags:
+        - Authentication
+      summary: Авторизация пользователя
+      description: Вход в систему с использованием email и пароля
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInUserRequest'
+      responses:
+        '200':
+          description: Успешная авторизация
+        '401':
+          description: Неверные учетные данные
+    
+  /api/v1/parents/create:
+    post:
+      summary: Создать родителя
+      description: Регистрация нового родителя и привязка к AuthUser по номеру телефона
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateParentRequest'
+      responses:
+        '201':
+          description: Родитель успешно создан
+        '400':
+          description: Ошибка валидации данных
+        '409':
+          description: Родитель с таким email уже существует
+      tags:
+        - Parent
+        
+  /api/v1/parentId/add-child:
+    post:
+      summary: Создать ребенка
+      description: Регистрация нового ребенка
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChildRequest'
+      responses:
+        '201':
+          description: Ребенок успешно создан
+        '400':
+          description: Ошибка валидации данных
+      tags:
+        - Parent
+      
+components:
+  schemas:
+    SignUpUserRequest:
+      type: object
+      required:
+        - phoneNumber
+        - password
+        - role
+      properties:
+        phoneNumber:
+          type: string
+        password:
+          type: string
+          format: password
+        role:
+          type: string
+          enum: [PARENT, CHILD]
+    
+    SignInUserRequest:
+      type: object
+      required:
+        - phoneNumber
+        - password
+      properties:
+        phoneNumber:
+          type: string
+          format: phoneNumber
+        password:
+          type: string
+          format: password
+          
+    CreateParentRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - phoneNumber
+        - birthDate
+        - email
+      properties:
+        firstName:
+          type: string
+          description: Имя родителя
+        lastName:
+          type: string
+          description: Фамилия родителя
+        phoneNumber:
+          type: string
+          pattern: "\\+?\\d{10,15}"
+          description: "Номер телефона родителя в формате +XXXXXXXXXXX (10-15 цифр)"
+        birthDate:
+          type: string
+          format: date
+          description: "Дата рождения родителя (должна быть в прошлом)"
+        email:
+          type: string
+          format: email
+          description: "Email родителя в формате user@example.com"
+          
+    CreateChildRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - phoneNumber
+        - birthDate
+        - email
+        - gender
+      properties:
+        firstName:
+          type: string
+          description: Имя ребенка
+        lastName:
+          type: string
+          description: Фамилия ребенка
+        phoneNumber:
+          type: string
+          pattern: "\\+?\\d{10,15}"
+          description: "Номер телефона ребенка в формате +XXXXXXXXXXX (10-15 цифр)"
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          description: "Пароль (не отображается в ответах API)"
+        birthDate:
+          type: string
+          format: date
+          description: "Дата рождения ребенка (должна быть в прошлом)"
+        email:
+          type: string
+          format: email
+          description: "Email ребенка в формате user@example.com"
+        gender:
+          type: string
+          enum: [MALE, FEMALE, OTHER]
+          description: "Пол ребенка"    
+    
+  
+
+
+
+
