@@ -1,5 +1,6 @@
 package kz.balaguide.common_module.core.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import kz.balaguide.common_module.core.enums.Gender;
@@ -53,11 +54,11 @@ public class Child extends AbstractEntity implements Comparable<Child> {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-/*    *//** The password for the child account. *//*
-    @NotNull(message = "Password must be not null")
-    @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
-    @Column(name = "password", nullable = false, length = 60)
-    private String password;*/
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
+    @ToString.Exclude
+    @JsonIgnore
+    private AuthUser authUser;
 
     /** The gender of the child. */
     @NotNull(message = "Gender must not be null")

@@ -90,6 +90,7 @@ public class ParentServiceImpl implements ParentService {
      * @throws IllegalArgumentException if the parent is not found or the password is incorrect
      */
     @Override
+    @Transactional
     @ForLog
     public Child addChild(Long parentId, CreateChildRequest createChildRequest)  {
         Parent parent = parentRepository.findById(parentId)
@@ -99,9 +100,8 @@ public class ParentServiceImpl implements ParentService {
         authUserService.save(newAuthUserForChild);
 
         Child child = childMapper.mapCreateChildRequestToChild(createChildRequest);
+        child.setAuthUser(newAuthUserForChild);
         child.setParent(parent);
-
-        //TODO hardcode
 
         return childRepository.save(child);
     }

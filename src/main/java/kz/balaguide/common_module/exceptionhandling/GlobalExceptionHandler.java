@@ -6,6 +6,7 @@ import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNot
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.*;
 import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.BalanceUpdateException;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 @RequiredArgsConstructor
+@Slf4j
 //TODO добавить логи в хэндлеры DIP-27
 public class GlobalExceptionHandler {
 

@@ -64,3 +64,4 @@ spring:
 token:
   signing:
     key: ${TOKEN_SIGNING_KEY}
+  lifetime : ${TOKEN_LIFETIME}
