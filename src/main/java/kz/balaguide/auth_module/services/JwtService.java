@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kz.balaguide.common_module.core.entities.Parent;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ public class JwtService {
     @Value("${token.signing.key}")
     private String jwtSigningKey;
 
+    @Value("${token.lifetime}")
+    @Getter
+    private Long tokeLifetimeMillis;
     /**
      * Extracting the username from the token
      *
@@ -84,7 +88,7 @@ public class JwtService {
                 .add(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 10000 * 60 * 60 * 24))
+                .expiration(new Date(System.currentTimeMillis() + tokeLifetimeMillis))
                 .and()
                 .signWith(getSigningKey(), Jwts.SIG.HS256)
                 .compact();

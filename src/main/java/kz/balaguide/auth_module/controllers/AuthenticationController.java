@@ -1,7 +1,7 @@
 package kz.balaguide.auth_module.controllers;
 
 import jakarta.validation.Valid;
-import kz.balaguide.auth_module.dtos.JwtAuthenticationResponse;
+import kz.balaguide.auth_module.dtos.AuthenticationResponse;
 import kz.balaguide.auth_module.dtos.SignInUserRequest;
 import kz.balaguide.auth_module.dtos.SignUpUserRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,19 +23,18 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/sign-up")
-    @ForLog
-    public ResponseEntity<JwtAuthenticationResponse> signUp(@RequestBody @Valid SignUpUserRequest request) {
-        JwtAuthenticationResponse jwtAuthenticationResponse = authenticationService.signUpUser(request);
+    public ResponseEntity<AuthenticationResponse> signUp(@RequestBody @Valid SignUpUserRequest request) {
+        AuthenticationResponse authenticationResponse = authenticationService.signUpUser(request);
         //TODO: delete next log, cuz token must be confidential
         //log.info("new token registered: {}", jwtAuthenticationResponse.getToken());
-        return ResponseEntity.status(HttpStatus.OK).body(jwtAuthenticationResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(authenticationResponse);
     }
 
     @PostMapping("/sign-in")
-    public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInUserRequest request) {
-        JwtAuthenticationResponse jwtAuthenticationResponse = authenticationService.signIn(request);
+    public ResponseEntity<AuthenticationResponse> signIn(@RequestBody @Valid SignInUserRequest request) {
+        AuthenticationResponse authenticationResponse = authenticationService.signIn(request);
         //TODO: delete next log, cuz token must be confidential
         //log.info("new token registered: {}", jwtAuthenticationResponse.getToken());
-        return authenticationService.signIn(request);
+        return ResponseEntity.status(HttpStatus.OK).body(authenticationResponse);
     }
 }

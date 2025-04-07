@@ -67,6 +67,7 @@ public class Parent extends AbstractEntity implements Comparable<Parent> {
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
     @ToString.Exclude
+    @JsonIgnore
     private AuthUser authUser;
 
     /** A list of children associated with the parent. */
