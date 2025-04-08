@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ChildRepository extends JpaRepository<Child, Long> {
@@ -18,5 +19,7 @@ public interface ChildRepository extends JpaRepository<Child, Long> {
      */
     @Query("SELECT c FROM Child c WHERE c.parent.id = :parentId")
     List<Child> findAllByParentId(Long parentId);
+
+    Optional<Child> findByPhoneNumber(String phoneNumber);
 
 }

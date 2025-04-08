@@ -59,6 +59,12 @@ public class ChildServiceImpl implements ChildService {
         return child.get();
     }
 
+    @Override
+    public Child findByPhoneNumber(String phoneNumber) {
+        return childRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new ChildNotFoundException(ResponseCode._0100.getMessage()));
+    }
+
     /**
      * Saves a new {@link Child} entity.
      *

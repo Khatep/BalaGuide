@@ -11,6 +11,7 @@ public interface ChildService {
     Page<Child> findAll(int page, int size);
 
     Child findById(Long id);
+    Child findByPhoneNumber(String phoneNumber);
 
     Child save(Child child);
 
