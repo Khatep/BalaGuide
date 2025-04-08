@@ -25,11 +25,6 @@ public record CreateChildRequest(
         @Pattern(regexp = "\\+?\\d{10,15}", message = "Phone number must be valid and contain 10-15 digits")
         String phoneNumber,
 
-        @NotNull(message = "Password must be not null")
-        @NotBlank(message = "Password must be not empty")
-        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-        String password,
-
         @NotNull(message = "Birth date must be not null")
         @Past(message = "Birth date must be in the past")
         LocalDate birthDate,

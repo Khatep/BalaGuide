@@ -69,7 +69,7 @@ public class ParentServiceImpl implements ParentService {
         Parent parent = parentMapper.mapCreateParentRequestToParent(createParentRequest);
 
         //Связываем Parent с зарегистрированным authUser с помощью phone number
-        //TODO: Возможно есть риск отсутсвтие клиента в authUser
+        //TODO: Возможно есть риск отсутствие клиента в authUser
         AuthUser authUser = (AuthUser) authUserService
                 .userDetailsService()
                 .loadUserByUsername(createParentRequest.phoneNumber());
@@ -95,11 +95,13 @@ public class ParentServiceImpl implements ParentService {
     public Child addChild(Long parentId, CreateChildRequest createChildRequest)  {
         Parent parent = findById(parentId);
 
-        AuthUser newAuthUserForChild = new AuthUser(createChildRequest.phoneNumber(), createChildRequest.password(), Role.CHILD);
-        authUserService.save(newAuthUserForChild);
+        //TODO HARDCODE
+        AuthUser authUser = (AuthUser) authUserService
+                .userDetailsService()
+                .loadUserByUsername(createChildRequest.phoneNumber());
 
         Child child = childMapper.mapCreateChildRequestToChild(createChildRequest);
-        child.setAuthUser(newAuthUserForChild);
+        child.setAuthUser(authUser);
         child.setParent(parent);
 
         return childRepository.save(child);

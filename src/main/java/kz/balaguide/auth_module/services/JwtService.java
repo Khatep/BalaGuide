@@ -5,14 +5,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kz.balaguide.auth_module.dtos.JwtResponseDto;
-import kz.balaguide.common_module.core.entities.Parent;
+import kz.balaguide.common_module.core.entities.AuthUser;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,9 +43,9 @@ public class JwtService {
      */
     public JwtResponseDto generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        if (userDetails instanceof Parent customUserDetails) {
+        if (userDetails instanceof AuthUser customUserDetails) {
             claims.put("id", customUserDetails.getId());
-            claims.put("phoneNumber", customUserDetails.getEmail());
+            claims.put("phoneNumber", customUserDetails.getPhoneNumber());
             claims.put("role", customUserDetails.getRole());
         }
         return generateToken(claims, userDetails);
@@ -97,9 +96,7 @@ public class JwtService {
                                 .signWith(getSigningKey(), Jwts.SIG.HS256)
                                 .compact()
                 )
-                //.createdAt(LocalDateTime.now())
                 .createdAt(new Date(System.currentTimeMillis()))
-                //.expiresAt(LocalDateTime.now().plusSeconds(tokeLifetimeMillis / 1000))
                 .expiresAt(new Date(System.currentTimeMillis() + tokeLifetimeMillis))
                 .build();
     }
