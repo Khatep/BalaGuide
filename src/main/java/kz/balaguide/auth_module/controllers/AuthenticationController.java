@@ -1,12 +1,13 @@
 package kz.balaguide.auth_module.controllers;
 
 import jakarta.validation.Valid;
-import kz.balaguide.auth_module.dtos.AuthenticationResponse;
+import kz.balaguide.auth_module.dtos.JwtResponseDto;
 import kz.balaguide.auth_module.dtos.SignInUserRequest;
+import kz.balaguide.auth_module.dtos.SignInUserResponse;
 import kz.balaguide.auth_module.dtos.SignUpUserRequest;
+import kz.balaguide.common_module.core.entities.AbstractEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import kz.balaguide.common_module.core.annotations.ForLog;
 import kz.balaguide.auth_module.services.AuthenticationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,18 +24,18 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<AuthenticationResponse> signUp(@RequestBody @Valid SignUpUserRequest request) {
-        AuthenticationResponse authenticationResponse = authenticationService.signUpUser(request);
+    public ResponseEntity<JwtResponseDto> signUp(@RequestBody @Valid SignUpUserRequest request) {
+        JwtResponseDto jwtResponseDto = authenticationService.signUpUser(request);
         //TODO: delete next log, cuz token must be confidential
         //log.info("new token registered: {}", jwtAuthenticationResponse.getToken());
-        return ResponseEntity.status(HttpStatus.OK).body(authenticationResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(jwtResponseDto);
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<AuthenticationResponse> signIn(@RequestBody @Valid SignInUserRequest request) {
-        AuthenticationResponse authenticationResponse = authenticationService.signIn(request);
+    public ResponseEntity<SignInUserResponse<AbstractEntity>> signIn(@RequestBody @Valid SignInUserRequest request) {
+        SignInUserResponse<AbstractEntity> jwtResponseDto = authenticationService.signIn(request);
         //TODO: delete next log, cuz token must be confidential
         //log.info("new token registered: {}", jwtAuthenticationResponse.getToken());
-        return ResponseEntity.status(HttpStatus.OK).body(authenticationResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(jwtResponseDto);
     }
 }

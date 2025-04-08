@@ -13,4 +13,12 @@ import lombok.Setter;
 public class ApiResponse<T> {
     private ResponseMetadata responseMetadata ;
     private T data;
+
+    @Override
+    public String toString() {
+        return "ApiResponse{" +
+                "responseMetadata=" + responseMetadata +
+                ", data=" + data +
+                '}';
+    }
 }

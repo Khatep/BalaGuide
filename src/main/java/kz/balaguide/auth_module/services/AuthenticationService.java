@@ -2,10 +2,12 @@ package kz.balaguide.auth_module.services;
 
 
 import kz.balaguide.auth_module.dtos.SignInUserRequest;
+import kz.balaguide.auth_module.dtos.SignInUserResponse;
 import kz.balaguide.auth_module.dtos.SignUpUserRequest;
+import kz.balaguide.common_module.core.entities.AbstractEntity;
 import kz.balaguide.common_module.core.entities.AuthUser;
 import lombok.RequiredArgsConstructor;
-import kz.balaguide.auth_module.dtos.AuthenticationResponse;
+import kz.balaguide.auth_module.dtos.JwtResponseDto;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse signUpUser(SignUpUserRequest signUpUserRequest) {
+    public JwtResponseDto signUpUser(SignUpUserRequest signUpUserRequest) {
 
         authUserService.checkIsUserWithPhoneNumberAlreadyExists(signUpUserRequest.phoneNumber());
 
@@ -34,33 +36,25 @@ public class AuthenticationService {
 
         authUserService.save(authUser);
 
-        var jwt = jwtService.generateToken(authUser);
-        return new AuthenticationResponse(jwt,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusSeconds(jwtService.getTokeLifetimeMillis() / 1000)
-        );
+        return jwtService.generateToken(authUser);
     }
 
     /**
      * Sign in of all types of users
      *
      * @param request data of user
-     * @return {@link AuthenticationResponse} which contain token
+     * @return {@link JwtResponseDto} which contain token
      */
-    public AuthenticationResponse signIn(SignInUserRequest request) {
+    public SignInUserResponse<AbstractEntity> signIn(SignInUserRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.phoneNumber(),
                 request.password()
         ));
 
-        var user = authUserService
+        AuthUser user = (AuthUser) authUserService
                 .userDetailsService()
                 .loadUserByUsername(request.phoneNumber());
-        String jwt = jwtService.generateToken(user);
 
-        return new AuthenticationResponse(jwt,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusSeconds(jwtService.getTokeLifetimeMillis() / 1000)
-        );
+        return authUserService.signIn(user, jwtService.generateToken(user));
     }
 }

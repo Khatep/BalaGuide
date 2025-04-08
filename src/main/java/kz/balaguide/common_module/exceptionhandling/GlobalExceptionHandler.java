@@ -1,4 +1,5 @@
 package kz.balaguide.common_module.exceptionhandling;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
@@ -29,7 +30,9 @@ public class GlobalExceptionHandler {
 
     private final ResponseMetadataService responseMetadataService;
 
-    /**GENERAL EXCEPTIONS*/
+    /**
+     * GENERAL EXCEPTIONS
+     */
 
     //Bad Request, нужно протестить
     @ExceptionHandler(BadRequestException.class)
@@ -57,7 +60,7 @@ public class GlobalExceptionHandler {
                 .responseMetadata(responseMetadata)
                 .data(cause)
                 .build();
-        
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
     }
 
@@ -77,10 +80,11 @@ public class GlobalExceptionHandler {
     }
 
 
-    /**BUSINESS LOGIC EXCEPTIONS*/
+    /**
+     * BUSINESS LOGIC EXCEPTIONS
+     */
 
     // FINANCIAL EXCEPTIONS:
-
     @ExceptionHandler(value = BalanceUpdateException.class)
     public ResponseEntity<ApiResponse<Void>> handleBalanceUpdateException(BalanceUpdateException ex) {
 
@@ -236,16 +240,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
 
-    /**TECHNICAL EXCEPTIONS:*/
+    /**
+     * TECHNICAL EXCEPTIONS:
+     */
 
     // Jwt token expired
+    //TODO надо понять вызывается ли это
     @ExceptionHandler(value = ExpiredJwtException.class)
     public ResponseEntity<ApiResponse<Void>> handleExpiredJwtException(ExpiredJwtException ex) {
 
-        //ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0012);
-        //ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0003);
+        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
     }
 
     // Unauthorized
@@ -253,5 +260,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: " + e.getMessage());
     }
+
 }
 

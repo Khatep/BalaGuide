@@ -76,9 +76,6 @@ public class Parent extends AbstractEntity implements Comparable<Parent> {
     @JsonIgnore
     private List<Child> myChildren;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
     @Override
     public int compareTo(Parent o) {
         return this.getId().compareTo(o.getId());

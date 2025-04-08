@@ -23,6 +23,8 @@ public interface ParentService {
 
     Child addChild(Long parentId, CreateChildRequest createChildRequest);
 
+    Parent findByPhoneNumber(String phoneNumber);
+    Parent findById(Long id);
     boolean removeChild(Long parentId, Long childId);
 
     List<Child> getMyChildren(Long parentId);

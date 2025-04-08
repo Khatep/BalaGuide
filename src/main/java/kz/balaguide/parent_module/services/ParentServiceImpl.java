@@ -69,7 +69,7 @@ public class ParentServiceImpl implements ParentService {
         Parent parent = parentMapper.mapCreateParentRequestToParent(createParentRequest);
 
         //Связываем Parent с зарегистрированным authUser с помощью phone number
-        //TODO: Возможно есть риск отсутсвтие клиента в authUser
+        //TODO: Возможно есть риск отсутствие клиента в authUser
         AuthUser authUser = (AuthUser) authUserService
                 .userDetailsService()
                 .loadUserByUsername(createParentRequest.phoneNumber());
@@ -93,17 +93,30 @@ public class ParentServiceImpl implements ParentService {
     @Transactional
     @ForLog
     public Child addChild(Long parentId, CreateChildRequest createChildRequest)  {
-        Parent parent = parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
+        Parent parent = findById(parentId);
 
-        AuthUser newAuthUserForChild = new AuthUser(createChildRequest.phoneNumber(), createChildRequest.password(), Role.CHILD);
-        authUserService.save(newAuthUserForChild);
+        //TODO HARDCODE
+        AuthUser authUser = (AuthUser) authUserService
+                .userDetailsService()
+                .loadUserByUsername(createChildRequest.phoneNumber());
 
         Child child = childMapper.mapCreateChildRequestToChild(createChildRequest);
-        child.setAuthUser(newAuthUserForChild);
+        child.setAuthUser(authUser);
         child.setParent(parent);
 
         return childRepository.save(child);
+    }
+
+    @Override
+    public Parent findByPhoneNumber(String phoneNumber) {
+        return parentRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new ParentNotFoundException("Parent with phone number: " + phoneNumber + " not found"));
+    }
+
+    @Override
+    public Parent findById(Long id) {
+        return parentRepository.findById(id)
+                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + id + " not found"));
     }
 
     /**
@@ -142,9 +155,7 @@ public class ParentServiceImpl implements ParentService {
     @Override
     @ForLog
     public List<Child> getMyChildren(Long parentId) {
-        parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
-
+        findById(parentId);
         return childRepository.findAllByParentId(parentId);
     }
 
@@ -165,8 +176,7 @@ public class ParentServiceImpl implements ParentService {
     @ForLog
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public boolean enrollChildToCourse(Long parentId, Long childId, Long courseId) {
-        Parent parent = parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + "not found"));
+        Parent parent = findById(parentId);
 
         Child child = childRepository.findById(childId)
                 .orElseThrow(() -> new ChildNotFoundException("Child with id: " + childId + " not found"));
@@ -202,8 +212,7 @@ public class ParentServiceImpl implements ParentService {
     @Override
     @ForLog
     public boolean unenrollChildFromCourse(Long parentId, Long childId, Long courseId) {
-        parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
+        findById(parentId);
 
         Child child = childRepository.findById(childId)
                 .orElseThrow(() -> new ChildNotFoundException("Child with id: " + childId + " not found"));
@@ -237,8 +246,7 @@ public class ParentServiceImpl implements ParentService {
     public boolean payForCourse(Long parentId, Course course) {
         BigDecimal coursePrice = course.getPrice();
 
-        Parent parent = parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
+        Parent parent = findById(parentId);
 
         if (parent.getBalance().compareTo(coursePrice) < 0)
             throw new InsufficientFundsException("Insufficient funds for payment");
@@ -277,8 +285,7 @@ public class ParentServiceImpl implements ParentService {
     @ForLog
     @Transactional(isolation = Isolation.READ_COMMITTED)
         public String addBalance(Long parentId, Integer amountOfMoney, Card card) {
-        Parent parent = parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
+        Parent parent = findById(parentId);
 
         BigDecimal newBalance = parent.getBalance().add(BigDecimal.valueOf(amountOfMoney));
         parent.setBalance(newBalance);
@@ -297,8 +304,7 @@ public class ParentServiceImpl implements ParentService {
     @Override
     @ForLog
     public boolean removeParent(Long parentId) {
-        parentRepository.findById(parentId)
-                .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
+        findById(parentId);
 
         parentRepository.deleteById(parentId);
 

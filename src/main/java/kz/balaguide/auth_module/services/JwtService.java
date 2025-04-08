@@ -4,7 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import kz.balaguide.common_module.core.entities.Parent;
+import kz.balaguide.auth_module.dtos.JwtResponseDto;
+import kz.balaguide.common_module.core.entities.AuthUser;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,11 +41,11 @@ public class JwtService {
      *
      * @return token
      */
-    public String generateToken(UserDetails userDetails) {
+    public JwtResponseDto generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        if (userDetails instanceof Parent customUserDetails) {
+        if (userDetails instanceof AuthUser customUserDetails) {
             claims.put("id", customUserDetails.getId());
-            claims.put("phoneNumber", customUserDetails.getEmail());
+            claims.put("phoneNumber", customUserDetails.getPhoneNumber());
             claims.put("role", customUserDetails.getRole());
         }
         return generateToken(claims, userDetails);
@@ -82,16 +83,22 @@ public class JwtService {
      * @param userDetails user data
      * @return token
      */
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder()
-                .claims()
-                .add(extraClaims)
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + tokeLifetimeMillis))
-                .and()
-                .signWith(getSigningKey(), Jwts.SIG.HS256)
-                .compact();
+    private JwtResponseDto generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return JwtResponseDto.builder()
+                .token(
+                        Jwts.builder()
+                                .claims()
+                                .add(extraClaims)
+                                .subject(userDetails.getUsername())
+                                .issuedAt(new Date(System.currentTimeMillis()))
+                                .expiration(new Date(System.currentTimeMillis() + tokeLifetimeMillis))
+                                .and()
+                                .signWith(getSigningKey(), Jwts.SIG.HS256)
+                                .compact()
+                )
+                .createdAt(new Date(System.currentTimeMillis()))
+                .expiresAt(new Date(System.currentTimeMillis() + tokeLifetimeMillis))
+                .build();
     }
 
     /**
