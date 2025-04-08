@@ -11,6 +11,7 @@ import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.child_module.services.ChildService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class ChildController {
      * @return a list of all children
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Page<Child>>> getAllChildren(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size

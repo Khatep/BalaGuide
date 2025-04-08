@@ -11,9 +11,13 @@ public enum ResponseCode {
 
     // Общие ошибки
     //0000 - 0099
-    _0000("Bad request exception"),
+    _0000("Bad request"),
     _0001("Runtime exception"),
-    _0002("Illegal argument exception"),
+    _0002("Illegal argument"),
+    _0003("Token expired"),
+    _0004("Unauthorized"),
+    _0005("Bad credentials"),
+    _0006("Access denied"),
 
     // NOT FOUND: 0100 - 0199
     _0100("Child not found"),
