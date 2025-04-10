@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 @RequiredArgsConstructor
 @Slf4j
-//TODO добавить логи в хэндлеры DIP-27
 public class GlobalExceptionHandler {
 
     private final ResponseMetadataService responseMetadataService;
@@ -37,7 +36,7 @@ public class GlobalExceptionHandler {
     //Bad Request, нужно протестить
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiResponse<String>> handleBadRequestException(BadRequestException ex) {
-
+        log.error("Bad request exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0000);
@@ -52,7 +51,7 @@ public class GlobalExceptionHandler {
     //Runtime, нужно протестить
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<String>> handleRuntimeException(RuntimeException ex) {
-
+        log.error("Runtime exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0001);
@@ -66,7 +65,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
-
+        log.error("Illegal argument exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0001);
@@ -87,7 +86,7 @@ public class GlobalExceptionHandler {
     // FINANCIAL EXCEPTIONS:
     @ExceptionHandler(value = BalanceUpdateException.class)
     public ResponseEntity<ApiResponse<Void>> handleBalanceUpdateException(BalanceUpdateException ex) {
-
+        log.error("Balance update exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0300);
         ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .responseMetadata(responseMetadata)
@@ -99,7 +98,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = InsufficientFundsException.class)
     public ResponseEntity<ApiResponse<Void>> handleInsufficientFundsException(InsufficientFundsException ex) {
-
+        log.error("Insufficient funds exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0301);
         ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .responseMetadata(responseMetadata)
@@ -114,7 +113,7 @@ public class GlobalExceptionHandler {
     // Child not belong to parent
     @ExceptionHandler(value = ChildNotBelongToParentException.class)
     public ResponseEntity<ApiResponse<Void>> handleChildNotBelongToParentException(ChildNotBelongToParentException ex) {
-
+        log.error("Child not belong to parent exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0400);
         ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .responseMetadata(responseMetadata)
@@ -127,7 +126,7 @@ public class GlobalExceptionHandler {
     // Child not enrolled to course
     @ExceptionHandler(value = ChildNotEnrolledToCourseException.class)
     public ResponseEntity<ApiResponse<Void>> handleChildNotEnrolledToCourseException(ChildNotEnrolledToCourseException ex) {
-
+        log.error("Child not enroll to course exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0401);
         ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .responseMetadata(responseMetadata)
@@ -139,7 +138,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = CourseFullException.class)
     public ResponseEntity<ApiResponse<Void>> handleCourseFullException(CourseFullException ex) {
-
+        log.error("Course already full exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0800);
         ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .responseMetadata(responseMetadata)
@@ -151,7 +150,7 @@ public class GlobalExceptionHandler {
     // Ineligible child
     @ExceptionHandler(value = IneligibleChildException.class)
     public ResponseEntity<ApiResponse<Void>> handleIneligibleChildException(IneligibleChildException ex) {
-
+        log.error("Ineligible child exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0402);
         ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
 
@@ -163,7 +162,7 @@ public class GlobalExceptionHandler {
     // Child not found
     @ExceptionHandler(value = ChildNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleChildNotFoundException(ChildNotFoundException ex) {
-
+        log.error("Child not found exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0100);
         ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .responseMetadata(responseMetadata)
@@ -176,7 +175,7 @@ public class GlobalExceptionHandler {
     // Children not found
     @ExceptionHandler(value = ChildrenNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleChildrenNotFoundException(ChildrenNotFoundException ex) {
-
+        log.error("Children not found: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0101);
         ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .responseMetadata(responseMetadata)
@@ -189,7 +188,7 @@ public class GlobalExceptionHandler {
     // Course not found
     @ExceptionHandler(value = CourseNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleCourseNotFoundException(CourseNotFoundException ex) {
-
+        log.error("Course not found exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0103);
         ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .responseMetadata(responseMetadata)
@@ -202,7 +201,7 @@ public class GlobalExceptionHandler {
     // Education center not found
     @ExceptionHandler(value = EducationCenterNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleEducationCenterNotFoundException(EducationCenterNotFoundException ex) {
-
+        log.error("Education center not found: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0104);
         ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .responseMetadata(responseMetadata)
@@ -215,7 +214,7 @@ public class GlobalExceptionHandler {
     // Parent not found
     @ExceptionHandler(value = ParentNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleParentNotFoundException(ParentNotFoundException ex) {
-
+        log.error("Parent not found exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0102);
         ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .responseMetadata(responseMetadata)
@@ -230,7 +229,7 @@ public class GlobalExceptionHandler {
     // User already exists
     @ExceptionHandler(value = UserAlreadyExistsException.class)
     public ResponseEntity<ApiResponse<Void>> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-
+        log.error("User already exists exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0200);
         ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .responseMetadata(responseMetadata)
@@ -248,7 +247,7 @@ public class GlobalExceptionHandler {
     //TODO надо понять вызывается ли это
     @ExceptionHandler(value = ExpiredJwtException.class)
     public ResponseEntity<ApiResponse<Void>> handleExpiredJwtException(ExpiredJwtException ex) {
-
+        log.error("Expired jwt exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0003);
         ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
 
@@ -257,8 +256,9 @@ public class GlobalExceptionHandler {
 
     // Unauthorized
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: " + e.getMessage());
+    public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException ex) {
+        log.error("Unauthorized exception: {}, {}", ex.getMessage(), ex.getStackTrace());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: " + ex.getMessage());
     }
 
 }
