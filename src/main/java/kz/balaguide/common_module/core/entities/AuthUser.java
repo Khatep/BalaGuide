@@ -22,7 +22,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthUser extends AbstractEntity implements Comparable<AuthUser>, UserDetails {
-
     /**
      * Used like unique username in Security
      * */
@@ -33,8 +32,8 @@ public class AuthUser extends AbstractEntity implements Comparable<AuthUser>, Us
     @JsonIgnore
     private String password;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "role")
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Override

@@ -20,21 +20,12 @@ import java.util.Objects;
 @Entity
 @Table(name = "educationcenter")
 public class EducationCenter extends AbstractEntity implements Comparable<EducationCenter>{
-
-    /**
-     * The unique identifier for the education center.
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     /**
      * The name of the education center.
      */
     @NotNull(message = "Name must be not null")
     @NotBlank(message = "Name must be not empty")
     private String name;
-
 
     /**
      * The contact phone number of the education center.
@@ -109,5 +100,4 @@ public class EducationCenter extends AbstractEntity implements Comparable<Educat
     public final int hashCode() {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
-
 }

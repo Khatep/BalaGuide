@@ -33,9 +33,9 @@ public class EmailConsumerService {
     public void listenReceiptTopic(ConsumerRecord<String, Receipt> receiptConsumerRecord) {
         Receipt receipt = receiptConsumerRecord.value();
 
-        String parentEmail = parentRepository.findById(receipt.getParentId())
+        String parentEmail = parentRepository.findById(receipt.getChildId())
                 .map(Parent::getEmail)
-                .orElseThrow(() -> new ParentNotFoundException("Parent not found with Id: " + receipt.getParentId()));
+                .orElseThrow(() -> new ParentNotFoundException("Parent not found with Id: " + receipt.getChildId()));
 
         CourseDto courseDto = courseRepository.findCoursePriceAndNameById(receipt.getCourseId());
 

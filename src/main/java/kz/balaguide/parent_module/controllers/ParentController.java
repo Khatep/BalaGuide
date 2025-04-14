@@ -160,7 +160,7 @@ public class ParentController {
         String message = parentService.addBalance(
                 parentId,
                 addBalanceRequest.amountOfMoney(),
-                addBalanceRequest.card()
+                addBalanceRequest.bankCard()
         );
 
         return ResponseEntity.ok(message);

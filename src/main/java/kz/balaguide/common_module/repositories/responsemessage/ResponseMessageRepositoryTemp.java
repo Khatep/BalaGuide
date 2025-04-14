@@ -57,7 +57,7 @@ public class ResponseMessageRepositoryTemp {
         };
     }
 
-    public ResponseMetadata findByCode(ResponseCode code) {
+    public ResponseMetadata findByResponseCode(ResponseCode code) {
         return responseMetadataMap.get(code);
     }
 }

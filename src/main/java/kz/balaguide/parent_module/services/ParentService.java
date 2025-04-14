@@ -1,9 +1,8 @@
 package kz.balaguide.parent_module.services;
 
-import kz.balaguide.common_module.core.entities.Card;
+import kz.balaguide.common_module.core.entities.BankCard;
 import kz.balaguide.parent_module.dtos.CreateChildRequest;
 import kz.balaguide.parent_module.dtos.CreateParentRequest;
-import kz.balaguide.common_module.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotBelongToParentException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.BalanceUpdateException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.InsufficientFundsException;
@@ -38,7 +37,7 @@ public interface ParentService {
     boolean payForCourse(Long parentId, Course course)
             throws ParentNotFoundException, InsufficientFundsException, BalanceUpdateException;
 
-    String addBalance(Long parentId, Integer amountOfMoney, Card card) throws ParentNotFoundException;
+    String addBalance(Long parentId, Integer amountOfMoney, BankCard bankCard) throws ParentNotFoundException;
 
     boolean removeParent(Long parentId) throws ParentNotFoundException;
 

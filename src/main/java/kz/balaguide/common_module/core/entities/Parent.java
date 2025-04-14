@@ -71,6 +71,7 @@ public class Parent extends AbstractEntity implements Comparable<Parent> {
     private AuthUser authUser;
 
     /** A list of children associated with the parent. */
+    //TODO Стоит использовать ParentDto
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @ToString.Exclude
     @JsonIgnore

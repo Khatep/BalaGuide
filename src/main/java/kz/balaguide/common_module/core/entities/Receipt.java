@@ -19,8 +19,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "receipt")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Receipt extends AbstractEntity{
-
+public class Receipt extends AbstractEntity {
     /**
      * Percentage of VAT applied to the transaction.
      */
@@ -28,6 +27,8 @@ public class Receipt extends AbstractEntity{
     @Column(name = "percent_of_vat")
     private Integer percentOfVat;
 
+    @Column(name = "payment_number")
+    private String paymentNumber;
 
     /**
      * Payment method used for the transaction.
@@ -42,14 +43,18 @@ public class Receipt extends AbstractEntity{
     private PaymentStatus paymentStatus;
 
     /**
-     * The parent id associated with this receipt.
+     * The child id associated with this receipt.
      */
-    private Long parentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "child_id", referencedColumnName = "id")
+    private Child child;
 
     /**
      * The course id associated with this receipt.
-     */
-    private Long courseId;
+     * */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id", referencedColumnName = "id")
+    private Course course;
 
     @Override
     public final boolean equals(Object o) {

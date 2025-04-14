@@ -1,7 +1,6 @@
 package kz.balaguide.parent_module.services;
 
 import kz.balaguide.child_module.mappers.ChildMapper;
-import kz.balaguide.common_module.core.enums.Role;
 import kz.balaguide.parent_module.dtos.CreateChildRequest;
 import kz.balaguide.parent_module.dtos.CreateParentRequest;
 import kz.balaguide.common_module.core.entities.*;
@@ -277,14 +276,14 @@ public class ParentServiceImpl implements ParentService {
      *
      * @param parentId the ID of the {@link Parent} entity
      * @param amountOfMoney the amount to add to the balance
-     * @param card the bank card where the balance is replenished
+     * @param bankCard the bank card where the balance is replenished
      * @return a success message indicating the updated balance
      * @throws ParentNotFoundException if the parent is not found
      */
     @Override
     @ForLog
     @Transactional(isolation = Isolation.READ_COMMITTED)
-        public String addBalance(Long parentId, Integer amountOfMoney, Card card) {
+        public String addBalance(Long parentId, Integer amountOfMoney, BankCard bankCard) {
         Parent parent = findById(parentId);
 
         BigDecimal newBalance = parent.getBalance().add(BigDecimal.valueOf(amountOfMoney));

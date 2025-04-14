@@ -16,12 +16,15 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
   # Config Kafka-server
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
