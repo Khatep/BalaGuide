@@ -15,6 +15,18 @@ tags:
     description: Эндпоинты для аутентификации пользователей
   - name: Parent
     description: Эндпоинты для родителей
+  - name: Course
+    description: Эндпоинты для работы с курсами (создание, поиск, регистрация)
+  - name: Teacher
+    description: Эндпоинты для учителей
+  - name: Child
+    description: Эндпоинты для управления детьми
+  - name: Education Center
+    description: Эндпоинты для образовательных центров
+  - name: Lesson
+    description: Эндпоинты для управления уроками
+  - name: Schedule
+    description: Эндпоинты для управления расписанием
 
 paths:
   /auth/sign-up:
@@ -93,7 +105,272 @@ paths:
           description: Ошибка валидации данных
       tags:
         - Parent
-      
+
+  /api/v1/courses/add-course:
+    post:
+      tags:
+        - Course
+      summary: Создание нового курса
+      description: Позволяет образовательному центру создать новый курс
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseRequest'
+      responses:
+        '201':
+          description: Курс успешно создан
+          content:
+            application/json:
+              example:
+                code: _1005
+                message: "Child enrolled successfully"
+        '400':
+          description: Ошибка валидации данных
+          content:
+            application/json:
+              example:
+                code: _0000
+                message: "Bad request"
+        '104':
+          description: Образовательный центр не найден
+          content:
+            application/json:
+              example:
+                code: _0104
+                message: "Education center not found"
+
+  /api/v1/courses/{courseId}/enroll/{childId}:
+    post:
+      tags:
+        - Course
+      summary: Записать ребенка на курс
+      description: Родитель записывает ребенка на курс
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: childId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ребенок успешно записан на курс
+          content:
+            application/json:
+              example:
+                code: _1005
+                message: "Child enrolled successfully"
+        '404':
+          description: Курс или ребенок не найден
+          content:
+            application/json:
+              examples:
+                courseNotFound:
+                  summary: Курс не найден
+                  value:
+                    code: _0103
+                    message: "Course not found"
+                childNotFound:
+                  summary: Ребенок не найден
+                  value:
+                    code: _0100
+                    message: "Child not found"
+        '409':
+          description: Курс переполнен
+          content:
+            application/json:
+              example:
+                code: _0800
+                message: "Course is full"
+        '403':
+          description: Ребенок не принадлежит родителю
+          content:
+            application/json:
+              example:
+                code: _0400
+                message: "Child does not belong to parent"
+
+  /api/v1/courses/search-courses:
+    get:
+      tags:
+        - Course
+      summary: Поиск курсов
+      description: Поиск курсов по названию или ключевому слову
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список курсов по запросу
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseResponse'
+        '400':
+          description: Пустой или недопустимый поисковый запрос
+          content:
+            application/json:
+              example:
+                code: _0000
+                message: "Bad request"
+
+  /api/v1/teachers/create:
+          post:
+            tags:
+              - Teacher
+            summary: Создание аккаунта учителя
+            description: Образовательный центр создает аккаунт учителя с временным паролем
+            requestBody:
+              required: true
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/CreateTeacherRequest'
+            responses:
+              '201':
+                description: Учитель успешно создан
+                content:
+                  application/json:
+                    example:
+                      code: _1300
+                      message: "Teacher created successfully"
+              '400':
+                description: Ошибка валидации данных
+                content:
+                  application/json:
+                    example:
+                      code: _0000
+                      message: "Bad request"
+              '409':
+                description: Учитель с таким email уже существует
+                content:
+                  application/json:
+                    example:
+                      code: _0200
+                      message: "User already exists"
+
+  /api/v1/teachers/{teacherId}/courses:
+          get:
+            tags:
+              - Teacher
+            summary: Получить курсы учителя
+            description: Возвращает список курсов, которые ведет учитель
+            parameters:
+              - name: teacherId
+                in: path
+                required: true
+                schema:
+                  type: integer
+            responses:
+              '200':
+                description: Курсы получены успешно
+                content:
+                  application/json:
+                    schema:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/CourseResponse'
+              '404':
+                description: Учитель не найден
+                content:
+                  application/json:
+                    example:
+                      code: _0100
+                      message: "Teacher not found"
+
+  /api/v1/teachers/{teacherId}/evaluate/{childId}:
+          post:
+            tags:
+              - Teacher
+            summary: Оценка ребенка
+            description: Учитель оставляет отзыв и оценку после урока
+            parameters:
+              - name: teacherId
+                in: path
+                required: true
+                schema:
+                  type: integer
+              - name: childId
+                in: path
+                required: true
+                schema:
+                  type: integer
+            requestBody:
+              required: true
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/EvaluateChildRequest'
+            responses:
+              '200':
+                description: Оценка успешно добавлена
+              '404':
+                description: Ребенок или учитель не найден
+              '400':
+                description: Ошибка запроса
+  /api/v1/children:
+    get:
+      tags:
+        - Child
+      summary: Получить список всех детей
+      responses:
+        '200':
+          description: Успешный ответ
+        '101':
+          description: Children not found
+
+  /api/v1/parents/{parentId}/remove-child/{childId}:
+      delete:
+        tags:
+          - Child
+        summary: Удалить ребенка у родителя
+        parameters:
+          - name: parentId
+            in: path
+            required: true
+            schema:
+              type: integer
+          - name: childId
+            in: path
+            required: true
+            schema:
+              type: integer
+        responses:
+          '200':
+            description: Child removed successfully
+          '100':
+            description: Child not found
+          '400':
+            description: Child does not belong to parent
+
+  /api/v1/education-centers/create:
+      post:
+        tags:
+          - Education Center
+        summary: Создание образовательного центра
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEducationCenterRequest'
+        responses:
+          '201':
+            description: Education Center created successfully
+          '0200':
+            description: Education Center already exists
+
 components:
   schemas:
     SignUpUserRequest:
@@ -190,9 +467,136 @@ components:
           type: string
           enum: [MALE, FEMALE, OTHER]
           description: "Пол ребенка"    
-    
-  
 
+    CreateCourseRequest:
+      type: object
+      required:
+        - educationCenterId
+        - name
+        - description
+        - category
+        - ageRange
+        - price
+        - durability
+      properties:
+        educationCenterId:
+          type: integer
+          description: ID образовательного центра
+        name:
+          type: string
+          description: Название курса
+        description:
+          type: string
+          description: Описание курса
+        category:
+          type: string
+          enum: [ PROGRAMMING, MATH, SCIENCE, ART, MUSIC, OTHER ]
+          description: Категория курса
+        ageRange:
+          type: string
+          example: "6-10"
+          description: Возрастная группа
+        price:
+          type: number
+          format: float
+          description: Цена за курс
+        durability:
+          type: integer
+          description: Длительность курса в неделях
+        maxParticipants:
+          type: integer
+          description: Максимальное количество участников (если курс групповой)
+        currentParticipants:
+          type: integer
+          description: Текущее количество записанных участников
+
+    CourseResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        ageRange:
+          type: string
+        price:
+          type: number
+        durability:
+          type: integer
+        maxParticipants:
+          type: integer
+        currentParticipants:
+          type: integer
+
+
+
+    CreateTeacherRequest:
+          type: object
+          required:
+            - firstName
+            - lastName
+            - email
+            - phoneNumber
+            - educationCenterId
+          properties:
+            firstName:
+              type: string
+              description: Имя учителя
+            lastName:
+              type: string
+              description: Фамилия учителя
+            email:
+              type: string
+              format: email
+            phoneNumber:
+              type: string
+              pattern: "\\+?\\d{10,15}"
+              description: Номер телефона в формате +XXXXXXXXXXX
+            educationCenterId:
+              type: integer
+              description: ID образовательного центра, к которому относится учитель
+
+    EvaluateChildRequest:
+          type: object
+          required:
+            - score
+            - comment
+          properties:
+            score:
+              type: integer
+              minimum: 1
+              maximum: 5
+              description: Оценка от 1 до 5
+            comment:
+              type: string
+              description: Комментарий или рекомендация от учителя
+
+    CreateEducationCenterRequest:
+      type: object
+      required:
+        - name
+        - address
+        - email
+        - phoneNumber
+      properties:
+        name:
+          type: string
+          description: Название образовательного центра
+        address:
+          type: string
+          description: Адрес образовательного центра
+        email:
+          type: string
+          format: email
+          description: Email центра
+        phoneNumber:
+          type: string
+          pattern: "\\+?\\d{10,15}"
+          description: Телефон центра
 
 
 
