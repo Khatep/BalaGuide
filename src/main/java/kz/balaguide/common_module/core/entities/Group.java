@@ -4,15 +4,16 @@ package kz.balaguide.common_module.core.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "group")
 public class Group extends AbstractEntity {
@@ -56,5 +57,10 @@ public class Group extends AbstractEntity {
      * */
     private String language;
 
-    //NOT now private Schedule schedule
+    @ManyToMany(mappedBy = "groupsEnrolled", cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @Builder.Default
+    private List<Group> childrenEnrolled = new ArrayList<>();
+
+    //NOT now: private Schedule schedule
 }

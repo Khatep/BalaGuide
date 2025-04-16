@@ -188,7 +188,7 @@ public class ParentServiceImpl implements ParentService {
         if (!isParentsChild)
             throw new ChildNotBelongToParentException("Child does not belong to the specified parent");
 
-        boolean isPaid = payForCourse(parentId, course);
+        boolean isPaid = payForCourse(parentId, childId, course);
 
         if (isPaid)
             return courseService.enrollChild(courseId, childId);
@@ -242,7 +242,7 @@ public class ParentServiceImpl implements ParentService {
     @Override
     @ForLog
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public boolean payForCourse(Long parentId, Course course) {
+    public boolean payForCourse(Long parentId, Long childId, Course course) {
         BigDecimal coursePrice = course.getPrice();
 
         Parent parent = findById(parentId);
@@ -266,7 +266,7 @@ public class ParentServiceImpl implements ParentService {
                     " payment, transaction rolled back");
         }
 
-        Receipt receipt = receiptService.createReceipt(parentId, course.getId());
+        Receipt receipt = receiptService.createReceipt(parentId, childId, course.getId());
         emailProducerService.sendReceiptToTopic(receipt);
         return true;
     }

@@ -42,6 +42,11 @@ public class Receipt extends AbstractEntity {
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", referencedColumnName = "id")
+    private Parent parent;
+
     /**
      * The child id associated with this receipt.
      */

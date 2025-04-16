@@ -1,6 +1,7 @@
 package kz.balaguide.course_module.controllers;
 
 import jakarta.validation.Valid;
+import kz.balaguide.course_module.dto.EnrollChildRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import kz.balaguide.common_module.core.entities.Course;
@@ -93,9 +94,7 @@ public class CourseController {
      * @return ResponseEntity with success status
      */
     @PostMapping("/{courseId}/enroll/{childId}")
-    public ResponseEntity<Void> enrollChild(
-            @PathVariable Long courseId,
-            @PathVariable Long childId) {
+    public ResponseEntity<Void> enrollChild(EnrollChildRequest enrollChildRequest) {
         courseService.enrollChild(courseId, childId);
         return ResponseEntity.ok().build();
     }

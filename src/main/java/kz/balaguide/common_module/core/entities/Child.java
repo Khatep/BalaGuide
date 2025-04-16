@@ -69,16 +69,15 @@ public class Child extends AbstractEntity implements Comparable<Child> {
     @JoinColumn(name= "parent_id", referencedColumnName = "id")
     private Parent parent;
 
-    /** A list of courses the child is enrolled in. */
     @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
-            name = "child_course",
+            name = "child_group",
             joinColumns = @JoinColumn(name = "child_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id")
+            inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     @ToString.Exclude
     @Builder.Default
-    private List<Course> coursesEnrolled = new ArrayList<>();
+    private List<Group> groupsEnrolled = new ArrayList<>();
 
     @Override
     public int compareTo(Child o) {

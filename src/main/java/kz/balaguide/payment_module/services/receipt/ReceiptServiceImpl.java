@@ -1,5 +1,8 @@
 package kz.balaguide.payment_module.services.receipt;
 
+import kz.balaguide.child_module.repository.ChildRepository;
+import kz.balaguide.common_module.core.entities.Child;
+import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ChildNotFoundException;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.CourseNotFoundException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ParentNotFoundException;
@@ -18,6 +21,7 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     private final ReceiptRepository receiptRepository;
     private final ParentRepository parentRepository;
+    private final ChildRepository childRepository;
     private final CourseRepository courseRepository;
 
     /**
@@ -30,16 +34,20 @@ public class ReceiptServiceImpl implements ReceiptService {
      * @return a {@link Receipt} object containing the payment details
      */
     @Override
-    public Receipt createReceipt(Long parentId, Long courseId) {
+    public Receipt createReceipt(Long parentId, Long childId, Long courseId) {
         Parent parent = parentRepository.findById(parentId)
                 .orElseThrow(() -> new ParentNotFoundException("Parent with id: " + parentId + " not found"));
+
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + childId + " not found"));
 
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new CourseNotFoundException("Course with id: " + courseId + " not found"));
 
         Receipt receipt = Receipt.builder()
-                .parentId(parent.getId())
-                .courseId(course.getId())
+                .parent(parent)
+                .child(child)
+                .course(course)
                 .percentOfVat(12)
                 .paymentMethod(PaymentMethod.BANK_CARD)
                 .build();

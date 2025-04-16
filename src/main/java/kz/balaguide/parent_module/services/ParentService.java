@@ -34,7 +34,7 @@ public interface ParentService {
     boolean unenrollChildFromCourse(Long parentId, Long courseId, Long childId)
             throws ParentNotFoundException, ChildNotFoundException;
 
-    boolean payForCourse(Long parentId, Course course)
+    boolean payForCourse(Long parentId, Long childId, Course course)
             throws ParentNotFoundException, InsufficientFundsException, BalanceUpdateException;
 
     String addBalance(Long parentId, Integer amountOfMoney, BankCard bankCard) throws ParentNotFoundException;

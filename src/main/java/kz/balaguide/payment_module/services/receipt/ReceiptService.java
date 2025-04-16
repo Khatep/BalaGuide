@@ -6,7 +6,7 @@ import kz.balaguide.common_module.core.entities.Receipt;
 
 public interface ReceiptService {
 
-    Receipt createReceipt(Long parentId, Long courseId)
+    Receipt createReceipt(Long parentId, Long childId, Long courseId)
             throws ParentNotFoundException, CourseNotFoundException;
 
 }
