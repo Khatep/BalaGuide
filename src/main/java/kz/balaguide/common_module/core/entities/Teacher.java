@@ -18,7 +18,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "teacher")
+@Table(name = "teachers")
 public class Teacher extends AbstractEntity implements Comparable<Teacher> {
     /**
      * The first name of the teacher.

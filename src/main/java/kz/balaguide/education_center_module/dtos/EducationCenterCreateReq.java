@@ -5,8 +5,9 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
+//TODO use Record
 @Data
-public class CreateEduCenterRequest {
+public class EducationCenterCreateReq {
 
     @NotNull(message = "Name must be not null")
     @NotBlank(message = "Name must be not empty")

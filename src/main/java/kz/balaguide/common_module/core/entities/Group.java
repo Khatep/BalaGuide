@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "group")
+@Table(name = "groups")
 public class Group extends AbstractEntity {
 
     @NotNull(message = "Group name must not be null")
@@ -37,6 +37,8 @@ public class Group extends AbstractEntity {
     @Column(name = "min_participants", nullable = false)
     private int minParticipants;
 
+    private boolean groupFull;
+
     /**
      * The maximum number of participants for the course.
      */
@@ -50,7 +52,7 @@ public class Group extends AbstractEntity {
      */
     @NotNull(message = "Current participants must not be null")
     @Column(name = "current_participants", nullable = false)
-    private int currentParticipants;
+    private int currentParticipants = 0;
 
     /**
      * EN, RU, KZ
@@ -60,7 +62,7 @@ public class Group extends AbstractEntity {
     @ManyToMany(mappedBy = "groupsEnrolled", cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     @ToString.Exclude
     @Builder.Default
-    private List<Group> childrenEnrolled = new ArrayList<>();
+    private List<Child> childrenEnrolled = new ArrayList<>();
 
     //NOT now: private Schedule schedule
 }

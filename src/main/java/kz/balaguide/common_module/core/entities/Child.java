@@ -1,6 +1,6 @@
 package kz.balaguide.common_module.core.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import kz.balaguide.common_module.core.enums.Gender;
@@ -19,7 +19,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "child")
+@Table(name = "children")
 public class Child extends AbstractEntity implements Comparable<Child> {
     /** The first name of the child. */
     @NotNull(message = "First name must be not null")
@@ -56,7 +56,8 @@ public class Child extends AbstractEntity implements Comparable<Child> {
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
     @ToString.Exclude
-    @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    //@JsonIgnore
     private AuthUser authUser;
 
     /** The gender of the child. */

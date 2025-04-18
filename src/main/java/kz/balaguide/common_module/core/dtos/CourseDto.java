@@ -12,6 +12,7 @@ import java.math.BigDecimal;
  * different layers of the application.
  */
 @Builder
-public record CourseDto(String name, BigDecimal price) {
-
-}
+public record CourseDto(
+        String name,
+        BigDecimal price
+) {}

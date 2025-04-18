@@ -1,5 +1,6 @@
 package kz.balaguide.education_center_module.services;
 
+import kz.balaguide.education_center_module.dtos.EducationCenterCreateReq;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import kz.balaguide.common_module.core.entities.EducationCenter;
@@ -30,5 +31,11 @@ public class EducationServiceImpl implements EducationCenterService {
     private EducationCenter getByPhoneNumber(String phoneNumber) throws UsernameNotFoundException {
         return educationCenterRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new UsernameNotFoundException("Education center with phone number: " + phoneNumber + " not found"));
+    }
+
+    //TODO Реализую позже
+    @Override
+    public EducationCenter createEducationCenter(EducationCenterCreateReq educationCenterCreateReq) {
+        return null;
     }
 }

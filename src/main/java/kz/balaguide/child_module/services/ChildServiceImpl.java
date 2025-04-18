@@ -1,9 +1,11 @@
 package kz.balaguide.child_module.services;
 
+import kz.balaguide.common_module.core.entities.Group;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ChildrenNotFoundException;
 import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
+import kz.balaguide.course_module.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.common_module.core.annotations.ForLog;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotEnrolledToCourseException;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +31,7 @@ public class ChildServiceImpl implements ChildService {
     private final ResponseMetadataService responseMetadataService;
     private final ChildRepository childRepository;
     private final CourseRepository courseRepository;
+    private final GroupRepository groupRepository;
 
 
     /**
@@ -145,17 +149,22 @@ public class ChildServiceImpl implements ChildService {
             );
         }
 
-        Optional<List<Course>> enrolledCoursesOpt = childOpt.map(childEntity ->
-                    courseRepository.findAllByChildId(childOpt.get().getId())
+        Optional<List<Group>> enrolledGroupsOpt = childOpt.map(childEntity ->
+                groupRepository.findAllByChildId(childOpt.get().getId())
         );
 
-        if (enrolledCoursesOpt.isEmpty()) {
+        if (enrolledGroupsOpt.isEmpty()) {
             throw new ChildNotEnrolledToCourseException(
                     responseMetadataService.findByCode(ResponseCode._0401).getMessage()
             );
         }
 
-        return enrolledCoursesOpt.get();
+        List<Course> courseList = new ArrayList<>();
+        for (Group group : enrolledGroupsOpt.get()) {
+            courseList.add(group.getCourse());
+        }
+
+        return courseList;
     }
 
     /**

@@ -33,11 +33,12 @@ public class EmailConsumerService {
     public void listenReceiptTopic(ConsumerRecord<String, Receipt> receiptConsumerRecord) {
         Receipt receipt = receiptConsumerRecord.value();
 
-        String parentEmail = parentRepository.findById(receipt.getChild().getId())
+        Long parentId = receipt.getPayment().getParent().getId();
+        String parentEmail = parentRepository.findById(parentId)
                 .map(Parent::getEmail)
-                .orElseThrow(() -> new ParentNotFoundException("Parent not found with Id: " + receipt.getChild().getId()));
+                .orElseThrow(() -> new ParentNotFoundException("Parent not found with Id: " + parentId));
 
-        CourseDto courseDto = courseRepository.findCoursePriceAndNameById(receipt.getCourse().getId());
+        CourseDto courseDto = courseRepository.findCoursePriceAndNameById(receipt.getPayment().getCourse().getId());
 
         messageSenderService.sendReceiptToParentEmail(parentEmail, courseDto.price(), courseDto.name(), receipt);
     }

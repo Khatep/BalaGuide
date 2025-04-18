@@ -18,7 +18,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "educationcenter")
+@Table(name = "education_centers")
 public class EducationCenter extends AbstractEntity implements Comparable<EducationCenter>{
     /**
      * The name of the education center.

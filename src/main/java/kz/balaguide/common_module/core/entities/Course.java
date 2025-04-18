@@ -20,7 +20,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "course")
+@Table(name = "courses")
 public class Course extends AbstractEntity implements Comparable<Course> {
     /**
      * The name of the course.
@@ -78,9 +78,9 @@ public class Course extends AbstractEntity implements Comparable<Course> {
     @ToString.Exclude
     private List<Teacher> teachers;
 
-    @ManyToMany(mappedBy = "coursesEnrolled", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "course", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
-    private List<Child> children;
+    private List<Group> groups;
 
     @Override
     public int compareTo(Course o) {

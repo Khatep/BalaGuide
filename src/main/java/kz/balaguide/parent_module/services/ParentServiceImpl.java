@@ -1,15 +1,17 @@
 package kz.balaguide.parent_module.services;
 
 import kz.balaguide.child_module.mappers.ChildMapper;
+import kz.balaguide.course_module.dto.EnrollmentActionDto;
+import kz.balaguide.course_module.repository.GroupRepository;
+import kz.balaguide.course_module.services.GroupService;
 import kz.balaguide.parent_module.dtos.CreateChildRequest;
 import kz.balaguide.parent_module.dtos.CreateParentRequest;
 import kz.balaguide.common_module.core.entities.*;
-import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.BalanceUpdateException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.InsufficientFundsException;
 import kz.balaguide.auth_module.services.AuthUserService;
 import kz.balaguide.course_module.services.CourseService;
 import kz.balaguide.parent_module.dtos.UpdateParentRequest;
-import kz.balaguide.payment_module.services.receipt.ReceiptService;
+import kz.balaguide.payment_module.services.payment.PaymentService;
 import kz.balaguide.parent_module.mappers.ParentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +23,7 @@ import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.CourseN
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ParentNotFoundException;
 import kz.balaguide.child_module.repository.ChildRepository;
 import kz.balaguide.course_module.repository.CourseRepository;
-import kz.balaguide.education_center_module.repository.EducationCenterRepository;
 import kz.balaguide.parent_module.repository.ParentRepository;
-import kz.balaguide.notification_module.services.kafka.email.EmailProducerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,10 +40,11 @@ public class ParentServiceImpl implements ParentService {
     private final ParentRepository parentRepository;
     private final ChildRepository childRepository;
     private final CourseRepository courseRepository;
+    private final GroupRepository groupRepository;
+
     private final CourseService courseService;
-    private final ReceiptService receiptService;
-    private final EducationCenterRepository educationCenterRepository;
-    private final EmailProducerService emailProducerService;
+    private final GroupService groupService;
+    private final PaymentService paymentService;
 
     //TODO: Добавил authenticationService так как родитель регистрирует своего ребенка, но это hardcode
     private final AuthUserService authUserService;
@@ -158,117 +159,59 @@ public class ParentServiceImpl implements ParentService {
         return childRepository.findAllByParentId(parentId);
     }
 
-    /**
-     * Enrolls a child in a specified course and processes payment.
-     *
-     * @param parentId the ID of the {@link Parent} entity
-     * @param childId the ID of the {@link Child} entity to enroll
-     * @param courseId the ID of the {@link Course} entity
-     * @return true if enrollment is successful
-     * @throws ParentNotFoundException if the parent not found
-     * @throws ChildNotFoundException if the child not found
-     * @throws CourseNotFoundException if the course not found
-     * @throws ChildNotBelongToParentException if the child does not belong to the specified parent
-     * @throws InsufficientFundsException if the payment fails due to insufficient funds
-     */
     @Override
     @ForLog
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public boolean enrollChildToCourse(Long parentId, Long childId, Long courseId) {
-        Parent parent = findById(parentId);
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean enrollChildToCourse(EnrollmentActionDto enrollmentActionDto) {
+        Parent parent = findById(enrollmentActionDto.parentId());
 
-        Child child = childRepository.findById(childId)
-                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + childId + " not found"));
+        Child child = childRepository.findById(enrollmentActionDto.childId())
+                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + enrollmentActionDto.childId() + " not found"));
 
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + courseId + "not found"));
+        Course course = courseRepository.findById(enrollmentActionDto.courseId())
+                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + enrollmentActionDto.courseId() + "not found"));
 
          boolean isParentsChild = child.getParent().equals(parent);
 
-        if (!isParentsChild)
+        if (!isParentsChild) {
             throw new ChildNotBelongToParentException("Child does not belong to the specified parent");
+        }
 
-        boolean isPaid = payForCourse(parentId, childId, course);
+        boolean isPaid = paymentService.payForCourse(parent, child, course);
 
         if (isPaid)
-            return courseService.enrollChild(courseId, childId);
+            return courseService.enrollChild(enrollmentActionDto);
         else
             throw new InsufficientFundsException("Failed to pay for course");
     }
 
-    /**
-     * Unenrolls a child from a specific course.
-     *
-     * @param parentId The id of the parent
-     * @param courseId The ID of the course.
-     * @param childId  The ID of the child to be unenrolled.
-     * @throws ParentNotFoundException if the parent not found
-     * @throws ChildNotFoundException if the child not found
-     * @throws CourseNotFoundException if the course not found
-     * @throws ChildNotBelongToParentException if the child does not belong to the specified parent
-     * @return True if the child is successfully unenrolled, otherwise false.
-     */
     @Override
     @ForLog
-    public boolean unenrollChildFromCourse(Long parentId, Long childId, Long courseId) {
-        findById(parentId);
+    public boolean unenrollChildFromCourse(EnrollmentActionDto enrollmentActionDto) {
+        findById(enrollmentActionDto.parentId());
 
-        Child child = childRepository.findById(childId)
-                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + childId + " not found"));
+        Child child = childRepository.findById(enrollmentActionDto.childId())
+                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + enrollmentActionDto.childId() + " not found"));
 
-        if (!child.getParent().getId().equals(parentId)) {
-            log.error("Child ID {} does not belong to Parent ID {}", childId, parentId);
+        if (!child.getParent().getId().equals(enrollmentActionDto.parentId())) {
+            log.error("Child ID {} does not belong to Parent ID {}", enrollmentActionDto.childId(), enrollmentActionDto.parentId());
             throw new ChildNotBelongToParentException("Child does not belong to the specified parent");
         }
 
-        boolean isEnrolledInCourse = courseRepository.isChildEnrolledInCourse(courseId, childId);
+        boolean isEnrolledInCourse = groupRepository.isChildEnrolledInCourseGroup(
+                enrollmentActionDto.groupId(),
+                enrollmentActionDto.parentId()
+        );
 
-        if (isEnrolledInCourse)
-            return courseService.unenrollChild(courseId, childId);
-        else {
-            log.warn("Child ID {} is not enrolled in course ID {}", childId, courseId);
+        if (isEnrolledInCourse) {
+            return groupService.unenrollChild(enrollmentActionDto);
+        } else {
+            log.warn("Child ID {} is not enrolled in course ID {}",
+                    enrollmentActionDto.childId(),
+                    enrollmentActionDto.courseId()
+            );
             return false;
         }
-    }
-
-    /**
-     * Processes payment for a course.
-     *
-     * @param parentId the ID of the {@link Parent} entity making the payment
-     * @param course the {@link Course} entity for which payment is being made
-     * @return true if the payment is successful
-     * @throws InsufficientFundsException if the parent has insufficient funds
-     */
-    @Override
-    @ForLog
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public boolean payForCourse(Long parentId, Long childId, Course course) {
-        BigDecimal coursePrice = course.getPrice();
-
-        Parent parent = findById(parentId);
-
-        if (parent.getBalance().compareTo(coursePrice) < 0)
-            throw new InsufficientFundsException("Insufficient funds for payment");
-
-        parent.setBalance(parent.getBalance().subtract(coursePrice));
-        //TODO Use update instead of save
-        parentRepository.save(parent);
-
-        try {
-            course.getEducationCenter().setBalance(course.getEducationCenter().getBalance().add(coursePrice));
-            //TODO Use update instead of save
-            educationCenterRepository.save(course.getEducationCenter());
-        } catch (Exception e) {
-            parent.setBalance(parent.getBalance().add(coursePrice));
-            //TODO Use update instead of save
-            parentRepository.save(parent);
-            throw new BalanceUpdateException("Failed to update balance for Education Center after parent ID: " + parentId +
-                    " payment, transaction rolled back");
-        }
-
-        Receipt receipt = receiptService.createReceipt(parentId, childId, course.getId());
-        emailProducerService.sendReceiptToTopic(receipt);
-        return true;
     }
 
     /**
@@ -290,24 +233,6 @@ public class ParentServiceImpl implements ParentService {
         parent.setBalance(newBalance);
         parentRepository.save(parent);
         return "Balance updated successfully. New balance: " + newBalance;
-    }
-
-
-    /**
-     * Removes a parent from the system.
-     *
-     * @param parentId the ID of the {@link Parent} entity to be removed
-     * @return true if the parent was successfully removed
-     * @throws ParentNotFoundException if the parent is not found
-     */
-    @Override
-    @ForLog
-    public boolean removeParent(Long parentId) {
-        findById(parentId);
-
-        parentRepository.deleteById(parentId);
-
-        return !parentRepository.existsById(parentId);
     }
 
     /**
