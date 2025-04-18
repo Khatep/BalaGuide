@@ -1,6 +1,7 @@
 package kz.balaguide.common_module.core.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import kz.balaguide.common_module.core.enums.Role;
@@ -8,6 +9,7 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,6 +59,12 @@ public class EducationCenter extends AbstractEntity implements Comparable<Educat
     @Column(name = "instagram_link")
     private String instagramLink;
 
+    /**
+     * Дата когда образовательный центр открылся
+     * */
+    @Column(name = "date_of_created")
+    private LocalDate dateOfCreated;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -70,6 +78,7 @@ public class EducationCenter extends AbstractEntity implements Comparable<Educat
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AuthUser authUser;
 
     /**

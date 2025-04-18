@@ -32,7 +32,7 @@ public class ParentController {
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<Parent>> createParent(@RequestBody @Valid CreateParentRequest createParentRequest) {
-        Parent parent = parentService.save(createParentRequest);
+        Parent parent = parentService.createParentAndSave(createParentRequest);
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1300);
         ApiResponse<Parent> apiResponse = ApiResponse.<Parent>builder()

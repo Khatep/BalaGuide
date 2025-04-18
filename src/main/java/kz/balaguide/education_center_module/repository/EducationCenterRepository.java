@@ -16,4 +16,8 @@ public interface EducationCenterRepository extends JpaRepository<EducationCenter
      */
     Optional<EducationCenter> findByEmail(String email);
     Optional<EducationCenter> findByPhoneNumber(String phoneNumber);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhoneNumber(String phoneNumber);
 }

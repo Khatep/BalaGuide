@@ -1,7 +1,6 @@
 package kz.balaguide.education_center_module.controllers;
 
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
-import kz.balaguide.common_module.core.entities.Child;
 import kz.balaguide.common_module.core.entities.EducationCenter;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController("api/v1/education-centers")
 @RequiredArgsConstructor

@@ -60,10 +60,15 @@ public class ParentServiceImpl implements ParentService {
      * @return the saved {@link Parent} entity
      */
     @Override
-    public Parent save(CreateParentRequest createParentRequest) {
+    public Parent createParentAndSave(CreateParentRequest createParentRequest) {
         if (parentRepository.existsByEmail(createParentRequest.email())) {
             log.warn("Parent with email: {} already exists", createParentRequest.email());
             throw new UserAlreadyExistsException("Parent with email: " + createParentRequest.email() + " already exists");
+        }
+
+        if (parentRepository.existsByPhoneNumber(createParentRequest.phoneNumber())) {
+            log.warn("Parent with phoneNumber: {} already exists", createParentRequest.phoneNumber());
+            throw new UserAlreadyExistsException("Parent with phoneNumber: " + createParentRequest.phoneNumber() + " already exists");
         }
 
         Parent parent = parentMapper.mapCreateParentRequestToParent(createParentRequest);
@@ -76,9 +81,7 @@ public class ParentServiceImpl implements ParentService {
         parent.setAuthUser(authUser);
 
         //Save parent
-        parentRepository.save(parent);
-
-        return parent;
+        return parentRepository.save(parent);
     }
 
     /**

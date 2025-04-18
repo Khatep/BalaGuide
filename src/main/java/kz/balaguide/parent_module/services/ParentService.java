@@ -16,7 +16,7 @@ import java.util.List;
 
 public interface ParentService {
 
-    Parent save(CreateParentRequest createParentRequest);
+    Parent createParentAndSave(CreateParentRequest createParentRequest);
 
     Child addChild(Long parentId, CreateChildRequest createChildRequest);
 

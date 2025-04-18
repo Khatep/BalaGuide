@@ -19,6 +19,7 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       TOKEN_SIGNING_KEY: ${TOKEN_SIGNING_KEY}
+      TOKEN_LIFETIME: ${TOKEN_LIFETIME}
 
   db:
     image: postgres:15
