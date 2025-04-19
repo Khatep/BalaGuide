@@ -2,16 +2,14 @@ package kz.balaguide.common_module.core.entities;
 
 import jakarta.persistence.*;
 import kz.balaguide.common_module.core.enums.ResponseCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Entity
 @Table(name = "response_metadata")
 public class ResponseMetadata {

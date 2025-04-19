@@ -1,5 +1,6 @@
 package kz.balaguide.education_center_module.controllers;
 
+import jakarta.validation.Valid;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
 import kz.balaguide.common_module.core.entities.EducationCenter;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
@@ -11,10 +12,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@RestController("api/v1/education-centers")
+@RestController
+@RequestMapping("api/v1/education-centers")
 @RequiredArgsConstructor
 public class EducationCenterController {
 
@@ -22,7 +26,7 @@ public class EducationCenterController {
     private final ResponseMetadataService responseMetadataService;
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<EducationCenter>> create(EducationCenterCreateReq educationCenterCreateReq) {
+    public ResponseEntity<ApiResponse<EducationCenter>> createEducationCenter(@RequestBody @Valid EducationCenterCreateReq educationCenterCreateReq) {
         EducationCenter educationCenter = educationCenterService.createEducationCenter(educationCenterCreateReq);
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1600);
