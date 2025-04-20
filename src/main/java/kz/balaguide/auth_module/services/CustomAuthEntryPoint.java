@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kz.balaguide.auth_module.utils.ExceptionUtil;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
@@ -26,18 +27,20 @@ public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        Throwable cause = authException.getCause();
-        log.error(cause.getMessage(), cause);
-        ApiResponse<Void> errorResponse;
+        Throwable rootCause = ExceptionUtil.getRootCause(authException);
+        log.error("Error in filter chain: {}", rootCause.getMessage(), rootCause);
 
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         ResponseMetadata responseMetadata;
-        if (cause instanceof ExpiredJwtException) {
+        if (rootCause instanceof ExpiredJwtException) {
             responseMetadata = responseMetadataService.findByCode(ResponseCode._0003);
         }
         else {
+            //TODO Хардкод
             responseMetadata = responseMetadataService.findByCode(ResponseCode._0006);
         }
+
+        ApiResponse<Void> errorResponse;
         errorResponse = new ApiResponse<>(responseMetadata, null);
 
         log.error("error response: {}", errorResponse);
