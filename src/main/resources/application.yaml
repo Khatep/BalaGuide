@@ -1,5 +1,10 @@
 server:
   port: ${SERVER_PORT}
+  error:
+    whitelabel:
+      enabled: false
+    include-message: always
+    include-binding-errors: always
 
 spring:
   application:
