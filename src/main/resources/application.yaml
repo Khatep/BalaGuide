@@ -11,6 +11,8 @@ spring:
     name: BalaGuide
   devtools:
     add-properties: false
+    restart:
+      enabled: false
 
   # Database Configuration
   datasource:

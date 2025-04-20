@@ -30,16 +30,6 @@ public class Group extends AbstractEntity {
     private Teacher teacher;
 
     /**
-     * The minimum number of participants for the course.
-     */
-    @NotNull(message = "Min participants must not be null")
-    @Positive(message = "Min participants must be greater than zero")
-    @Column(name = "min_participants", nullable = false)
-    private int minParticipants;
-
-    private boolean groupFull;
-
-    /**
      * The maximum number of participants for the course.
      */
     @NotNull(message = "Max participants must not be null")
@@ -48,11 +38,21 @@ public class Group extends AbstractEntity {
     private int maxParticipants;
 
     /**
+     * The minimum number of participants for the course.
+     */
+    @NotNull(message = "Min participants must not be null")
+    @Positive(message = "Min participants must be greater than zero")
+    @Column(name = "min_participants", nullable = false)
+    private int minParticipants;
+
+    /**
      * The current number of participants in the course.
      */
     @NotNull(message = "Current participants must not be null")
     @Column(name = "current_participants", nullable = false)
     private int currentParticipants = 0;
+
+    private boolean groupFull;
 
     /**
      * EN, RU, KZ

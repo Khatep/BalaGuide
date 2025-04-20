@@ -19,10 +19,11 @@ import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.Ineligib
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 @RequiredArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
@@ -37,6 +38,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiResponse<String>> handleBadRequestException(BadRequestException ex) {
         log.error("Bad request exception: {}, {}", ex.getMessage(), ex.getStackTrace());
+        String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0000);
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
+                .responseMetadata(responseMetadata)
+                .data(cause)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        log.error("Method argument not valid exception: {}, {}", ex.getMessage(), ex.getStackTrace());
         String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0000);
@@ -242,17 +257,6 @@ public class GlobalExceptionHandler {
     /**
      * TECHNICAL EXCEPTIONS:
      */
-
-    // Jwt token expired
-    //TODO надо понять вызывается ли это
-    @ExceptionHandler(value = ExpiredJwtException.class)
-    public ResponseEntity<ApiResponse<Void>> handleExpiredJwtException(ExpiredJwtException ex) {
-        log.error("Expired jwt exception: {}, {}", ex.getMessage(), ex.getStackTrace());
-        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0003);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
-    }
 
     // Unauthorized
     @ExceptionHandler(UnauthorizedException.class)

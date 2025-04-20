@@ -1,5 +1,6 @@
 package kz.balaguide.common_module.exceptionhandling;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
@@ -29,10 +30,17 @@ public class CustomErrorController implements org.springframework.boot.web.servl
 
         log.warn("Unhandled error ({}): {}", statusCode, uri);
 
+        if (throwable instanceof ExpiredJwtException) {
+            ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0003);
+            ApiResponse<Void> apiResponse = new ApiResponse<>(responseMetadata, null);
+
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
+        }
+
         if (statusCode != null && statusCode == HttpStatus.NOT_FOUND.value()) {
             var metadata = ResponseMetadata.builder()
-                    .id(404L)
-                    .responseCode(ResponseCode._0004)
+                    .id((long) HttpStatus.NOT_FOUND.value())
+                    .responseCode(null)
                     .message("Endpoint not found")
                     .build();
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

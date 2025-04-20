@@ -1,5 +1,7 @@
 package kz.balaguide.common_module.core.dtos.requests;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -22,6 +24,7 @@ public record CourseRequest(
         String description,
 
         @NotNull(message = "CourseCategory must be not null")
+        @Enumerated(EnumType.STRING)
         CourseCategory courseCategory,
 
         @NotNull(message = "Age range must be not null")
@@ -33,12 +36,5 @@ public record CourseRequest(
 
         @NotNull(message = "Durability must not be null")
         @Positive(message = "Durability must be greater than zero")
-        Integer durability,
-
-        @NotNull(message = "Max participants must not be null")
-        @Positive(message = "Max participants must be greater than zero")
-        int maxParticipants,
-
-        @NotNull(message = "Current participants must not be null")
-        int currentParticipants
+        Integer durability
 ) {}
