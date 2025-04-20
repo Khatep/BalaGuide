@@ -2,7 +2,7 @@ package kz.balaguide.common_module.core.dtos.requests;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import kz.balaguide.common_module.core.entities.Card;
+import kz.balaguide.common_module.core.entities.BankCard;
 import lombok.*;
 
 @Builder
@@ -12,5 +12,5 @@ public record AddBalanceRequest(
         Integer amountOfMoney,
 
         @NotNull(message = "Card must not be null")
-        Card card
+        BankCard bankCard
 ) {}

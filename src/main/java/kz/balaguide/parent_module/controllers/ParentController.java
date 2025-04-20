@@ -1,6 +1,7 @@
 package kz.balaguide.parent_module.controllers;
 
 import jakarta.validation.Valid;
+import kz.balaguide.course_module.dto.EnrollmentActionDto;
 import kz.balaguide.parent_module.dtos.CreateChildRequest;
 import kz.balaguide.parent_module.dtos.CreateParentRequest;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
@@ -10,7 +11,6 @@ import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataServ
 import kz.balaguide.parent_module.dtos.UpdateParentRequest;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.common_module.core.entities.Child;
-import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.Parent;
 import kz.balaguide.common_module.core.dtos.requests.AddBalanceRequest;
 import kz.balaguide.parent_module.services.ParentService;
@@ -32,7 +32,7 @@ public class ParentController {
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<Parent>> createParent(@RequestBody @Valid CreateParentRequest createParentRequest) {
-        Parent parent = parentService.save(createParentRequest);
+        Parent parent = parentService.createParentAndSave(createParentRequest);
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1300);
         ApiResponse<Parent> apiResponse = ApiResponse.<Parent>builder()
@@ -67,7 +67,7 @@ public class ParentController {
     public ResponseEntity<ApiResponse<Child>> addChild(@PathVariable Long parentId, @RequestBody @Valid CreateChildRequest createChildRequest) {
         Child child = parentService.addChild(parentId, createChildRequest);
 
-        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1300);
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1000);
         ApiResponse<Child> apiResponse = ApiResponse.<Child>builder()
                 .responseMetadata(responseMetadata)
                 .data(child)
@@ -110,17 +110,9 @@ public class ParentController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * Endpoint to enroll a child in a course.
-     *
-     * @param parentId the ID of the {@link Parent} entity
-     * @param childId the ID of the {@link Child} entity
-     * @param courseId the ID of the {@link Course} entity
-     * @return a message indicating enrollment success or failure
-     */
     @PostMapping("/{parentId}/children/{childId}/enroll/{courseId}")
-    public ResponseEntity<ApiResponse<Boolean>> enrollChild(@PathVariable Long parentId, @PathVariable Long childId, @PathVariable Long courseId) {
-        parentService.enrollChildToCourse(parentId, childId, courseId);
+    public ResponseEntity<ApiResponse<Boolean>> enrollChild(EnrollmentActionDto enrollmentActionDto) {
+        parentService.enrollChildToCourse(enrollmentActionDto);
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1005);
         ApiResponse<Boolean> apiResponse = ApiResponse.<Boolean>builder()
@@ -131,17 +123,9 @@ public class ParentController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * Endpoint to unenroll a child from a course.
-     * TODO Нужно подумать как правильно реализовать отказ от курса
-     * @param parentId the ID of the {@link Parent} entity
-     * @param childId the ID of the {@link Child} entity
-     * @param courseId the ID of the {@link Course} entity
-     * @return a message indicating unenrollment success or failure
-     */
     @DeleteMapping("/{parentId}/children/{childId}/unenroll/{courseId}")
-    public ResponseEntity<String> unenrollChild(@PathVariable Long parentId, @PathVariable Long childId, @PathVariable Long courseId) {
-        parentService.unenrollChildFromCourse(parentId, childId, courseId);
+    public ResponseEntity<String> unenrollChild(EnrollmentActionDto enrollmentActionDto) {
+        parentService.unenrollChildFromCourse(enrollmentActionDto);
         return ResponseEntity.ok("Child unenrolled successfully");
     }
 
@@ -160,7 +144,7 @@ public class ParentController {
         String message = parentService.addBalance(
                 parentId,
                 addBalanceRequest.amountOfMoney(),
-                addBalanceRequest.card()
+                addBalanceRequest.bankCard()
         );
 
         return ResponseEntity.ok(message);

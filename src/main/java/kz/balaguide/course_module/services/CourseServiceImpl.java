@@ -1,6 +1,10 @@
 package kz.balaguide.course_module.services;
 
+import kz.balaguide.common_module.core.entities.Group;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotEnrolledToCourseException;
+import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.GroupNotFoundException;
+import kz.balaguide.course_module.dto.EnrollmentActionDto;
+import kz.balaguide.course_module.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.common_module.core.annotations.ForLog;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.CourseFullException;
@@ -30,7 +34,9 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final ChildRepository childRepository;
     private final EducationCenterRepository educationCenterRepository;
+    private final GroupRepository groupRepository;
     private final CourseMapper courseMapper;
+    private final GroupService groupService;
 
     /**
      * Adds a new course to the system.
@@ -94,36 +100,29 @@ public class CourseServiceImpl implements CourseService {
         return !childRepository.existsById(courseId);
     }
 
-    /**
-     * Enrolls a child in a specified course.
-     *
-     * @param courseId the ID of the course to enroll the child in
-     * @param childId the ID of the child to enroll
-     * @return true if the enrollment is successful
-     * @throws CourseFullException if the course is full
-     * @throws IneligibleChildException if the child is not eligible for the course
-     * @throws RuntimeException if the course or child is not found
-     */
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @ForLog
-    public boolean enrollChild(Long courseId, Long childId) {
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + courseId + " not found "));
-        Child child = childRepository.findById(childId)
-                .orElseThrow(() -> new ChildNotFoundException("Child not found with id: " + childId));
-
-        if (this.isCourseFull(course)) {
-            throw new CourseFullException("Course is full and cannot enroll more participants.");
-        }
+    public boolean enrollChild(EnrollmentActionDto enrollmentActionDto) {
+        Course course = courseRepository.findById(enrollmentActionDto.courseId())
+                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + enrollmentActionDto.courseId() + " not found"));
+        Child child = childRepository.findById(enrollmentActionDto.childId())
+                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + enrollmentActionDto.childId() + " not found"));
+        Group group = groupRepository.findById(enrollmentActionDto.groupId())
+                .orElseThrow(() -> new GroupNotFoundException("Group with id: " + enrollmentActionDto.groupId() + " not found"));
 
         if (!isChildEligible(course, child)) {
             throw new IneligibleChildException("Child is not eligible for this course.");
         }
+        if (group.isGroupFull()) {
+            throw new CourseFullException("Course is full and cannot enroll more participants.");
+        }
 
-        courseRepository.enrollChildInCourse(childId, courseId);
-        course.setCurrentParticipants(course.getCurrentParticipants() + 1);
-        courseRepository.save(course);
+        child.getGroupsEnrolled().add(group);
+        childRepository.save(child);
+
+        group.setCurrentParticipants(group.getCurrentParticipants() + 1);
+        groupRepository.save(group);
         return true;
     }
 
@@ -136,60 +135,30 @@ public class CourseServiceImpl implements CourseService {
                 .toList();
     }
 
-    /**
-     * Unenrolls a child from a specified course.
-     *
-     * @param courseId the ID of the course to unenroll the child from
-     * @param childId the ID of the child to unenroll
-     * @return true if the unenrollment is successful
-     * @throws RuntimeException if the course or child is not found, or if the child is not enrolled in any courses
-     */
-    @Override
+/*    @Override
     @ForLog
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public boolean unenrollChild(Long courseId, Long childId) {
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + courseId + " not found"));
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean unenrollChild(EnrollmentActionDto enrollmentActionDto) {
+        Course course = courseRepository.findById(enrollmentActionDto.childId())
+                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + enrollmentActionDto.courseId() + " not found"));
 
-        childRepository.findById(childId)
-                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + childId + " not found"));
+        Group group = groupRepository.findById(enrollmentActionDto.courseId())
+                .orElseThrow(() -> new GroupNotFoundException("Group with id: " + enrollmentActionDto.groupId() + " not found"));
 
-        List<Course> enrolledCourses = courseRepository.findAllByChildId(childId);
+        childRepository.findById(course.getId())
+                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + enrollmentActionDto.childId() + " not found"));
 
-        if (!enrolledCourses.isEmpty())
-            throw new ChildNotEnrolledToCourseException("Child with id: "+ childId + " is not enrolled in any courses");
+        List<Group> enrolledGroup = groupRepository.findAllByChildId(enrollmentActionDto.childId());
 
-        course.setCurrentParticipants(course.getCurrentParticipants() - 1);
-        courseRepository.unenrollChildInCourse(childId, courseId);
+        if (!enrolledGroup.isEmpty()) {
+            throw new ChildNotEnrolledToCourseException("Child with id: " + enrollmentActionDto.childId() + " is not enrolled in any courses");
+        }
+
+        group.setCurrentParticipants(group.getCurrentParticipants() - 1);
+        groupRepository.unenrollChildFromCourseGroup(enrollmentActionDto.courseId(), course.getId());
         return true;
-    }
+    }*/
 
-    /**
-     * Checks if a course is full.
-     *
-     * @param course the {@link Course} entity to check
-     * @return true if the current number of participants is equal to or exceeds the maximum allowed
-     */
-    @Override
-    @ForLog
-    public boolean isCourseFull(Course course) {
-        return course.getCurrentParticipants() >= course.getMaxParticipants();
-    }
-
-    /**
-     * Retrieves the current number of participants in a course.
-     *
-     * @param course the {@link Course} entity to check
-     * @return the current number of participants
-     * @throws RuntimeException if the course is not found
-     */
-    @Override
-    @ForLog
-    public int getCurrentParticipants(Course course) {
-        return courseRepository.findById(course.getId())
-                .map(Course::getCurrentParticipants)
-                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + course.getId() + " not found"));
-    }
 
     /**
      * Checks if a child is eligible for a specified course based on age range.

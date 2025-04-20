@@ -11,53 +11,53 @@ public enum ResponseCode {
 
     // Общие ошибки
     //0000 - 0099
-    _0000("Bad request"),
-    _0001("Runtime exception"),
-    _0002("Illegal argument"),
-    _0003("Token expired"),
-    _0004("Unauthorized"),
-    _0005("Bad credentials"),
-    _0006("Access denied"),
+    _0000,
+    _0001,
+    _0002,
+    _0003,
+    _0004,
+    _0005,
+    _0006,
 
     // NOT FOUND: 0100 - 0199
-    _0100("Child not found"),
-    _0101("Children not found"),
-    _0102("Parent not found"),
-    _0103("Course not found"),
-    _0104("Education center not found"),
+    _0100,
+    _0101,
+    _0102,
+    _0103,
+    _0104,
 
     // ALREADY EXISTS 0200 - 0299
-    _0200("User already exists"),
+    _0200,
 
     // Financial Operations 0300 - 0399
-    _0300("Balance update exception"),
-    _0301("Insufficient funds"),
+    _0300,
+    _0301,
 
     // Child's exception 0400 - 0499
-    _0400("Child does not belong to parent"),
-    _0401("Child is not enrolled in the course"),
-    _0402("Child is ineligible"),
+    _0400,
+    _0401,
+    _0402,
 
     // Parent's exception 0600 - 0699
 
     //Course's exception 0800 - 0899
-    _0800("Course is full"),
+    _0800,
 
     // Teacher's exception 0900 - 0999
 
     // Успешные операции (1XXX)
     // Успешные операции по ребенку 1000 - 1299
-    _1000("Children retrieved successfully"),
-    _1001("Child retrieved successfully"),
-    _1002("Child updated successfully"),
-    _1003("Child removed successfully"),
-    _1004("Child's courses retrieved successfully"),
-    _1005("Child enrolled successfully"),
+    _1000,
+    _1001,
+    _1002,
+    _1003,
+    _1004,
+    _1005,
 
-    // Успешные операции по родителю 1300 - 1600
-    _1300("Parent created successfully"),
+    // Успешные операции по родителю 1300 - 1599
+    _1300,
 
-    ;
-    private final String message;
+    //Успешные операции по Образовательному центру 1600 - 1899
+    _1600
 }
 

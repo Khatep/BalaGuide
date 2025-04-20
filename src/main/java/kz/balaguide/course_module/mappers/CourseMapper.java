@@ -26,8 +26,6 @@ public class CourseMapper {
                 .ageRange(courseRequest.ageRange())
                 .price(courseRequest.price())
                 .durability(courseRequest.durability())
-                .maxParticipants(courseRequest.maxParticipants())
-                .currentParticipants(courseRequest.currentParticipants())
                 .educationCenter(educationCenter)
                 .build();
     }
@@ -47,8 +45,6 @@ public class CourseMapper {
                 .ageRange(course.getAgeRange())
                 .price(course.getPrice())
                 .durability(course.getDurability())
-                .maxParticipants(course.getMaxParticipants())
-                .currentParticipants(course.getCurrentParticipants())
                 .build();
     }
 
@@ -66,7 +62,5 @@ public class CourseMapper {
         existingCourse.setAgeRange(updatedCourse.getAgeRange());
         existingCourse.setPrice(updatedCourse.getPrice());
         existingCourse.setDurability(updatedCourse.getDurability());
-        existingCourse.setMaxParticipants(updatedCourse.getMaxParticipants());
-        existingCourse.setCurrentParticipants(updatedCourse.getCurrentParticipants());
     }
 }

@@ -9,6 +9,7 @@ import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.Educati
 import kz.balaguide.common_module.core.entities.Child;
 import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.dtos.requests.CourseRequest;
+import kz.balaguide.course_module.dto.EnrollmentActionDto;
 
 import java.util.List;
 
@@ -22,17 +23,19 @@ public interface CourseService {
 
     List<Course> getCourses();
 
-    boolean enrollChild(Long courseId, Long childId)
+    boolean enrollChild(EnrollmentActionDto enrollmentActionDto)
             throws CourseNotFoundException, ChildNotFoundException, CourseFullException, IneligibleChildException;
 
     List<Course> searchCourses(String query);
 
-    boolean unenrollChild(Long courseId, Long childId)
+/*
+    boolean unenrollChild(EnrollmentActionDto enrollmentActionDto)
             throws ChildNotFoundException, ChildNotEnrolledToCourseException;
+*/
 
-    boolean isCourseFull(Course course);
+    //boolean isCourseFull(Course course);
 
-    int getCurrentParticipants(Course course) throws CourseNotFoundException;
+    //int getCurrentParticipants(Course course) throws CourseNotFoundException;
 
     boolean isChildEligible(Course course, Child child);
 

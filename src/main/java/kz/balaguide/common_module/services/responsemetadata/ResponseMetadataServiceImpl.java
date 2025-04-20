@@ -13,6 +13,6 @@ public class ResponseMetadataServiceImpl implements ResponseMetadataService {
 
     @Override
     public ResponseMetadata findByCode(ResponseCode responseCode) {
-        return responseMessageRepositoryTemp.findByCode(responseCode);
+        return responseMessageRepositoryTemp.findByResponseCode(responseCode);
     }
 }

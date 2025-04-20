@@ -20,9 +20,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "course")
+@Table(name = "courses")
 public class Course extends AbstractEntity implements Comparable<Course> {
-
     /**
      * The name of the course.
      */
@@ -44,6 +43,7 @@ public class Course extends AbstractEntity implements Comparable<Course> {
      */
     @Enumerated(EnumType.STRING)
     @NotNull(message = "CourseCategory must be not null")
+    @Column(name = "course_category")
     private CourseCategory courseCategory;
 
     /**
@@ -64,27 +64,13 @@ public class Course extends AbstractEntity implements Comparable<Course> {
     /**
      * The number of weeks of course duration.
      * */
+    //TODO может сделаем Lessons
     @NotNull(message = "Durability must not be null")
     @Positive(message = "Durability must be greater than zero")
     private Integer durability;
 
-    /**
-     * The maximum number of participants for the course.
-     */
-    @NotNull(message = "Max participants must not be null")
-    @Positive(message = "Max participants must be greater than zero")
-    @Column(name = "max_participants", nullable = false)
-    private int maxParticipants;
-    
-    /**
-     * The current number of participants in the course.
-     */
-    @NotNull(message = "Current participants must not be null")
-    @Column(name = "current_participants", nullable = false)
-    private int currentParticipants;
-
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "education_center_id")
+    @JoinColumn(name = "education_center_id", referencedColumnName = "id", nullable = false)
     @ToString.Exclude
     private EducationCenter educationCenter;
 
@@ -92,9 +78,9 @@ public class Course extends AbstractEntity implements Comparable<Course> {
     @ToString.Exclude
     private List<Teacher> teachers;
 
-    @ManyToMany(mappedBy = "coursesEnrolled", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "course", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
-    private List<Child> children;
+    private List<Group> groups;
 
     @Override
     public int compareTo(Course o) {

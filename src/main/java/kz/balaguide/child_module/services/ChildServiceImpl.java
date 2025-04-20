@@ -1,7 +1,11 @@
 package kz.balaguide.child_module.services;
 
+import kz.balaguide.common_module.core.entities.Group;
+import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ChildrenNotFoundException;
+import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
+import kz.balaguide.course_module.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.common_module.core.annotations.ForLog;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotEnrolledToCourseException;
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,8 +28,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChildServiceImpl implements ChildService {
 
+    private final ResponseMetadataService responseMetadataService;
     private final ChildRepository childRepository;
     private final CourseRepository courseRepository;
+    private final GroupRepository groupRepository;
+
 
     /**
      * Retrieves all {@link Child} heirs.
@@ -36,7 +44,9 @@ public class ChildServiceImpl implements ChildService {
 
         Page<Child> children = childRepository.findAll(PageRequest.of(page, size));
         if (children.getTotalElements() == 0) {
-            throw new ChildrenNotFoundException(ResponseCode._0101.getMessage());
+            throw new ChildrenNotFoundException(
+                    responseMetadataService.findByCode(ResponseCode._0101).getMessage()
+            );
         }
 
         return children;
@@ -53,7 +63,9 @@ public class ChildServiceImpl implements ChildService {
 
         Optional<Child> child = childRepository.findById(id);
         if (child.isEmpty()) {
-            throw new ChildNotFoundException(ResponseCode._0100.getMessage());
+            throw new ChildNotFoundException(
+                    responseMetadataService.findByCode(ResponseCode._0100).getMessage()
+            );
         }
 
         return child.get();
@@ -62,7 +74,9 @@ public class ChildServiceImpl implements ChildService {
     @Override
     public Child findByPhoneNumber(String phoneNumber) {
         return childRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new ChildNotFoundException(ResponseCode._0100.getMessage()));
+                .orElseThrow(() -> new ChildNotFoundException(
+                        responseMetadataService.findByCode(ResponseCode._0100).getMessage()
+                ));
     }
 
     /**
@@ -89,7 +103,9 @@ public class ChildServiceImpl implements ChildService {
         Optional<Child> existingChildOpt = childRepository.findById(id);
 
         if (existingChildOpt.isEmpty()) {
-            throw new ChildNotFoundException(ResponseCode._0100.getMessage());
+            throw new ChildNotFoundException(
+                    responseMetadataService.findByCode(ResponseCode._0100).getMessage()
+            );
         }
 
         copyNonNullProperties(updatedChild, existingChildOpt.get());
@@ -108,7 +124,9 @@ public class ChildServiceImpl implements ChildService {
         if (childRepository.existsById(id)) {
             childRepository.deleteById(id);
         } else {
-            throw new ChildNotFoundException(ResponseCode._0100.getMessage());
+            throw new ChildNotFoundException(
+                    responseMetadataService.findByCode(ResponseCode._0100).getMessage()
+            );
         }
     }
 
@@ -126,18 +144,27 @@ public class ChildServiceImpl implements ChildService {
         Optional<Child> childOpt = childRepository.findById(child.getId());
 
         if (childOpt.isEmpty()) {
-            throw new ChildNotFoundException(ResponseCode._0100.getMessage());
+            throw new ChildNotFoundException(
+                    responseMetadataService.findByCode(ResponseCode._0100).getMessage()
+            );
         }
 
-        Optional<List<Course>> enrolledCoursesOpt = childOpt.map(childEntity ->
-                    courseRepository.findAllByChildId(childOpt.get().getId())
+        Optional<List<Group>> enrolledGroupsOpt = childOpt.map(childEntity ->
+                groupRepository.findAllByChildId(childOpt.get().getId())
         );
 
-        if (enrolledCoursesOpt.isEmpty()) {
-            throw new ChildNotEnrolledToCourseException(ResponseCode._0401.getMessage());
+        if (enrolledGroupsOpt.isEmpty()) {
+            throw new ChildNotEnrolledToCourseException(
+                    responseMetadataService.findByCode(ResponseCode._0401).getMessage()
+            );
         }
 
-        return enrolledCoursesOpt.get();
+        List<Course> courseList = new ArrayList<>();
+        for (Group group : enrolledGroupsOpt.get()) {
+            courseList.add(group.getCourse());
+        }
+
+        return courseList;
     }
 
     /**
@@ -148,9 +175,8 @@ public class ChildServiceImpl implements ChildService {
         if (source.getLastName() != null) target.setLastName(source.getLastName());
         if (source.getBirthDate() != null) target.setBirthDate(source.getBirthDate());
         if (source.getPhoneNumber() != null) target.setPhoneNumber(source.getPhoneNumber());
-        //if (source.getPassword() != null) target.setPassword(source.getPassword());
         if (source.getGender() != null) target.setGender(source.getGender());
         if (source.getParent() != null) target.setParent(source.getParent());
-        if (source.getCoursesEnrolled() != null) target.setCoursesEnrolled(source.getCoursesEnrolled());
+        if (source.getGroupsEnrolled() != null) target.setGroupsEnrolled(source.getGroupsEnrolled());
     }
 }

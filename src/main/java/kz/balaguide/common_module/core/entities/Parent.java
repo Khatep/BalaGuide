@@ -1,6 +1,7 @@
 package kz.balaguide.common_module.core.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import kz.balaguide.common_module.core.enums.Role;
@@ -19,7 +20,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "parent")
+@Table(name = "parents")
 public class Parent extends AbstractEntity implements Comparable<Parent> {
 
     /** The first name of the parent. */
@@ -67,10 +68,12 @@ public class Parent extends AbstractEntity implements Comparable<Parent> {
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
     @ToString.Exclude
-    @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    //@JsonIgnore
     private AuthUser authUser;
 
     /** A list of children associated with the parent. */
+    //TODO Стоит использовать ParentDto
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @ToString.Exclude
     @JsonIgnore

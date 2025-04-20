@@ -85,33 +85,24 @@ public class CourseController {
         return ResponseEntity.ok(courses);
     }
 
-    /**
-     * Enrolls a child in a course.
-     *
-     * @param courseId the ID of the course
-     * @param childId the ID of the child
-     * @return ResponseEntity with success status
-     */
-    @PostMapping("/{courseId}/enroll/{childId}")
-    public ResponseEntity<Void> enrollChild(
-            @PathVariable Long courseId,
-            @PathVariable Long childId) {
-        courseService.enrollChild(courseId, childId);
+/*    @PostMapping("/{courseId}/enroll/{childId}")
+    public ResponseEntity<Void> enrollChild(EnrollChildRequest enrollChildRequest) {
+        courseService.enrollChild(enrollChildRequest);
         return ResponseEntity.ok().build();
-    }
+    }*/
 
-    /**
+/*    *//**
      * Unenrolls a child from a course.
      *
      * @param courseId the ID of the course
      * @param childId the ID of the child
      * @return ResponseEntity with success status
-     */
+     *//*
     @DeleteMapping("/{courseId}/unenroll/{childId}")
     public ResponseEntity<Void> unenrollChild(
             @PathVariable Long courseId,
             @PathVariable Long childId) {
         courseService.unenrollChild(courseId, childId);
         return ResponseEntity.ok().build();
-    }
+    }*/
 }

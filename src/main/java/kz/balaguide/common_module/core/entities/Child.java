@@ -1,6 +1,6 @@
 package kz.balaguide.common_module.core.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import kz.balaguide.common_module.core.enums.Gender;
@@ -19,9 +19,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "child")
+@Table(name = "children")
 public class Child extends AbstractEntity implements Comparable<Child> {
-
     /** The first name of the child. */
     @NotNull(message = "First name must be not null")
     @NotBlank(message = "First name must be not empty")
@@ -57,7 +56,8 @@ public class Child extends AbstractEntity implements Comparable<Child> {
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
     @ToString.Exclude
-    @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    //@JsonIgnore
     private AuthUser authUser;
 
     /** The gender of the child. */
@@ -70,16 +70,15 @@ public class Child extends AbstractEntity implements Comparable<Child> {
     @JoinColumn(name= "parent_id", referencedColumnName = "id")
     private Parent parent;
 
-    /** A list of courses the child is enrolled in. */
     @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
-            name = "child_course",
+            name = "child_group",
             joinColumns = @JoinColumn(name = "child_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id")
+            inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     @ToString.Exclude
     @Builder.Default
-    private List<Course> coursesEnrolled = new ArrayList<>();
+    private List<Group> groupsEnrolled = new ArrayList<>();
 
     @Override
     public int compareTo(Child o) {

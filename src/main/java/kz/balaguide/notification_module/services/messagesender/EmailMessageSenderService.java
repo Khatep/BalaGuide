@@ -58,8 +58,6 @@ public class EmailMessageSenderService implements MessageSenderService {
 
         mailSender.send(message);
         //Todo check
-        return CompletableFuture.runAsync(() -> {
-            log.info("Email sent to " + parentEmail);
-        });
+        return CompletableFuture.runAsync(() -> log.info("Email sent to " + parentEmail));
     }
 }
