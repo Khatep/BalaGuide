@@ -76,7 +76,7 @@ public class Teacher extends AbstractEntity implements Comparable<Teacher> {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
     @ToString.Exclude
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -115,5 +115,4 @@ public class Teacher extends AbstractEntity implements Comparable<Teacher> {
     public final int hashCode() {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
-
 }

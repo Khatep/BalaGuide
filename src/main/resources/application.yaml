@@ -30,8 +30,12 @@ spring:
         format_sql: true
 
   flyway:
-    enabled: false
+    enabled: true
     locations: classpath:db/migration
+    clean-disabled: false     # разрешаем очистку базы
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    out-of-order: false
 
   # Config Kafka-server
   kafka:
@@ -76,3 +80,16 @@ token:
   signing:
     key: ${TOKEN_SIGNING_KEY}
   lifetime: ${TOKEN_LIFETIME}
+
+logging:
+  level:
+    org.flywaydb: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, flyway, info, prometheus
+  endpoint:
+    health:
+      show-details: always

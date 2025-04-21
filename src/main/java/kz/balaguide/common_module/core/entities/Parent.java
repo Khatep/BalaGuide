@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import kz.balaguide.common_module.core.enums.Role;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -65,11 +64,10 @@ public class Parent extends AbstractEntity implements Comparable<Parent> {
     @PositiveOrZero(message = "Balance must be greater than zero")
     private BigDecimal balance;
 
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
     @ToString.Exclude
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    //@JsonIgnore
     private AuthUser authUser;
 
     /** A list of children associated with the parent. */
