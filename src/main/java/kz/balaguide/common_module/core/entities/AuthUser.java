@@ -21,11 +21,12 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "auth_users")
 public class AuthUser extends AbstractEntity implements Comparable<AuthUser>, UserDetails {
     /**
      * Used like unique username in Security
      * */
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
 
     @Column(name = "password")

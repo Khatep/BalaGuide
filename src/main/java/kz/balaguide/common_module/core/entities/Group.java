@@ -45,6 +45,7 @@ public class Group extends AbstractEntity {
     @Column(name = "current_participants", nullable = false)
     private int currentParticipants = 0;
 
+    @Column(name = "group_full", nullable = false)
     private boolean groupFull = false;
 
     /**
@@ -56,7 +57,7 @@ public class Group extends AbstractEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     private Course course;
 
-    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
+    @JoinColumn(name = "teacher_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
     private Teacher teacher;
 
