@@ -1,4 +1,4 @@
-package kz.balaguide.common_module.core.dtos;
+package kz.balaguide.course_module.dto;
 
 import lombok.Builder;
 

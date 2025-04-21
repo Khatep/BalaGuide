@@ -1,6 +1,5 @@
 package kz.balaguide.common_module.exceptionhandling;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotEnrolledToCourseException;
@@ -66,7 +65,7 @@ public class GlobalExceptionHandler {
     //Runtime, нужно протестить
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<String>> handleRuntimeException(RuntimeException ex) {
-        log.error("Runtime exception: {}, {}", ex.getMessage(), ex.getStackTrace());
+        log.error("Runtime exception: ", ex);
         String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0001);

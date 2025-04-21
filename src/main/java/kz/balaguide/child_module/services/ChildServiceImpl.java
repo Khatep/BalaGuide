@@ -1,19 +1,27 @@
 package kz.balaguide.child_module.services;
 
-import kz.balaguide.common_module.core.entities.Group;
-import kz.balaguide.common_module.core.entities.ResponseMetadata;
-import kz.balaguide.common_module.core.enums.ResponseCode;
-import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ChildrenNotFoundException;
-import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
-import kz.balaguide.course_module.repository.GroupRepository;
-import lombok.RequiredArgsConstructor;
+import kz.balaguide.child_module.repository.ChildRepository;
 import kz.balaguide.common_module.core.annotations.ForLog;
-import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotEnrolledToCourseException;
-import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ChildNotFoundException;
 import kz.balaguide.common_module.core.entities.Child;
 import kz.balaguide.common_module.core.entities.Course;
-import kz.balaguide.child_module.repository.ChildRepository;
-import kz.balaguide.course_module.repository.CourseRepository;
+import kz.balaguide.common_module.core.entities.Group;
+import kz.balaguide.common_module.core.entities.Parent;
+import kz.balaguide.common_module.core.enums.ResponseCode;
+import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.InsufficientFundsException;
+import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotBelongToParentException;
+import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotEnrolledToCourseException;
+import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ChildNotFoundException;
+import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ChildrenNotFoundException;
+import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.CourseNotFoundException;
+import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
+import kz.balaguide.course_module.dto.EnrollmentActionDto;
+import kz.balaguide.course_module.repository.GroupRepository;
+import kz.balaguide.course_module.services.CourseService;
+import kz.balaguide.course_module.services.GroupService;
+import kz.balaguide.parent_module.services.ParentService;
+import kz.balaguide.payment_module.services.payment.PaymentService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,19 +34,18 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChildServiceImpl implements ChildService {
 
     private final ResponseMetadataService responseMetadataService;
+    private final ParentService parentService;
+    private final PaymentService paymentService;
+    private final CourseService courseService;
+    private final GroupService groupService;
+
     private final ChildRepository childRepository;
-    private final CourseRepository courseRepository;
     private final GroupRepository groupRepository;
 
-
-    /**
-     * Retrieves all {@link Child} heirs.
-     *
-     * @return a {@link List} of all {@link Child} heirs.
-     */
     @Override
     public Page<Child> findAll(int page, int size) {
 
@@ -52,12 +59,6 @@ public class ChildServiceImpl implements ChildService {
         return children;
     }
 
-    /**
-     * Retrieves a {@link Child} entity by its ID.
-     *
-     * @param id the ID of the {@link Child} entity to be retrieved.
-     * @return an {@link Optional} containing the {@link Child} if found, or empty if not found.
-     */
     @Override
     public Child findById(Long id) {
 
@@ -79,24 +80,11 @@ public class ChildServiceImpl implements ChildService {
                 ));
     }
 
-    /**
-     * Saves a new {@link Child} entity.
-     *
-     * @param child the {@link Child} entity to be saved.
-     * @return the saved {@link Child} entity.
-     */
     @Override
     public Child save(Child child) {
         return childRepository.save(child);
     }
 
-    /**
-     * Updates an existing {@link Child} entity by its ID.
-     *
-     * @param id    the ID of the {@link Child} entity to be updated.
-     * @param updatedChild the {@link Child} entity containing updated information.
-     * @return an {@link Optional} containing the updated {@link Child} if found and updated, or empty if not found.
-     */
     @Override
     public Child update(Long id, Child updatedChild) {
 
@@ -113,12 +101,6 @@ public class ChildServiceImpl implements ChildService {
         return childRepository.save(existingChildOpt.get());
     }
 
-    /**
-     * Remove a {@link Child} entity by its ID.
-     *
-     * @param id the ID of the {@link Child} entity to be deleted.
-     * @return true if the deletion was successful, false if no entity was found with the specified ID.
-     */
     @Override
     public void removeChild(Long id) {
         if (childRepository.existsById(id)) {
@@ -130,13 +112,6 @@ public class ChildServiceImpl implements ChildService {
         }
     }
 
-    /**
-     * Retrieves a list of courses that the specified child is enrolled in.
-     *
-     * @param child the {@link Child} entity for which to retrieve enrolled courses
-     * @return a {@link List} of {@link Course} heirs that the child is enrolled in
-     * @throws RuntimeException if the child is not found or if the child is not enrolled in any courses
-     */
     @Override
     @ForLog
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
@@ -165,6 +140,63 @@ public class ChildServiceImpl implements ChildService {
         }
 
         return courseList;
+    }
+
+    @Override
+    @ForLog
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean enrollChildToCourse(EnrollmentActionDto enrollmentActionDto) {
+        Parent parent = parentService.findParentById(enrollmentActionDto.parentId());
+
+        Child child = childRepository.findById(enrollmentActionDto.childId())
+                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + enrollmentActionDto.childId() + " not found"));
+
+        Course course = courseService.findCourseById(enrollmentActionDto.courseId())
+                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + enrollmentActionDto.courseId() + "not found"));
+
+        boolean isParentsChild = child.getParent().equals(parent);
+
+        if (!isParentsChild) {
+            throw new ChildNotBelongToParentException("Child does not belong to the specified parent");
+        }
+
+        boolean isPaid = paymentService.payForCourse(parent, child, course);
+
+        if (isPaid)
+            return courseService.enrollChild(course, child, enrollmentActionDto);
+        else
+            throw new InsufficientFundsException("Failed to pay for course");
+    }
+
+    @Override
+    @ForLog
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean unenrollChildFromCourse(EnrollmentActionDto enrollmentActionDto) {
+        Course course = courseService.findCourseById(enrollmentActionDto.childId())
+                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + enrollmentActionDto.courseId() + " not found"));
+
+        Child child = childRepository.findById(course.getId())
+                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + enrollmentActionDto.childId() + " not found"));
+
+        if (!child.getParent().getId().equals(enrollmentActionDto.parentId())) {
+            log.error("Child ID {} does not belong to Parent ID {}", enrollmentActionDto.childId(), enrollmentActionDto.parentId());
+            throw new ChildNotBelongToParentException("Child does not belong to the specified parent");
+        }
+
+        boolean isEnrolledInCourse = groupRepository.isChildEnrolledInCourseGroup(
+                enrollmentActionDto.groupId(),
+                enrollmentActionDto.parentId()
+        );
+
+        if (isEnrolledInCourse) {
+            return groupService.unenrollChild(enrollmentActionDto);
+        } else {
+            log.warn("Child ID {} is not enrolled in course ID {}",
+                    enrollmentActionDto.childId(),
+                    enrollmentActionDto.courseId()
+            );
+            return false;
+        }
     }
 
     /**

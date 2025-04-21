@@ -1,14 +1,15 @@
 package kz.balaguide.child_module.controllers;
 
 import jakarta.validation.Valid;
+import kz.balaguide.child_module.services.ChildService;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
+import kz.balaguide.common_module.core.entities.Child;
+import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
+import kz.balaguide.course_module.dto.EnrollmentActionDto;
 import lombok.RequiredArgsConstructor;
-import kz.balaguide.common_module.core.entities.Child;
-import kz.balaguide.common_module.core.entities.Course;
-import kz.balaguide.child_module.services.ChildService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,11 +25,32 @@ public class ChildController {
     private final ChildService childService;
     private final ResponseMetadataService responseMetadataService;
 
-    /**
-     * Retrieve all children.
-     *
-     * @return a list of all children
-     */
+    @PostMapping("/enroll-to-course")
+    public ResponseEntity<ApiResponse<Boolean>> enrollChild(@RequestBody EnrollmentActionDto enrollmentActionDto) {
+        boolean isEnrolled = childService.enrollChildToCourse(enrollmentActionDto);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1005);
+        ApiResponse<Boolean> apiResponse = ApiResponse.<Boolean>builder()
+                .responseMetadata(responseMetadata)
+                .data(isEnrolled)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/unenroll-from-course")
+    public ResponseEntity<ApiResponse<Boolean>> unenrollChild(EnrollmentActionDto enrollmentActionDto) {
+        boolean isUnenrolled = childService.unenrollChildFromCourse(enrollmentActionDto);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1006);
+        ApiResponse<Boolean> apiResponse = ApiResponse.<Boolean>builder()
+                .responseMetadata(responseMetadata)
+                .data(isUnenrolled)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Page<Child>>> getAllChildren(
@@ -46,12 +68,6 @@ public class ChildController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * Retrieve a child by ID.
-     *
-     * @param id the ID of the child to retrieve
-     * @return the child if found
-     */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Child>> getChildById(
             @PathVariable Long id
@@ -67,13 +83,6 @@ public class ChildController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * Update an existing child by ID.
-     *
-     * @param id    the ID of the child to update
-     * @param child the updated child information
-     * @return the updated child if found, otherwise a not found status
-     */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Child>> updateChild(
             @PathVariable Long id,
@@ -90,12 +99,6 @@ public class ChildController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * Delete a child by ID.
-     *
-     * @param id the ID of the child to delete
-     * @return no content status if deletion is successful
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteChild(
             @PathVariable Long id
@@ -111,12 +114,6 @@ public class ChildController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * Retrieve courses that a child is enrolled in.
-     *
-     * @param id the ID of the child
-     * @return list of courses the child is enrolled in
-     */
     @GetMapping("/{id}/my-courses")
     public ResponseEntity<ApiResponse<List<Course>>> getChildCourses(
             @PathVariable Long id

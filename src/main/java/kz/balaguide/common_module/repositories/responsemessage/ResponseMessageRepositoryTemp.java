@@ -28,6 +28,7 @@ public class ResponseMessageRepositoryTemp {
             case _0004 -> new ResponseMetadata(++index, code, "Unauthorized exception");
             case _0005 -> new ResponseMetadata(++index, code, "Bad credentials exception");
             case _0006 -> new ResponseMetadata(++index, code, "Access denied exception");
+            case _0007 -> new ResponseMetadata(++index, code, "Invalid compact JWT string");
 
             case _0100 -> new ResponseMetadata(++index, code, "Child not found");
             case _0101 -> new ResponseMetadata(++index, code, "Children not found");
@@ -46,15 +47,25 @@ public class ResponseMessageRepositoryTemp {
 
             case _0800 -> new ResponseMetadata(++index, code, "Course is full");
 
+            case _1007 -> new ResponseMetadata(++index, code, "Child created successfully");
             case _1000 -> new ResponseMetadata(++index, code, "Children retrieved successfully");
             case _1001 -> new ResponseMetadata(++index, code, "Child retrieved successfully");
             case _1002 -> new ResponseMetadata(++index, code, "Child updated successfully");
             case _1003 -> new ResponseMetadata(++index, code, "Child removed successfully");
             case _1004 -> new ResponseMetadata(++index, code, "Child's courses retrieved successfully");
+            case _1005 -> new ResponseMetadata(++index, code, "Child enrolled successfully");
+            case _1006 -> new ResponseMetadata(++index, code, "Child's unenrolled successfully");
+
 
             case _1300 -> new ResponseMetadata(++index, code, "Parent created successfully");
 
             case _1600 -> new ResponseMetadata(++index, code, "Education center created successfully");
+
+            case _1900 -> new ResponseMetadata(++index, code, "Course created successfully");
+
+            case _2000 -> new ResponseMetadata(++index, code, "Group created successfully");
+
+            case _2200 -> new ResponseMetadata(++index, code, "Teacher created successfully");
             default -> new ResponseMetadata(99L, code, "Default message");
         };
     }

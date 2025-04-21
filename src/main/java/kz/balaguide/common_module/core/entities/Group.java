@@ -1,6 +1,7 @@
 package kz.balaguide.common_module.core.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -20,14 +21,6 @@ public class Group extends AbstractEntity {
 
     @NotNull(message = "Group name must not be null")
     private String name;
-
-    @JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Course course;
-
-    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Teacher teacher;
 
     /**
      * The maximum number of participants for the course.
@@ -52,16 +45,25 @@ public class Group extends AbstractEntity {
     @Column(name = "current_participants", nullable = false)
     private int currentParticipants = 0;
 
-    private boolean groupFull;
+    private boolean groupFull = false;
 
     /**
      * EN, RU, KZ
      * */
     private String language;
 
+    @JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Course course;
+
+    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Teacher teacher;
+
     @ManyToMany(mappedBy = "groupsEnrolled", cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     @ToString.Exclude
     @Builder.Default
+    @JsonIgnore
     private List<Child> childrenEnrolled = new ArrayList<>();
 
     //NOT now: private Schedule schedule

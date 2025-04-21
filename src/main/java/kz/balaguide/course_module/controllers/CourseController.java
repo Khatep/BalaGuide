@@ -1,10 +1,14 @@
 package kz.balaguide.course_module.controllers;
 
 import jakarta.validation.Valid;
+import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
+import kz.balaguide.common_module.core.entities.ResponseMetadata;
+import kz.balaguide.common_module.core.enums.ResponseCode;
+import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import kz.balaguide.common_module.core.entities.Course;
-import kz.balaguide.common_module.core.dtos.requests.CourseRequest;
+import kz.balaguide.course_module.dto.CreateCourseRequest;
 import kz.balaguide.course_module.services.CourseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,26 +25,21 @@ public class CourseController {
     //TODO: Переделать все контроллеры с сервисами под ApiResponse
 
     private final CourseService courseService;
+    private final ResponseMetadataService responseMetadataService;
 
-    /**
-     * Adds a new course.
-     *
-     * @param courseRequest the dto for course to be added
-     * @return ResponseEntity with the added course
-     */
-    @PostMapping("/add-course")
-    public ResponseEntity<Course> addCourse(@RequestBody @Valid CourseRequest courseRequest) {
-        Course savedCourse = courseService.addCourse(courseRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedCourse);
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<Course>> createCourse(@RequestBody @Valid CreateCourseRequest createCourseRequest) {
+        Course savedCourse = courseService.createAndSaveCourse(createCourseRequest);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1900);
+        ApiResponse<Course> apiResponse = ApiResponse.<Course>builder()
+                .responseMetadata(responseMetadata)
+                .data(savedCourse)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
-    /**
-     * Updates an existing course.
-     *
-     * @param courseId the ID of the course to update
-     * @param updatedCourse the course with updated information
-     * @return ResponseEntity with the updated course
-     */
     @PutMapping("/{courseId}")
     public ResponseEntity<Course> updateCourse(
             @PathVariable Long courseId,
@@ -49,20 +48,12 @@ public class CourseController {
         return ResponseEntity.ok(updated);
     }
 
-    /**
-     * Retrieves all courses.
-     *
-     * @return ResponseEntity with a list of all courses
-     */
     @GetMapping
     public ResponseEntity<List<Course>> getAllCourses() {
         List<Course> courses = courseService.getCourses();
         return ResponseEntity.ok(courses);
     }
 
-    /**
-     * Delete method for {@link Course}
-     */
     @DeleteMapping("/{courseId}")
     public ResponseEntity<String> deleteCourse(@PathVariable Long courseId) {
         try {
@@ -73,36 +64,9 @@ public class CourseController {
         }
     }
 
-    /**
-     * Endpoint to search for courses based on a query and filter.
-     *
-     * @param query the search query
-     * @return a {@link List} of {@link Course} entities that match the query
-     */
     @GetMapping("/search-courses")
     public ResponseEntity<List<Course>> searchCourses(@RequestParam String query) {
         List<Course> courses = courseService.searchCourses(query);
         return ResponseEntity.ok(courses);
     }
-
-/*    @PostMapping("/{courseId}/enroll/{childId}")
-    public ResponseEntity<Void> enrollChild(EnrollChildRequest enrollChildRequest) {
-        courseService.enrollChild(enrollChildRequest);
-        return ResponseEntity.ok().build();
-    }*/
-
-/*    *//**
-     * Unenrolls a child from a course.
-     *
-     * @param courseId the ID of the course
-     * @param childId the ID of the child
-     * @return ResponseEntity with success status
-     *//*
-    @DeleteMapping("/{courseId}/unenroll/{childId}")
-    public ResponseEntity<Void> unenrollChild(
-            @PathVariable Long courseId,
-            @PathVariable Long childId) {
-        courseService.unenrollChild(courseId, childId);
-        return ResponseEntity.ok().build();
-    }*/
 }

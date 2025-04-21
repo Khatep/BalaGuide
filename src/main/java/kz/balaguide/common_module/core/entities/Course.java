@@ -1,5 +1,6 @@
 package kz.balaguide.common_module.core.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -76,10 +77,12 @@ public class Course extends AbstractEntity implements Comparable<Course> {
 
     @ManyToMany(mappedBy = "myCourses", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonIgnore
     private List<Teacher> teachers;
 
     @OneToMany(mappedBy = "course", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
+    @JsonIgnore
     private List<Group> groups;
 
     @Override

@@ -1,51 +1,64 @@
 package kz.balaguide.course_module.services;
 
-import kz.balaguide.child_module.repository.ChildRepository;
-import kz.balaguide.common_module.core.annotations.ForLog;
 import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.Group;
-import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotEnrolledToCourseException;
-import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ChildNotFoundException;
-import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.CourseNotFoundException;
-import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.GroupNotFoundException;
+import kz.balaguide.common_module.core.entities.Teacher;
+import kz.balaguide.course_module.dto.CreateGroupRequest;
 import kz.balaguide.course_module.dto.EnrollmentActionDto;
+import kz.balaguide.course_module.mappers.GroupMapper;
 import kz.balaguide.course_module.repository.CourseRepository;
 import kz.balaguide.course_module.repository.GroupRepository;
+import kz.balaguide.teacher_module.services.TeacherService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GroupServiceImpl implements GroupService {
     private final GroupRepository groupRepository;
-    private final ChildRepository childRepository;
     private final CourseRepository courseRepository;
+    private final TeacherService teacherService;
+
+    private final GroupMapper groupMapper;
+    @Override
+    public boolean unenrollChild(EnrollmentActionDto enrollmentActionDto) {
+        Group group = groupRepository.findById(enrollmentActionDto.groupId())
+                .orElseThrow();
+
+        groupRepository.unenrollChildFromCourseGroup(enrollmentActionDto.childId(), enrollmentActionDto.groupId());
+        group.setCurrentParticipants(group.getCurrentParticipants() - 1);
+        groupRepository.save(group);
+        return true;
+    }
 
     @Override
-    @ForLog
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public boolean unenrollChild(EnrollmentActionDto enrollmentActionDto) {
-        Course course = courseRepository.findById(enrollmentActionDto.childId())
-                .orElseThrow(() -> new CourseNotFoundException("Course with id: " + enrollmentActionDto.courseId() + " not found"));
-
-        Group group = groupRepository.findById(enrollmentActionDto.courseId())
-                .orElseThrow(() -> new GroupNotFoundException("Group with id: " + enrollmentActionDto.groupId() + " not found"));
-
-        childRepository.findById(course.getId())
-                .orElseThrow(() -> new ChildNotFoundException("Child with id: " + enrollmentActionDto.childId() + " not found"));
-
-        List<Group> enrolledGroup = groupRepository.findAllByChildId(enrollmentActionDto.childId());
-
-        if (!enrolledGroup.isEmpty()) {
-            throw new ChildNotEnrolledToCourseException("Child with id: " + enrollmentActionDto.childId() + " is not enrolled in any courses");
+    public Group createGroup(CreateGroupRequest createGroupRequest) {
+        if (groupRepository.existsInCourseByName(createGroupRequest.name(), createGroupRequest.courseId())) {
+            log.warn("Group with name: {} already exists in course with id: {}", createGroupRequest.name(), createGroupRequest.courseId());
         }
 
-        group.setCurrentParticipants(group.getCurrentParticipants() - 1);
-        groupRepository.unenrollChildFromCourseGroup(enrollmentActionDto.courseId(), course.getId());
-        return true;
+        Course course = courseRepository.findById(createGroupRequest.courseId())
+                .orElseThrow();
+
+        Teacher teacher = teacherService.findTeacherById(createGroupRequest.teacherId());
+
+        Group group = groupMapper.mapCreateGroupRequestToCourse(createGroupRequest, course, teacher);
+
+        return groupRepository.save(group);
+    }
+
+    @Override
+    public Optional<Group> findGroupById(Long aLong) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Group> findAllGroupsByChildId(Long aLong) {
+        return List.of();
     }
 }
