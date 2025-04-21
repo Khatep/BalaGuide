@@ -1,6 +1,5 @@
 package kz.balaguide.course_module.services;
 
-import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotEnrolledToCourseException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.CourseFullException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.IneligibleChildException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ChildNotFoundException;
@@ -8,14 +7,15 @@ import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.CourseN
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.EducationCenterNotFoundException;
 import kz.balaguide.common_module.core.entities.Child;
 import kz.balaguide.common_module.core.entities.Course;
-import kz.balaguide.common_module.core.dtos.requests.CourseRequest;
+import kz.balaguide.course_module.dto.CreateCourseRequest;
 import kz.balaguide.course_module.dto.EnrollmentActionDto;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CourseService {
 
-    Course addCourse(CourseRequest course) throws EducationCenterNotFoundException;
+    Course createAndSaveCourse(CreateCourseRequest course) throws EducationCenterNotFoundException;
 
     Course updateInformation(Long courseId, Course updatedCourse) throws CourseNotFoundException;
 
@@ -23,7 +23,7 @@ public interface CourseService {
 
     List<Course> getCourses();
 
-    boolean enrollChild(EnrollmentActionDto enrollmentActionDto)
+    boolean enrollChild(Course course, Child child, EnrollmentActionDto enrollmentActionDto)
             throws CourseNotFoundException, ChildNotFoundException, CourseFullException, IneligibleChildException;
 
     List<Course> searchCourses(String query);
@@ -39,4 +39,5 @@ public interface CourseService {
 
     boolean isChildEligible(Course course, Child child);
 
+    Optional<Course> findCourseById(Long aLong);
 }

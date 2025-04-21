@@ -18,7 +18,6 @@ public class EducationCenterMapper {
                 .address(educationCenterCreateReq.address())
                 .instagramLink(educationCenterCreateReq.instagramLink())
                 .balance(BigDecimal.ZERO)
-                .role(Role.EDUCATION_CENTER)
                 .build();
     }
 }

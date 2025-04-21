@@ -4,7 +4,7 @@ import kz.balaguide.notification_module.services.messagesender.MessageSenderServ
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ParentNotFoundException;
-import kz.balaguide.common_module.core.dtos.CourseDto;
+import kz.balaguide.course_module.dto.CourseDto;
 import kz.balaguide.common_module.core.entities.Parent;
 import kz.balaguide.common_module.core.entities.Receipt;
 import kz.balaguide.course_module.repository.CourseRepository;

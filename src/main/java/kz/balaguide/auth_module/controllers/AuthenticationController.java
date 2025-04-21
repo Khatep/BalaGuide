@@ -26,7 +26,6 @@ public class AuthenticationController {
     @PostMapping("/sign-up")
     public ResponseEntity<JwtResponseDto> signUp(@RequestBody @Valid SignUpUserRequest request) {
         JwtResponseDto jwtResponseDto = authenticationService.signUpUser(request);
-        //TODO: delete next log, cuz token must be confidential
         //log.info("new token registered: {}", jwtAuthenticationResponse.getToken());
         return ResponseEntity.status(HttpStatus.OK).body(jwtResponseDto);
     }
@@ -34,7 +33,6 @@ public class AuthenticationController {
     @PostMapping("/sign-in")
     public ResponseEntity<SignInUserResponse<AbstractEntity>> signIn(@RequestBody @Valid SignInUserRequest request) {
         SignInUserResponse<AbstractEntity> jwtResponseDto = authenticationService.signIn(request);
-        //TODO: delete next log, cuz token must be confidential
         //log.info("new token registered: {}", jwtAuthenticationResponse.getToken());
         return ResponseEntity.status(HttpStatus.OK).body(jwtResponseDto);
     }

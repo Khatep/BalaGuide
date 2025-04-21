@@ -1,4 +1,4 @@
-package kz.balaguide.common_module.core.dtos.requests;
+package kz.balaguide.course_module.dto;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,7 +11,7 @@ import lombok.Builder;
 import java.math.BigDecimal;
 
 @Builder
-public record CourseRequest(
+public record CreateCourseRequest(
         @NotNull(message = "Education center id must be not null")
         Long educationCenterId,
 

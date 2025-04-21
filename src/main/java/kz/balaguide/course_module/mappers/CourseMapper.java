@@ -2,7 +2,7 @@ package kz.balaguide.course_module.mappers;
 
 import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.EducationCenter;
-import kz.balaguide.common_module.core.dtos.requests.CourseRequest;
+import kz.balaguide.course_module.dto.CreateCourseRequest;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,32 +12,32 @@ import org.springframework.stereotype.Component;
 public class CourseMapper {
 
     /**
-     * Maps a {@link CourseRequest} to a {@link Course} entity.
+     * Maps a {@link CreateCourseRequest} to a {@link Course} entity.
      *
-     * @param courseRequest   the request object containing course details
+     * @param createCourseRequest   the request object containing course details
      * @param educationCenter the education center associated with the course
      * @return a new {@link Course} object populated with the provided details
      */
-    public Course mapCourseRequestToCourse(CourseRequest courseRequest, EducationCenter educationCenter) {
+    public Course mapCourseRequestToCourse(CreateCourseRequest createCourseRequest, EducationCenter educationCenter) {
         return Course.builder()
-                .name(courseRequest.name())
-                .description(courseRequest.description())
-                .courseCategory(courseRequest.courseCategory())
-                .ageRange(courseRequest.ageRange())
-                .price(courseRequest.price())
-                .durability(courseRequest.durability())
+                .name(createCourseRequest.name())
+                .description(createCourseRequest.description())
+                .courseCategory(createCourseRequest.courseCategory())
+                .ageRange(createCourseRequest.ageRange())
+                .price(createCourseRequest.price())
+                .durability(createCourseRequest.durability())
                 .educationCenter(educationCenter)
                 .build();
     }
 
     /**
-     * Maps a {@link Course} entity to a {@link CourseRequest} object.
+     * Maps a {@link Course} entity to a {@link CreateCourseRequest} object.
      *
      * @param course the {@link Course} entity to be mapped
-     * @return a {@link CourseRequest} object populated with course details
+     * @return a {@link CreateCourseRequest} object populated with course details
      */
-    public CourseRequest mapCourseToCourseRequest(Course course) {
-        return CourseRequest.builder()
+    public CreateCourseRequest mapCourseToCourseRequest(Course course) {
+        return CreateCourseRequest.builder()
                 .educationCenterId(course.getEducationCenter().getId())
                 .name(course.getName())
                 .description(course.getDescription())

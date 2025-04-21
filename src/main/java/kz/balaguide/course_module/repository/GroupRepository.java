@@ -32,4 +32,10 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
             """, nativeQuery = true)
     boolean isChildEnrolledInCourseGroup(@Param("groupId") Long groupId, @Param("childId") Long childId);
 
+    @Query(value = """
+            SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
+            FROM groups
+            WHERE course_id = :courseId AND name = :name
+            """, nativeQuery = true)
+    boolean existsInCourseByName(String name, Long courseId);
 }

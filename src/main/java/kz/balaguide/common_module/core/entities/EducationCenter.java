@@ -65,9 +65,6 @@ public class EducationCenter extends AbstractEntity implements Comparable<Educat
     @Column(name = "date_of_created")
     private LocalDate dateOfCreated;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
     /**
      * The Balance of Education center
      * */

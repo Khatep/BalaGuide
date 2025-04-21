@@ -1,5 +1,6 @@
 package kz.balaguide.common_module.core.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -53,17 +54,16 @@ public class Child extends AbstractEntity implements Comparable<Child> {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
-    @ToString.Exclude
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    //@JsonIgnore
-    private AuthUser authUser;
-
     /** The gender of the child. */
     @NotNull(message = "Gender must not be null")
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
+    @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private AuthUser authUser;
 
     /** The parent associated with the child. */
     @ManyToOne(fetch = FetchType.EAGER)
@@ -78,6 +78,7 @@ public class Child extends AbstractEntity implements Comparable<Child> {
     )
     @ToString.Exclude
     @Builder.Default
+    @JsonIgnore
     private List<Group> groupsEnrolled = new ArrayList<>();
 
     @Override

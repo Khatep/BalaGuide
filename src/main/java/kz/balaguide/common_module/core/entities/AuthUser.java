@@ -37,6 +37,42 @@ public class AuthUser extends AbstractEntity implements Comparable<AuthUser>, Us
     private Role role;
 
     @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    @JsonIgnore
+    public String getUsername() {
+        return phoneNumber;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
     public int compareTo(AuthUser o) {
         return this.getId().compareTo(o.getId());
     }
@@ -55,35 +91,5 @@ public class AuthUser extends AbstractEntity implements Comparable<AuthUser>, Us
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return phoneNumber;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 }

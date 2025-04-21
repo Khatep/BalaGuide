@@ -2,6 +2,7 @@ package kz.balaguide.child_module.services;
 
 import kz.balaguide.common_module.core.entities.Child;
 import kz.balaguide.common_module.core.entities.Course;
+import kz.balaguide.course_module.dto.EnrollmentActionDto;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -21,4 +22,7 @@ public interface ChildService {
 
     List<Course> getMyCourses(Child child);
 
+    boolean enrollChildToCourse(EnrollmentActionDto enrollmentActionDto);
+
+    boolean unenrollChildFromCourse(EnrollmentActionDto enrollmentActionDto);
 }

@@ -1,5 +1,7 @@
 package kz.balaguide.common_module.core.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import kz.balaguide.common_module.core.enums.Gender;
@@ -53,15 +55,6 @@ public class Teacher extends AbstractEntity implements Comparable<Teacher> {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    /**
-     * The password for the teacher's account.
-     * This should be stored in a secure manner.
-     */
-    @NotNull(message = "Password must be not null")
-    @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
-    @Column(name = "password", nullable = false, length = 60)
-    private String password;
-
     /** The email address of the teacher. */
     @NotNull(message = "Email must be not null")
     @NotBlank(message = "Email must be not empty")
@@ -86,6 +79,7 @@ public class Teacher extends AbstractEntity implements Comparable<Teacher> {
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_user_id", nullable = false, unique = true)
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AuthUser authUser;
     
     /**
@@ -98,6 +92,7 @@ public class Teacher extends AbstractEntity implements Comparable<Teacher> {
             joinColumns = @JoinColumn(name = "teacher_id"),
             inverseJoinColumns = @JoinColumn(name = "course_id")
     )
+    @JsonIgnore
     private List<Course> myCourses;
 
     @Override
