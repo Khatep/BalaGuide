@@ -1,0 +1,263 @@
+openapi: 3.0.3
+info:
+  title: BalaGuide API
+  description: API для автоматизированной платформы записи детей на образовательные курсы
+  version: 1.0.0
+
+servers:
+  - url: https://balaguide.kz
+    description: Основной сервер
+  - url: http://localhost:8081
+    description: Локально
+
+tags:
+  - name: Authentication
+    description: Эндпоинты для аутентификации пользователей
+  - name: Education Center
+    description: Эндпоинты для управления образовательными центрами
+  - name: Course
+    description: Эндпоинты, связанные с курсами
+  - name: Teacher
+    description: Эндпоинты, связанные с преподавателями
+  - name: Group
+    description: Эндпоинты для управления группами
+
+paths:
+  /auth/sign-up:
+    post:
+      tags:
+        - Authentication
+      summary: Регистрация пользователя
+      description: Регистрация нового пользователя (Parent, Child, Teacher, Education Center)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpUserRequest'
+      responses:
+        '201':
+          description: Успешная регистрация
+        '400':
+          description: Ошибка валидации данных
+        '409':
+          description: Пользователь уже существует
+
+  /auth/sign-in:
+    post:
+      tags:
+        - Authentication
+      summary: Вход в систему
+      description: Вход по номеру телефона и паролю для Parent или Child
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInUserRequest'
+      responses:
+        '200':
+          description: Успешная авторизация
+        '401':
+          description: Неверные учетные данные
+
+  /api/v1/education-centers/create:
+    post:
+      tags:
+        - Education Center
+      summary: Создать образовательный центр
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEducationCenterRequest'
+      responses:
+        '201':
+          description: Образовательный центр успешно создан
+
+  /api/v1/courses/create:
+      post:
+        tags:
+          - Course
+        summary: Создать курс
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCourseRequest'
+        responses:
+          '201':
+            description: Курс успешно создан
+
+  /api/v1/teachers/create:
+      post:
+        tags:
+          - Teacher
+        summary: Создать преподавателя
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTeacherRequest'
+        responses:
+          '201':
+            description: Преподаватель успешно создан
+
+  /api/v1/groups/create:
+      post:
+        tags:
+          - Group
+        summary: Создать группу
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateGroupRequest'
+        responses:
+          '201':
+            description: Группа успешно создана
+
+      
+components:
+  schemas:
+    SignUpUserRequest:
+      type: object
+      required:
+        - phoneNumber
+        - password
+        - role
+      properties:
+        phoneNumber:
+          type: string
+        password:
+          type: string
+          format: password
+        role:
+          type: string
+          enum: [PARENT, CHILD, EDUCATION CENTER, TEACHER]
+    
+    SignInUserRequest:
+      type: object
+      required:
+        - phoneNumber
+        - password
+      properties:
+        phoneNumber:
+          type: string
+          format: phoneNumber
+        password:
+          type: string
+          format: password
+          
+    CreateEducationCenterRequest:
+      type: object
+      required:
+        - name
+        - dateOfCreated
+        - phoneNumber
+        - email
+        - address
+      properties:
+        name:
+          type: string
+        dateOfCreated:
+          type: string
+          format: date
+        phoneNumber:
+          type: string
+        email:
+          type: string
+          format: email
+        address:
+          type: string
+        instagramLink:
+          type: string
+
+    CreateCourseRequest:
+        type: object
+        required:
+          - educationCenterId
+          - name
+          - courseCategory
+          - ageRange
+          - price
+          - durability
+        properties:
+          educationCenterId:
+            type: integer
+          name:
+            type: string
+          description:
+            type: string
+          courseCategory:
+            type: string
+          ageRange:
+            type: string
+          price:
+            type: number
+            format: float
+          durability:
+            type: integer
+
+    CreateTeacherRequest:
+        type: object
+        required:
+          - firstName
+          - lastName
+          - birthDate
+          - phoneNumber
+          - email
+          - salary
+          - gender
+        properties:
+          firstName:
+            type: string
+          lastName:
+            type: string
+          birthDate:
+            type: string
+            format: date
+          phoneNumber:
+            type: string
+          email:
+            type: string
+            format: email
+          salary:
+            type: integer
+          gender:
+            type: string
+            enum: [ MALE, FEMALE, OTHER ]
+
+    CreateGroupRequest:
+        type: object
+        required:
+          - name
+          - courseId
+          - teacherId
+          - maxParticipants
+          - minParticipants
+          - language
+        properties:
+          name:
+            type: string
+          courseId:
+            type: integer
+          teacherId:
+            type: integer
+          maxParticipants:
+            type: integer
+          minParticipants:
+            type: integer
+          language:
+            type: string
+
+    
+  
+
+
+
+
