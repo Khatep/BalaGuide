@@ -15,14 +15,18 @@ tags:
     description: Эндпоинты для аутентификации пользователей
   - name: Parent
     description: Эндпоинты для родителей
+  - name: Child
+    description: Эндпоинты для детей
+  - name: Course
+    description: Эндпоинты, связанные с курсами
 
 paths:
   /auth/sign-up:
     post:
-      tags: 
+      tags:
         - Authentication
       summary: Регистрация пользователя
-      description: Регистрация родителя и его ребенка
+      description: Регистрация нового пользователя (Parent, Child, Teacher, Education Center)
       requestBody:
         required: true
         content:
@@ -31,19 +35,18 @@ paths:
               $ref: '#/components/schemas/SignUpUserRequest'
       responses:
         '201':
-          description: Ok
+          description: Успешная регистрация
         '400':
           description: Ошибка валидации данных
         '409':
-          description: User already exists
-  
+          description: Пользователь уже существует
 
   /auth/sign-in:
     post:
       tags:
         - Authentication
-      summary: Авторизация пользователя
-      description: Вход в систему с использованием email и пароля
+      summary: Вход в систему
+      description: Вход по номеру телефона и паролю для Parent или Child
       requestBody:
         required: true
         content:
@@ -55,7 +58,8 @@ paths:
           description: Успешная авторизация
         '401':
           description: Неверные учетные данные
-    
+
+
   /api/v1/parents/create:
     post:
       summary: Создать родителя
@@ -93,6 +97,119 @@ paths:
           description: Ошибка валидации данных
       tags:
         - Parent
+
+  /api/v1/parents/{parentId}/my-children:
+    get:
+      summary: Получить детей родителя
+      tags:
+        - Parent
+      parameters:
+        - in: path
+          name: parentId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список детей
+
+
+  /api/v1/children:
+    get:
+      summary: Получить всех детей
+      tags:
+        - Child
+      responses:
+        '200':
+          description: Список всех детей
+
+  /api/v1/parents/{parentId}/remove-child/{childId}:
+    delete:
+      summary: Удалить ребенка
+      tags:
+        - Child
+      parameters:
+        - in: path
+          name: parentId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: childId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Ребенок удален
+
+
+  /api/v1/courses/search-courses:
+    get:
+      summary: Поиск курсов по ключевому слову
+      tags:
+        - Course
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список найденных курсов
+
+  /api/v1/parents/{parentId}/add-balance:
+    post:
+      summary: Пополнение баланса родителя
+      tags:
+        - Parent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddBalanceRequest'
+      responses:
+        '200':
+          description: Баланс успешно пополнен
+        '400':
+          description: Неверные данные
+
+  /api/v1/parents/{parentId}/add-child:
+      post:
+        summary: Создать ребенка
+        description: Регистрация нового ребенка
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateChildRequest'
+        responses:
+          '201':
+            description: Ребенок успешно создан
+          '400':
+            description: Ошибка валидации данных
+        tags:
+          - Parent
+
+  /api/v1/children/enroll-to-course:
+      post:
+        summary: Записать ребенка на курс
+        tags:
+          - Child
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollChildToCourseRequest'
+        responses:
+          '200':
+            description: Успешная запись
+          '400':
+            description: Ошибка валидации данных
       
 components:
   schemas:
@@ -110,7 +227,7 @@ components:
           format: password
         role:
           type: string
-          enum: [PARENT, CHILD]
+          enum: [PARENT, CHILD, EDUCATION CENTER, TEACHER]
     
     SignInUserRequest:
       type: object
@@ -191,7 +308,38 @@ components:
           enum: [MALE, FEMALE, OTHER]
           description: "Пол ребенка"    
     
-  
+    AddBalanceRequest:
+      type: object
+      required:
+        - amountOfMoney
+        - numberOfBankCard
+      properties:
+        amountOfMoney:
+          type: number
+          format: double
+        numberOfBankCard:
+          type: string
+
+    EnrollChildToCourseRequest:
+        type: object
+        required:
+          - parentId
+          - courseId
+          - groupId
+          - childId
+          - methodType
+        properties:
+          parentId:
+            type: integer
+          courseId:
+            type: integer
+          groupId:
+            type: integer
+          childId:
+            type: integer
+          methodType:
+            type: string
+            enum: [ ENROLL, UNENROLL ]
 
 
 
