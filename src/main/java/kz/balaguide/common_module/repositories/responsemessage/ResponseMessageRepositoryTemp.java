@@ -26,7 +26,7 @@ public class ResponseMessageRepositoryTemp {
             case _0002 -> new ResponseMetadata(++index, code, "Illegal argument exception");
             case _0003 -> new ResponseMetadata(++index, code, "Token expired exception");
             case _0004 -> new ResponseMetadata(++index, code, "Unauthorized exception");
-            case _0005 -> new ResponseMetadata(++index, code, "Bad credentials exception");
+            case _0005 -> new ResponseMetadata(++index, code, "Incorrect password of phone number");
             case _0006 -> new ResponseMetadata(++index, code, "Access denied exception");
             case _0007 -> new ResponseMetadata(++index, code, "Invalid compact JWT string");
 

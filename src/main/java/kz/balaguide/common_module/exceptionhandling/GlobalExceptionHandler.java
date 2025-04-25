@@ -18,6 +18,7 @@ import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.Ineligib
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -76,6 +77,21 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
     }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<String>> handleBadCredentialsException(BadCredentialsException ex) {
+        log.error("Bad credentials exception: ", ex);
+        String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0005);
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
+                .responseMetadata(responseMetadata)
+                .data(cause)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
