@@ -7,7 +7,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ResponseCode {
-    // Ошибки (0XXX)
+    /**
+     * Ошибки (0XXX)
+     * */
 
     // Общие ошибки
     //0000 - 0099
@@ -46,7 +48,11 @@ public enum ResponseCode {
 
     // Teacher's exception 0900 - 0999
 
-    // Успешные операции (1XXX)
+
+    /**
+     * Успешные операции (1XXX)
+     * */
+
     // Успешные операции по ребенку 1000 - 1299
     _1000,
     _1001,
@@ -69,7 +75,6 @@ public enum ResponseCode {
 
     //Успешные операции по Учителям 2200 - 2499
     _2200,
-
 
 }
 

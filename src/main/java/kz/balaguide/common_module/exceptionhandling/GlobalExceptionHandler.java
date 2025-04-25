@@ -16,12 +16,15 @@ import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNot
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.CourseFullException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.IneligibleChildException;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
@@ -50,14 +53,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResponse<List<String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         log.error("Method argument not valid exception: {}, {}", ex.getMessage(), ex.getStackTrace());
-        String cause = (ex.getCause() != null) ? ex.getCause().toString() : ex.getMessage();
+
+        List<String> errors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .toList();
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._0000);
-        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
+        ApiResponse<List<String>> apiResponse = ApiResponse.<List<String>>builder()
                 .responseMetadata(responseMetadata)
-                .data(cause)
+                .data(errors)
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
