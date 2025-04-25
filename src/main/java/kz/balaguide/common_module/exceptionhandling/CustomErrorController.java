@@ -53,7 +53,7 @@ public class CustomErrorController implements org.springframework.boot.web.servl
 
         var metadata = ResponseMetadata.builder()
                 .id(500L)
-                .responseCode(ResponseCode._0005)
+                .responseCode(ResponseCode._0001)
                 .message("Unexpected error")
                 .build();
 
