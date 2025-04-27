@@ -66,9 +66,9 @@ public class Course extends AbstractEntity implements Comparable<Course> {
      * The number of weeks of course duration.
      * */
     //TODO может сделаем Lessons
-    @NotNull(message = "Durability must not be null")
-    @Positive(message = "Durability must be greater than zero")
-    private Integer durability;
+    @NotNull(message = "Number of lessons must not be null")
+    @Positive(message = "Number of lessons must be greater than zero")
+    private Integer numberOfLessons;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "education_center_id", referencedColumnName = "id", nullable = false)

@@ -25,7 +25,7 @@ public class CourseMapper {
                 .courseCategory(createCourseRequest.courseCategory())
                 .ageRange(createCourseRequest.ageRange())
                 .price(createCourseRequest.price())
-                .durability(createCourseRequest.durability())
+                .numberOfLessons(createCourseRequest.numberOfLessons())
                 .educationCenter(educationCenter)
                 .build();
     }
@@ -44,7 +44,7 @@ public class CourseMapper {
                 .courseCategory(course.getCourseCategory())
                 .ageRange(course.getAgeRange())
                 .price(course.getPrice())
-                .durability(course.getDurability())
+                .numberOfLessons(course.getNumberOfLessons())
                 .build();
     }
 
@@ -61,6 +61,6 @@ public class CourseMapper {
         existingCourse.setCourseCategory(updatedCourse.getCourseCategory());
         existingCourse.setAgeRange(updatedCourse.getAgeRange());
         existingCourse.setPrice(updatedCourse.getPrice());
-        existingCourse.setDurability(updatedCourse.getDurability());
+        existingCourse.setNumberOfLessons(updatedCourse.getNumberOfLessons());
     }
 }
