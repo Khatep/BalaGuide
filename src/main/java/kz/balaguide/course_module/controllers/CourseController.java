@@ -48,12 +48,6 @@ public class CourseController {
         return ResponseEntity.ok(updated);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
-        List<Course> courses = courseService.getCourses();
-        return ResponseEntity.ok(courses);
-    }
-
     @DeleteMapping("/{courseId}")
     public ResponseEntity<String> deleteCourse(@PathVariable Long courseId) {
         try {
@@ -62,6 +56,12 @@ public class CourseController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Course>> getAllCourses() {
+        List<Course> courses = courseService.getCourses();
+        return ResponseEntity.ok(courses);
     }
 
     @GetMapping("/search-courses")

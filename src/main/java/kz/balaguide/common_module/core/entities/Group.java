@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +49,8 @@ public class Group extends AbstractEntity {
     @Column(name = "group_full", nullable = false)
     private boolean groupFull = false;
 
+    private LocalDate startEducationDate;
+
     /**
      * EN, RU, KZ
      * */
@@ -67,5 +70,10 @@ public class Group extends AbstractEntity {
     @JsonIgnore
     private List<Child> childrenEnrolled = new ArrayList<>();
 
+    @OneToMany(mappedBy = "group", cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @Builder.Default
+    @JsonIgnore
+    private List<Lesson> lessons = new ArrayList<>();
     //NOT now: private Schedule schedule
 }
