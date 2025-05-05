@@ -32,7 +32,7 @@ public class Course extends AbstractEntity implements Comparable<Course> {
      */
     @NotNull(message = "Name must be not null")
     @NotBlank(message = "Name must be not empty")
-    @Column(name = "course_name", length = 100)
+    @Column(name = "name", length = 100)
     private String name;
 
     /**
@@ -96,8 +96,8 @@ public class Course extends AbstractEntity implements Comparable<Course> {
     //TODO endpoint for content creation and content updating
     @Column(columnDefinition = "jsonb")
     @Type(JsonType.class)
-    //key: lesson's topic, value: lesson's description
     private Map<Integer, Map<String, String>> content = new HashMap<>();
+    //key: lesson's topic, value: lesson's description
     /*
     {
         "1": {

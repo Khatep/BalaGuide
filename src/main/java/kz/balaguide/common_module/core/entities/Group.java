@@ -49,6 +49,7 @@ public class Group extends AbstractEntity {
     @Column(name = "group_full", nullable = false)
     private boolean groupFull = false;
 
+    @Column(name = "start_education_date")
     private LocalDate startEducationDate;
 
     /**

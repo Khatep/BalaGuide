@@ -1,14 +1,10 @@
 package kz.balaguide.common_module.core.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -17,18 +13,19 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "schedules")
+@Table(name = "schedule")
 public class Schedule extends AbstractEntity {
+    @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
-    //9:00
 
+    @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
-    //10:00
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "day_of_week", nullable = false)
     private DayOfWeek dayOfWeek;
-    //M
 
+    @Column(name = "time_zone", nullable = false)
     private String timeZone; //Asia/Almaty
 
 }

@@ -22,6 +22,7 @@ public class Lesson extends AbstractEntity {
 
     private String description; //linked to the course's content field (value)
 
+    @Column(name = "file_url")
     private String fileUrl; //Link to google disk
 
     @NotNull

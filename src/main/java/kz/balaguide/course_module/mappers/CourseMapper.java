@@ -25,7 +25,7 @@ public class CourseMapper {
                 .courseCategory(createCourseRequest.courseCategory())
                 .ageRange(createCourseRequest.ageRange())
                 .price(createCourseRequest.price())
-                .numberOfLessons(createCourseRequest.numberOfLessons())
+                .numberOfLessonsInWeek(createCourseRequest.numberOfLessons())
                 .educationCenter(educationCenter)
                 .build();
     }
