@@ -7,10 +7,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import kz.balaguide.common_module.core.enums.CourseCategory;
 import lombok.*;
 import org.hibernate.annotations.Type;
 import org.hibernate.proxy.HibernateProxy;
-import kz.balaguide.common_module.core.enums.CourseCategory;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ public class Course extends AbstractEntity implements Comparable<Course> {
      */
     @NotNull(message = "Name must be not null")
     @NotBlank(message = "Name must be not empty")
-    @Column(name = "name", length = 100)
+    @Column(name = "course_name", length = 100)
     private String name;
 
     /**
@@ -68,7 +68,7 @@ public class Course extends AbstractEntity implements Comparable<Course> {
 
     /**
      * The number of weeks of course duration.
-     * */
+     */
     //TODO может сделаем Lessons
     @NotNull(message = "Number of lessons must not be null")
     @Positive(message = "Number of lessons must be greater than zero")
@@ -76,7 +76,7 @@ public class Course extends AbstractEntity implements Comparable<Course> {
     private Integer numberOfLessonsInWeek;
 
     @Column(name = "durability_by_weeks")
-    private String durabilityByWeeks;
+    private Integer durabilityByWeeks;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "education_center_id", referencedColumnName = "id", nullable = false)
