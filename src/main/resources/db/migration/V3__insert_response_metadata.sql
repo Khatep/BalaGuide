@@ -39,6 +39,14 @@ VALUES ('_0000', 'BAD REQUEST'),
        ('_1300', 'Parent created successfully'),
 
        ('_1600', 'Education center created successfully'),
+       ('_1601', 'Total revenue retrieved successfully'),
+       ('_1602', 'Top courses by revenue retrieved successfully'),
+       ('_1603', 'Children distribution by course retrieved successfully'),
+       ('_1604', 'Monthly revenue data retrieved successfully'),
+       ('_1605', 'Monthly children growth data retrieved successfully'),
+       ('_1606', 'Average course duration retrieved successfully'),
+       ('_1607', 'Average group fill percentage retrieved successfully'),
+       ('_1608', 'Returning parents count retrieved successfully'),
 
        ('_1900', 'Course created successfully'),
 
