@@ -2,6 +2,7 @@ package kz.balaguide.education_center_module.controllers;
 
 import jakarta.validation.Valid;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
+import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.EducationCenter;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
@@ -38,6 +39,11 @@ public class EducationCenterController {
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
+    @GetMapping("/{educationalCenterId}/courses")
+    public ResponseEntity<List<Course>> getAllCoursesByEducationalCenter(@PathVariable Long educationalCenterId) {
+        List<Course> courses = educationCenterService.getCoursesByEducationCenter(educationalCenterId);
+        return ResponseEntity.ok(courses);
+    }
 
     @GetMapping(DASHBOARD_URL + "/total-revenue")
     public ResponseEntity<ApiResponse<Double>> getTotalRevenue(@PathVariable Long centerId) {

@@ -1,5 +1,6 @@
 package kz.balaguide.education_center_module.services;
 
+import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.EducationCenter;
 import kz.balaguide.education_center_module.dtos.*;
 
@@ -26,4 +27,5 @@ public interface EducationCenterService {
 
     Integer countReturningParents(Long centerId);
 
+    List<Course> getCoursesByEducationCenter(Long educationalCenterId);
 }

@@ -2,6 +2,7 @@ package kz.balaguide.education_center_module.services;
 
 import kz.balaguide.auth_module.services.AuthUserService;
 import kz.balaguide.common_module.core.entities.AuthUser;
+import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.EducationCenter;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
 import kz.balaguide.education_center_module.dtos.*;
@@ -145,5 +146,11 @@ public class EducationServiceImpl implements EducationCenterService {
     public Integer countReturningParents(Long centerId) {
         return educationCenterRepository.countReturningParents(centerId);
     }
+
+    @Override
+    public List<Course> getCoursesByEducationCenter(Long educationalCenterId) {
+        return educationCenterRepository.getAllCoursesByEducationalCenterId(educationalCenterId);
+    }
+
 
 }

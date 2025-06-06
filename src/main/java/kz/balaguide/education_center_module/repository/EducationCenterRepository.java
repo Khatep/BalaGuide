@@ -1,5 +1,6 @@
 package kz.balaguide.education_center_module.repository;
 
+import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.EducationCenter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -111,4 +112,13 @@ public interface EducationCenterRepository extends JpaRepository<EducationCenter
                 ) AS subquery
             """, nativeQuery = true)
     Integer countReturningParents(@Param("centerId") Long centerId);
+
+    @Query(value = """
+            SELECT *
+            FROM courses
+            WHERE education_center_id = :educationalCenterId
+            ORDER BY created_date DESC
+            """,
+            nativeQuery = true)
+    List<Course> getAllCoursesByEducationalCenterId(Long educationalCenterId);
 }
