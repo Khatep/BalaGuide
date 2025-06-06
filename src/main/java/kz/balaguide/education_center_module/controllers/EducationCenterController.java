@@ -21,9 +21,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EducationCenterController {
 
+    private static final String DASHBOARD_URL = "{centerId}/dashboard";
     private final EducationCenterService educationCenterService;
     private final ResponseMetadataService responseMetadataService;
-    private static final String DASHBOARD_URL = "{centerId}/dashboard";
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<EducationCenter>> createEducationCenter(@RequestBody @Valid EducationCenterCreateReq educationCenterCreateReq) {
@@ -94,6 +94,19 @@ public class EducationCenterController {
     @GetMapping(DASHBOARD_URL + "/children-growth-by-month")
     public ResponseEntity<ApiResponse<List<MonthlyChildrenGrowthDTO>>> getChildrenGrowthByMonth(@PathVariable Long centerId) {
         List<MonthlyChildrenGrowthDTO> childrenGrowth = educationCenterService.getMonthlyChildrenGrowth(centerId);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1605);
+        ApiResponse<List<MonthlyChildrenGrowthDTO>> apiResponse = ApiResponse.<List<MonthlyChildrenGrowthDTO>>builder()
+                .responseMetadata(responseMetadata)
+                .data(childrenGrowth)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping(DASHBOARD_URL + "/children-growth-by-month-fake")
+    public ResponseEntity<ApiResponse<List<MonthlyChildrenGrowthDTO>>> getChildrenGrowthByMonthFake(@PathVariable Long centerId) {
+        List<MonthlyChildrenGrowthDTO> childrenGrowth = educationCenterService.getMonthlyChildrenGrowthFake(centerId);
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1605);
         ApiResponse<List<MonthlyChildrenGrowthDTO>> apiResponse = ApiResponse.<List<MonthlyChildrenGrowthDTO>>builder()

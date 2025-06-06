@@ -214,8 +214,9 @@ CREATE TABLE groups
 
 CREATE TABLE child_group
 (
-    child_id BIGINT NOT NULL,
-    group_id BIGINT NOT NULL,
+    child_id     BIGINT NOT NULL,
+    group_id     BIGINT NOT NULL,
+    created_date TIMESTAMP DEFAULT NOW(),
 
     PRIMARY KEY (child_id, group_id),
 

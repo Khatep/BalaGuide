@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface EducationCenterService {
     EducationCenter createEducationCenter(EducationCenterCreateReq educationCenterCreateReq);
+
     Double calculateTotalRevenue(Long centerId);
 
     List<CourseRevenueDTO> getTopCoursesByRevenue(Long centerId, int limit);
@@ -16,6 +17,8 @@ public interface EducationCenterService {
     List<MonthlyRevenueDTO> getMonthlyRevenue(Long centerId);
 
     List<MonthlyChildrenGrowthDTO> getMonthlyChildrenGrowth(Long centerId);
+
+    List<MonthlyChildrenGrowthDTO> getMonthlyChildrenGrowthFake(Long centerId);
 
     Double calculateAverageCourseDuration(Long centerId);
 

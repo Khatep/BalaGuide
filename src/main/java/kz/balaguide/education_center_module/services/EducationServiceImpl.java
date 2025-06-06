@@ -2,20 +2,22 @@ package kz.balaguide.education_center_module.services;
 
 import kz.balaguide.auth_module.services.AuthUserService;
 import kz.balaguide.common_module.core.entities.AuthUser;
+import kz.balaguide.common_module.core.entities.EducationCenter;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
 import kz.balaguide.education_center_module.dtos.*;
 import kz.balaguide.education_center_module.mappers.EducationCenterMapper;
+import kz.balaguide.education_center_module.repository.EducationCenterRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import kz.balaguide.common_module.core.entities.EducationCenter;
-import kz.balaguide.education_center_module.repository.EducationCenterRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -109,6 +111,25 @@ public class EducationServiceImpl implements EducationCenterService {
                         .build())
                 .toList();
     }
+
+    @Override
+    public List<MonthlyChildrenGrowthDTO> getMonthlyChildrenGrowthFake(Long centerId) {
+        List<Map<String, Object>> raw = educationCenterRepository.getMonthlyChildrenGrowth(centerId);
+
+        AtomicInteger fakeCount = new AtomicInteger(1);
+        return raw.stream()
+                .sorted(Comparator.comparing(m -> YearMonth.parse(m.get("month").toString())))
+                .map(result -> {
+                    YearMonth month = YearMonth.parse(result.get("month").toString());
+                    int value = fakeCount.getAndAdd((int) (Math.random() * 4 + 2)); // от +2 до +5
+                    return MonthlyChildrenGrowthDTO.builder()
+                            .month(month)
+                            .childrenCount(value)
+                            .build();
+                })
+                .toList();
+    }
+
 
     @Override
     public Double calculateAverageCourseDuration(Long centerId) {

@@ -10,9 +10,9 @@ VALUES (1, now(), now(), 'Группа Scratch 1', '2025-01-10', 'Русский
 -----------------------------------------
 -- CHILD-GROUP связи
 -- ---------------------------------------
-INSERT INTO child_group (child_id, group_id)
-VALUES (1, 1), -- Alina в Scratch
-       (2, 2);
+INSERT INTO child_group (child_id, group_id, created_date)
+VALUES (1, 1, '2025-01-01'), -- Alina в Scratch
+       (2, 2, '2025-02-01');
 -- Marat в Math
 
 -- ---------------------------------------
