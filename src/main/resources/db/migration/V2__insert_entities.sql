@@ -1,11 +1,11 @@
 ------------------------------------------------PARENTS-----------------------------------------------------------------
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
 VALUES (1, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77011112233',
-        '$2a$10$Sx.a4wBeUYGQOR96W5mJwuDoBuo71DmH1SD8iq.rYwOvdNzRzTCFe', 'PARENT');
+        '$2a$10$DloIFFbe/Zak9m3M.bUh3O93DCYel873exKgir3l/3k7/xl2Zwzjy', 'PARENT');
 
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
 VALUES (2, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77025556677',
-        '$2a$10$Sx.a4wBeUYGQOR96W5mJwuDoBuo71DmH1SD8iq.rYwOvdNzRzTCFe', 'PARENT');
+        '$2a$10$DloIFFbe/Zak9m3M.bUh3O93DCYel873exKgir3l/3k7/xl2Zwzjy', 'PARENT');
 
 INSERT INTO parents (id, created_date, update_date, first_name, last_name, phone_number, birth_date, email, address,
                      balance, auth_user_id)
@@ -22,11 +22,11 @@ VALUES (2, '2025-01-01 00:00:00', '2025-01-01 00:00:00', 'Altynai', 'Zhenis',
 ------------------------------------------------CHILDREN----------------------------------------------------------------
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
 VALUES (3, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77037778899',
-        '$2a$10$Sx.a4wBeUYGQOR96W5mJwuDoBuo71DmH1SD8iq.rYwOvdNzRzTCFe', 'CHILD');
+        '$2a$10$DloIFFbe/Zak9m3M.bUh3O93DCYel873exKgir3l/3k7/xl2Zwzjy', 'CHILD');
 
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
 VALUES (4, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77045554433',
-        '$2a$10$Sx.a4wBeUYGQOR96W5mJwuDoBuo71DmH1SD8iq.rYwOvdNzRzTCFe', 'CHILD');
+        '$2a$10$DloIFFbe/Zak9m3M.bUh3O93DCYel873exKgir3l/3k7/xl2Zwzjy', 'CHILD');
 
 INSERT INTO children (id, created_date, update_date, first_name, last_name, phone_number, email, birth_date,
                       auth_user_id,
@@ -45,11 +45,11 @@ VALUES (2, '2025-01-01 00:00:00', '2025-01-01 00:00:00', 'Marat', 'Almas',
 ------------------------------------------EDUCATION CENTERS-------------------------------------------------------------
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
 VALUES (5, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77273334455',
-        '$2a$10$Sx.a4wBeUYGQOR96W5mJwuDoBuo71DmH1SD8iq.rYwOvdNzRzTCFe', 'EDUCATION_CENTER');
+        '$2a$10$DloIFFbe/Zak9m3M.bUh3O93DCYel873exKgir3l/3k7/xl2Zwzjy', 'EDUCATION_CENTER');
 
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
 VALUES (6, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77274445566',
-        '$2a$10$Sx.a4wBeUYGQOR96W5mJwuDoBuo71DmH1SD8iq.rYwOvdNzRzTCFe', 'EDUCATION_CENTER');
+        '$2a$10$DloIFFbe/Zak9m3M.bUh3O93DCYel873exKgir3l/3k7/xl2Zwzjy', 'EDUCATION_CENTER');
 
 INSERT INTO education_centers (id, created_date, update_date, name, phone_number, email, address, instagram_link,
                                date_of_created, balance, auth_user_id)
@@ -90,11 +90,11 @@ VALUES (1, '2025-01-01', '2025-01-01', 'Юный программист',
 ------------------------------------------------TEACHERS----------------------------------------------------------------
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
 VALUES (7, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77019998877',
-        '$2a$10$Sx.a4wBeUYGQOR96W5mJwuDoBuo71DmH1SD8iq.rYwOvdNzRzTCFe', 'TEACHER');
+        '$2a$10$DloIFFbe/Zak9m3M.bUh3O93DCYel873exKgir3l/3k7/xl2Zwzjy', 'TEACHER');
 
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
 VALUES (8, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77018887766',
-        '$2a$10$Sx.a4wBeUYGQOR96W5mJwuDoBuo71DmH1SD8iq.rYwOvdNzRzTCFe', 'TEACHER');
+        '$2a$10$DloIFFbe/Zak9m3M.bUh3O93DCYel873exKgir3l/3k7/xl2Zwzjy', 'TEACHER');
 
 
 INSERT INTO teachers (id, created_date, update_date, first_name, last_name, birth_date, phone_number, email, salary,
@@ -114,10 +114,10 @@ VALUES (2, '2025-01-01', '2025-01-01', 'Ермек', 'Серикбаев',
 ------------------------------------------------ADMINS------------------------------------------------------------------
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
 VALUES (9, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77012223344',
-        '$2a$10$Sx.a4wBeUYGQOR96W5mJwuDoBuo71DmH1SD8iq.rYwOvdNzRzTCFe', 'ADMIN');
+        '$2a$10$DloIFFbe/Zak9m3M.bUh3O93DCYel873exKgir3l/3k7/xl2Zwzjy', 'ADMIN');
 
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
 VALUES (10, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77016667788',
-        '$2a$10$Sx.a4wBeUYGQOR96W5mJwuDoBuo71DmH1SD8iq.rYwOvdNzRzTCFe', 'ADMIN');
+        '$2a$10$DloIFFbe/Zak9m3M.bUh3O93DCYel873exKgir3l/3k7/xl2Zwzjy', 'ADMIN');
 
 ------------------------------------------------------------------------------------------------------------------------
