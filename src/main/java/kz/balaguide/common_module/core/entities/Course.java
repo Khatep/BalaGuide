@@ -1,17 +1,21 @@
 package kz.balaguide.common_module.core.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
-import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
 import kz.balaguide.common_module.core.enums.CourseCategory;
+import lombok.*;
+import org.hibernate.annotations.Type;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Getter
@@ -64,11 +68,15 @@ public class Course extends AbstractEntity implements Comparable<Course> {
 
     /**
      * The number of weeks of course duration.
-     * */
+     */
     //TODO может сделаем Lessons
-    @NotNull(message = "Durability must not be null")
-    @Positive(message = "Durability must be greater than zero")
-    private Integer durability;
+    @NotNull(message = "Number of lessons must not be null")
+    @Positive(message = "Number of lessons must be greater than zero")
+    @Column(name = "number_of_lessons_in_week")
+    private Integer numberOfLessonsInWeek;
+
+    @Column(name = "durability_by_weeks")
+    private Integer durabilityByWeeks;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "education_center_id", referencedColumnName = "id", nullable = false)
@@ -84,6 +92,23 @@ public class Course extends AbstractEntity implements Comparable<Course> {
     @ToString.Exclude
     @JsonIgnore
     private List<Group> groups;
+
+    //TODO endpoint for content creation and content updating
+    @Column(columnDefinition = "jsonb")
+    @Type(JsonType.class)
+    private Map<Integer, Map<String, String>> content = new HashMap<>();
+    //key: lesson's topic, value: lesson's description
+    /*
+    {
+        "1": {
+            "Java Intro": "Lesson for introduction to Java lang, educate history of Java"
+        },
+        "2": {
+            "Python Intro": "Lesson for introduction to Python lang, educate history of Python"
+        }
+
+    }
+    * */
 
     @Override
     public int compareTo(Course o) {

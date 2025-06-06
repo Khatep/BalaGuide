@@ -51,69 +51,6 @@ public class ChildController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Page<Child>>> getAllChildren(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Page<Child> children = childService.findAll(page, size);
-
-        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1000);
-        ApiResponse<Page<Child>> apiResponse = ApiResponse.<Page<Child>>builder()
-                .responseMetadata(responseMetadata)
-                .data(children)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Child>> getChildById(
-            @PathVariable Long id
-    ) {
-        Child child = childService.findById(id);
-
-        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1001);
-        ApiResponse<Child> apiResponse = ApiResponse.<Child>builder()
-                .responseMetadata(responseMetadata)
-                .data(child)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Child>> updateChild(
-            @PathVariable Long id,
-            @RequestBody @Valid Child child
-    ) {
-        Child updatedChild = childService.update(id, child);
-
-        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1002);
-        ApiResponse<Child> apiResponse = ApiResponse.<Child>builder()
-                .responseMetadata(responseMetadata)
-                .data(updatedChild)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteChild(
-            @PathVariable Long id
-    ) {
-
-        childService.removeChild(id);
-
-        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1003);
-        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
-                .responseMetadata(responseMetadata)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
-    }
-
     @GetMapping("/{id}/my-courses")
     public ResponseEntity<ApiResponse<List<Course>>> getChildCourses(
             @PathVariable Long id
@@ -125,6 +62,70 @@ public class ChildController {
         ApiResponse<List<Course>> apiResponse = ApiResponse.<List<Course>>builder()
                 .responseMetadata(responseMetadata)
                 .data(childCourses)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+
+    @GetMapping("/{childId}")
+    public ResponseEntity<ApiResponse<Child>> getChildById(
+            @PathVariable Long childId
+    ) {
+        Child child = childService.findById(childId);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1001);
+        ApiResponse<Child> apiResponse = ApiResponse.<Child>builder()
+                .responseMetadata(responseMetadata)
+                .data(child)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PutMapping("/{childId}")
+    public ResponseEntity<ApiResponse<Child>> updateChild(
+            @PathVariable Long childId,
+            @RequestBody @Valid Child child //todo: use dto
+    ) {
+        Child updatedChild = childService.update(childId, child);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1002);
+        ApiResponse<Child> apiResponse = ApiResponse.<Child>builder()
+                .responseMetadata(responseMetadata)
+                .data(updatedChild)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/{childId}")
+    public ResponseEntity<ApiResponse<Void>> deleteChild(
+            @PathVariable Long childId
+    ) {
+
+        childService.removeChild(childId);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1003);
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .responseMetadata(responseMetadata)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping
+    //@PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Page<Child>>> getAllChildren(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<Child> children = childService.findAll(page, size);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._1000);
+        ApiResponse<Page<Child>> apiResponse = ApiResponse.<Page<Child>>builder()
+                .responseMetadata(responseMetadata)
+                .data(children)
                 .build();
 
         return ResponseEntity.ok(apiResponse);

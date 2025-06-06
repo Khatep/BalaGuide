@@ -38,7 +38,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group createGroup(CreateGroupRequest createGroupRequest) {
-        if (groupRepository.existsInCourseByName(createGroupRequest.name(), createGroupRequest.courseId())) {
+        if (groupRepository.isGroupExistsInCourseByName(createGroupRequest.name(), createGroupRequest.courseId())) {
             log.warn("Group with name: {} already exists in course with id: {}", createGroupRequest.name(), createGroupRequest.courseId());
         }
 
@@ -49,8 +49,10 @@ public class GroupServiceImpl implements GroupService {
 
         Group group = groupMapper.mapCreateGroupRequestToCourse(createGroupRequest, course, teacher);
 
+        //Here call fill lessons method,
         return groupRepository.save(group);
     }
+
 
     @Override
     public Optional<Group> findGroupById(Long aLong) {

@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import kz.balaguide.auth_module.dtos.JwtResponseDto;
 import kz.balaguide.common_module.core.entities.AuthUser;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@Slf4j
 public class JwtService {
 
     @Value("${token.signing.key}")
@@ -26,6 +28,7 @@ public class JwtService {
     @Value("${token.lifetime}")
     @Getter
     private Long tokeLifetimeMillis;
+
     /**
      * Extracting the username from the token
      *
@@ -66,9 +69,9 @@ public class JwtService {
     /**
      * Extracting data from the token
      *
-     * @param token token
+     * @param token           token
      * @param claimsResolvers data extraction function
-     * @param <T> data type
+     * @param <T>             data type
      * @return data
      */
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {

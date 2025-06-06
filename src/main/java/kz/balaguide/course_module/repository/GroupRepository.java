@@ -37,5 +37,5 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
             FROM groups
             WHERE course_id = :courseId AND name = :name
             """, nativeQuery = true)
-    boolean existsInCourseByName(String name, Long courseId);
+    boolean isGroupExistsInCourseByName(String name, Long courseId);
 }

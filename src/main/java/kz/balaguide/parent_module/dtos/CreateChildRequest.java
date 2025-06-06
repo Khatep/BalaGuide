@@ -1,7 +1,5 @@
 package kz.balaguide.parent_module.dtos;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -40,4 +38,5 @@ public record CreateChildRequest(
         @Enumerated(EnumType.STRING)
         Gender gender
 
-) {}
+) {
+}

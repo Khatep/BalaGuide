@@ -15,6 +15,7 @@ import kz.balaguide.education_center_module.repository.EducationCenterRepository
 import kz.balaguide.parent_module.repository.ParentRepository;
 import kz.balaguide.teacher_module.repositories.TeacherRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthUserServiceImpl implements AuthUserService {
     private final AuthUserRepository authUserRepository;
     //TODO hardcode
@@ -71,6 +73,7 @@ public class AuthUserServiceImpl implements AuthUserService {
             default -> throw new RuntimeException("Unknown role: " + authUser.getRole());
         }
 
+        log.info(clientData.toString());
         return SignInUserResponse.<AbstractEntity>builder()
                 .jwtResponseDto(jwtResponseDto)
                 .user(clientData)

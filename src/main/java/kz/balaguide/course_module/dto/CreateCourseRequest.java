@@ -34,7 +34,7 @@ public record CreateCourseRequest(
         @Positive(message = "Price must be greater than zero")
         BigDecimal price,
 
-        @NotNull(message = "Durability must not be null")
-        @Positive(message = "Durability must be greater than zero")
-        Integer durability
+        @NotNull(message = "Number of lessons must not be null")
+        @Positive(message = "Number of lessons must be greater than zero")
+        Integer numberOfLessons
 ) {}
