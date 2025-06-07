@@ -37,6 +37,11 @@ spring:
     validate-on-migrate: true
     out-of-order: false
 
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
   # Config Kafka-server
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
@@ -93,3 +98,7 @@ management:
   endpoint:
     health:
       show-details: always
+
+sftp:
+  url: ${SFTP_URL}
+  path: ${SFTP_PATH}

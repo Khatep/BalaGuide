@@ -26,6 +26,7 @@ public class CourseMapper {
                 .ageRange(createCourseRequest.ageRange())
                 .price(createCourseRequest.price())
                 .numberOfLessonsInWeek(createCourseRequest.numberOfLessons())
+                .durabilityByWeeks(createCourseRequest.durabilityByWeeks())
                 .educationCenter(educationCenter)
                 .build();
     }

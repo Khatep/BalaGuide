@@ -76,9 +76,9 @@ VALUES (6, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77274445566',
 
 INSERT INTO education_centers (id, created_date, update_date, name, phone_number, email, address, instagram_link,
                                date_of_created, balance, auth_user_id)
-VALUES (1, '2025-01-01 00:00:00', '2025-01-01 00:00:00', 'IT easy',
-        '77273334455', 'iteasy@gmail.com', 'Abay 45a',
-        'https://instagram.com/iteasy', '2016-01-01', 710000, 5);
+VALUES (1, '2025-01-01 00:00:00', '2025-01-01 00:00:00', 'Школа программирования KnewIT',
+        '77273334455', 'knewit@gmail.com', 'Abay 45a',
+        'https://instagram.com/knewit', '2019-01-01', 710000, 5);
 
 INSERT INTO education_centers (id, created_date, update_date, name, phone_number, email, address, instagram_link,
                                date_of_created, balance, auth_user_id)
@@ -109,13 +109,182 @@ VALUES (1, '2025-01-01', '2025-01-01', 'Юный программист',
         'Основы языка программирования Python', 'PROGRAMMING',
         '10-13', 14000.00, 3, 4, 1);
 
---UPDATE TABLE courses SET content ->> ;
-/*
-    "Lesson_1": {
-        "topic": "",
-        "description": "",
-    }
-*/
+UPDATE courses
+SET content = '{
+  "Lesson_1": {
+    "topic": "Знакомство с Scratch",
+    "description": "Введение в интерфейс среды Scratch. Создание первого проекта."
+  },
+  "Lesson_2": {
+    "topic": "Сцены и спрайты",
+    "description": "Добавление спрайтов, изменение фонов, основы визуального дизайна."
+  },
+  "Lesson_3": {
+    "topic": "Движение объектов",
+    "description": "Программирование перемещения спрайтов с помощью блоков."
+  },
+  "Lesson_4": {
+    "topic": "Анимация",
+    "description": "Создание анимации через смену костюмов и координат."
+  },
+  "Lesson_5": {
+    "topic": "События и реакции",
+    "description": "Использование событий (например, при нажатии клавиш) для запуска сценариев."
+  },
+  "Lesson_6": {
+    "topic": "Звуки и музыка",
+    "description": "Добавление звуков и создание музыкальных эффектов."
+  },
+  "Lesson_7": {
+    "topic": "Циклы и повторения",
+    "description": "Применение блоков повторения для оптимизации кода."
+  },
+  "Lesson_8": {
+    "topic": "Условия (if)",
+    "description": "Создание интерактивности через условные блоки."
+  },
+  "Lesson_9": {
+    "topic": "Переменные",
+    "description": "Введение в переменные. Отслеживание очков и счётчиков."
+  },
+  "Lesson_10": {
+    "topic": "Мини-игра: Лабиринт",
+    "description": "Создание простой игры, где спрайт проходит через лабиринт."
+  },
+  "Lesson_11": {
+    "topic": "Итоговый проект: Моя игра",
+    "description": "Работа над собственным проектом с использованием изученных элементов."
+  },
+  "Lesson_12": {
+    "topic": "Презентация проектов",
+    "description": "Представление работ, обсуждение, обратная связь и закрепление знаний."
+  }
+}'::jsonb
+WHERE id = 1;
+
+UPDATE courses
+SET content = '{
+  "Lesson_1": {
+    "topic": "Логические задачи на сообразительность",
+    "description": "Разбор простых логических задач на внимание и мышление."
+  },
+  "Lesson_2": {
+    "topic": "Шифры и коды",
+    "description": "Решение задач с заменой символов, простые шифры и логика."
+  },
+  "Lesson_3": {
+    "topic": "Анализ и дедукция",
+    "description": "Решение задач с условиями: кто где живёт, кто что делает."
+  },
+  "Lesson_4": {
+    "topic": "Последовательности и закономерности",
+    "description": "Нахождение закономерностей в числовых и графических рядах."
+  },
+  "Lesson_5": {
+    "topic": "Головоломки с кубиками и блоками",
+    "description": "Задачи на пространственное мышление и логику."
+  },
+  "Lesson_6": {
+    "topic": "Комбинаторика для детей",
+    "description": "Счёт вариантов, простейшие принципы подсчёта."
+  },
+  "Lesson_7": {
+    "topic": "Математические ребусы",
+    "description": "Цифровые кроссворды, расстановка чисел по условиям."
+  },
+  "Lesson_8": {
+    "topic": "Игры на стратегию и логику",
+    "description": "Простые логические игры: крестики-нолики, Ним, и др."
+  },
+  "Lesson_9": {
+    "topic": "Движение по клеткам",
+    "description": "Решение задач на клетчатом поле и логические маршруты."
+  },
+  "Lesson_10": {
+    "topic": "Проверка гипотез",
+    "description": "Формирование логических предположений и их проверка."
+  },
+  "Lesson_11": {
+    "topic": "Проект: логическая игра",
+    "description": "Создание собственной логической игры или головоломки."
+  },
+  "Lesson_12": {
+    "topic": "Турнир по логике",
+    "description": "Соревновательное решение задач. Подведение итогов."
+  }
+}'::jsonb
+WHERE id = 5;
+
+UPDATE courses
+SET content = '{
+  "Lesson_1": {
+    "topic": "Знакомство с Python",
+    "description": "Что такое Python, где используется, установка и запуск."
+  },
+  "Lesson_2": {
+    "topic": "Переменные и вывод на экран",
+    "description": "Создание переменных, функция print()."
+  },
+  "Lesson_3": {
+    "topic": "Типы данных и операции",
+    "description": "Числа, строки, булевы значения и арифметика."
+  },
+  "Lesson_4": {
+    "topic": "Ввод данных от пользователя",
+    "description": "input(), преобразование типов и взаимодействие с пользователем."
+  },
+  "Lesson_5": {
+    "topic": "Условные конструкции if",
+    "description": "Проверка условий и принятие решений."
+  },
+  "Lesson_6": {
+    "topic": "Циклы for и while",
+    "description": "Повторяющиеся действия и счётчики."
+  },
+  "Lesson_7": {
+    "topic": "Списки и перебор элементов",
+    "description": "Создание списков и работа с ними."
+  },
+  "Lesson_8": {
+    "topic": "Функции в Python",
+    "description": "Объявление, вызов и параметры функций."
+  },
+  "Lesson_9": {
+    "topic": "Генерация случайных чисел",
+    "description": "Модуль random и простые игры."
+  },
+  "Lesson_10": {
+    "topic": "Работа с условиями и циклами в проектах",
+    "description": "Создание мини-программы с логикой."
+  },
+  "Lesson_11": {
+    "topic": "Проект: Угадай число",
+    "description": "Создание простой консольной игры."
+  },
+  "Lesson_12": {
+    "topic": "Защита проектов",
+    "description": "Презентация работ, рефлексия, идеи для продолжения."
+  }
+}'::jsonb
+WHERE id = 6;
+
+UPDATE courses
+SET content = lesson_data.generated_lessons
+    FROM (
+    SELECT c.id,
+           jsonb_object_agg(
+               'Lesson_' || i,
+               jsonb_build_object(
+                   'topic', 'Topic for Lesson ' || i,
+                   'description', 'Description for Lesson ' || i
+               )
+           ) AS generated_lessons
+    FROM courses c
+    JOIN LATERAL generate_series(1, c.number_of_lessons_in_week * c.durability_by_weeks) AS i ON true
+    WHERE c.id IN (2, 3, 4)
+    GROUP BY c.id
+) AS lesson_data
+WHERE courses.id = lesson_data.id;
 
 ------------------------------------------------TEACHERS----------------------------------------------------------------
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)

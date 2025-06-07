@@ -39,11 +39,11 @@ public class EducationCenterController {
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
-    @GetMapping("/{educationalCenterId}/courses")
-    public ResponseEntity<List<Course>> getAllCoursesByEducationalCenter(@PathVariable Long educationalCenterId) {
-        List<Course> courses = educationCenterService.getCoursesByEducationCenter(educationalCenterId);
-        return ResponseEntity.ok(courses);
-    }
+        @GetMapping("/{educationalCenterId}/courses")
+        public ResponseEntity<List<Course>> getAllCoursesByEducationalCenter(@PathVariable Long educationalCenterId) {
+            List<Course> courses = educationCenterService.getCoursesByEducationCenter(educationalCenterId);
+            return ResponseEntity.ok(courses);
+        }
 
     @GetMapping(DASHBOARD_URL + "/total-revenue")
     public ResponseEntity<ApiResponse<Double>> getTotalRevenue(@PathVariable Long centerId) {

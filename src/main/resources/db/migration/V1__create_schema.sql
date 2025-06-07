@@ -126,7 +126,7 @@ CREATE TABLE courses
     number_of_lessons_in_week INTEGER        NOT NULL,
     durability_by_weeks       INTEGER        NOT NULL,
     education_center_id       BIGINT         NOT NULL,
-    content                   JSONB,
+    content                   JSONB      DEFAULT '{}',
 
     CONSTRAINT fk_course_education_center
         FOREIGN KEY (education_center_id)

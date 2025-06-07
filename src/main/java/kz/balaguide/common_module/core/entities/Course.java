@@ -96,19 +96,7 @@ public class Course extends AbstractEntity implements Comparable<Course> {
     //TODO endpoint for content creation and content updating
     @Column(columnDefinition = "jsonb")
     @Type(JsonType.class)
-    private Map<Integer, Map<String, String>> content = new HashMap<>();
-    //key: lesson's topic, value: lesson's description
-    /*
-    {
-        "1": {
-            "Java Intro": "Lesson for introduction to Java lang, educate history of Java"
-        },
-        "2": {
-            "Python Intro": "Lesson for introduction to Python lang, educate history of Python"
-        }
-
-    }
-    * */
+    private Map<String, Map<String, String>> content = new HashMap<>();
 
     @Override
     public int compareTo(Course o) {
