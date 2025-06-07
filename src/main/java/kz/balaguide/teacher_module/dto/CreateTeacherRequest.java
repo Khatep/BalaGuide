@@ -37,6 +37,8 @@ public record CreateTeacherRequest(
         BigDecimal salary,
 
         @NotNull(message = "Gender must not be null")
-        @Enumerated(EnumType.STRING)
-        Gender gender
+        Gender gender,
+
+        @NotNull(message = "Education center id must not be null")
+        Long educationCenterId
 ) {}

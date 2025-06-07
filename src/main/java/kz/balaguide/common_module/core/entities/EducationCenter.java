@@ -85,6 +85,11 @@ public class EducationCenter extends AbstractEntity implements Comparable<Educat
     @JsonIgnore
     private List<Course> courses;
 
+    @OneToMany(mappedBy = "educationCenter", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @JsonIgnore
+    private List<Teacher> teachers;
+
     @Override
     public int compareTo(EducationCenter o) {
         return getId().compareTo(o.getId());

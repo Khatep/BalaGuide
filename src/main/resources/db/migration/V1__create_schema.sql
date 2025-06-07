@@ -157,13 +157,20 @@ CREATE TABLE teachers
     email        VARCHAR(255) NOT NULL UNIQUE,
     salary       NUMERIC      NOT NULL,
     gender       VARCHAR(255) NOT NULL,
+    education_center_id BIGINT NOT NULL,
 
     auth_user_id BIGINT       NOT NULL UNIQUE,
 
     CONSTRAINT fk_teacher_auth_user
         FOREIGN KEY (auth_user_id)
             REFERENCES auth_users (id)
+            ON DELETE CASCADE,
+
+    CONSTRAINT fk_teacher_education_center
+        FOREIGN KEY (education_center_id)
+            REFERENCES education_centers (id)
             ON DELETE CASCADE
+
 );
 
 CREATE TABLE teacher_course

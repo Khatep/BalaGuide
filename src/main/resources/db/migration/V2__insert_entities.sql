@@ -309,22 +309,22 @@ VALUES (11, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77011284390',
 
 INSERT INTO teachers (id, created_date, update_date, first_name, last_name, birth_date, phone_number, email, salary,
                       gender,
-                      auth_user_id)
+                      auth_user_id, education_center_id)
 VALUES (1, '2025-01-01', '2025-01-01', 'Айгүл', 'Жумабаева',
         '1985-03-14', '77019998877', 'a.zhumbayeva@example.com', 280000,
-        'FEMALE', 7),
+        'FEMALE', 7, 1),
        (2, '2025-01-01', '2025-01-01', 'Ермек', 'Серикбаев',
         '1990-06-02', '77018887766', 'e.serikbayev@example.com', 320000,
-        'MALE', 8),
+        'MALE', 8, 1),
        (3, '2025-01-01', '2025-01-01', 'Асель', 'Тлеуханова',
         '1988-09-22', '77019997733', 'a.tleukhanova@example.com', 310000,
-        'FEMALE', 9),
+        'FEMALE', 9, 1),
        (4, '2025-01-01', '2025-01-01', 'Руслан', 'Муратов',
         '1984-02-11', '77075467712', 'r.muratov@example.com', 330000,
-        'MALE', 10),
+        'MALE', 10, 1),
        (5, '2025-01-01', '2025-01-01', 'Жанна', 'Калдыбаева',
         '1992-07-05', '77011284390', 'zh.kaldybaeva@example.com', 290000,
-        'FEMALE', 11);
+        'FEMALE', 11, 1);
 ------------------------------------------------ADMINS------------------------------------------------------------------
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
 VALUES (80, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77012223344',
