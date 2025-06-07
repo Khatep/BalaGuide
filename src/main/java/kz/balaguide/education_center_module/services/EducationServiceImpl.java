@@ -4,7 +4,9 @@ import kz.balaguide.auth_module.services.AuthUserService;
 import kz.balaguide.common_module.core.entities.AuthUser;
 import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.EducationCenter;
+import kz.balaguide.common_module.core.entities.Group;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
+import kz.balaguide.course_module.repository.GroupRepository;
 import kz.balaguide.education_center_module.dtos.*;
 import kz.balaguide.education_center_module.mappers.EducationCenterMapper;
 import kz.balaguide.education_center_module.repository.EducationCenterRepository;
@@ -26,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EducationServiceImpl implements EducationCenterService {
     private final AuthUserService authUserService;
     private final EducationCenterRepository educationCenterRepository;
+    private final GroupRepository groupRepository;
     private final EducationCenterMapper educationCenterMapper;
 
     /**
@@ -152,5 +155,10 @@ public class EducationServiceImpl implements EducationCenterService {
         return educationCenterRepository.getAllCoursesByEducationalCenterId(educationalCenterId);
     }
 
+
+    @Override
+    public List<Group> findAllGroupsByEducationCenterId(Long educationCenterId) {
+        return groupRepository.findAllByEducationCenterId(educationCenterId);
+    }
 
 }

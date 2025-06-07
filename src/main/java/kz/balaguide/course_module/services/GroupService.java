@@ -13,7 +13,7 @@ public interface GroupService {
 
     Group createGroup(@Valid CreateGroupRequest createGroupRequest);
 
-    Optional<Group> findGroupById(Long aLong);
+    Optional<Group> findGroupById(Long groupId);
 
-    List<Group> findAllGroupsByChildId(Long aLong);
+    List<Group> findAllGroupsByChildId(Long childId);
 }

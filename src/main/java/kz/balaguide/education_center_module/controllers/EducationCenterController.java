@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
 import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.EducationCenter;
+import kz.balaguide.common_module.core.entities.Group;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
@@ -39,11 +40,25 @@ public class EducationCenterController {
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
-        @GetMapping("/{educationalCenterId}/courses")
-        public ResponseEntity<List<Course>> getAllCoursesByEducationalCenter(@PathVariable Long educationalCenterId) {
-            List<Course> courses = educationCenterService.getCoursesByEducationCenter(educationalCenterId);
-            return ResponseEntity.ok(courses);
-        }
+    @GetMapping("/{educationalCenterId}/courses")
+    public ResponseEntity<List<Course>> getAllCoursesByEducationalCenter(@PathVariable Long educationalCenterId) {
+        List<Course> courses = educationCenterService.getCoursesByEducationCenter(educationalCenterId);
+        return ResponseEntity.ok(courses);
+    }
+
+
+    @GetMapping("/{educationCenterId}/groups")
+    public ResponseEntity<ApiResponse<List<Group>>> getAllGroupsByEducationCenterId(@PathVariable Long educationCenterId) {
+        List<Group> groups = educationCenterService.findAllGroupsByEducationCenterId(educationCenterId);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._2000);
+        ApiResponse<List<Group>> apiResponse = ApiResponse.<List<Group>>builder()
+                .responseMetadata(responseMetadata)
+                .data(groups)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
 
     @GetMapping(DASHBOARD_URL + "/total-revenue")
     public ResponseEntity<ApiResponse<Double>> getTotalRevenue(@PathVariable Long centerId) {

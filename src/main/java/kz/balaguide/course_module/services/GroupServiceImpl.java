@@ -25,6 +25,7 @@ public class GroupServiceImpl implements GroupService {
     private final TeacherService teacherService;
 
     private final GroupMapper groupMapper;
+
     @Override
     public boolean unenrollChild(EnrollmentActionDto enrollmentActionDto) {
         Group group = groupRepository.findById(enrollmentActionDto.groupId())
@@ -55,8 +56,8 @@ public class GroupServiceImpl implements GroupService {
 
 
     @Override
-    public Optional<Group> findGroupById(Long aLong) {
-        return Optional.empty();
+    public Optional<Group> findGroupById(Long id) {
+        return groupRepository.findById(id);
     }
 
     @Override

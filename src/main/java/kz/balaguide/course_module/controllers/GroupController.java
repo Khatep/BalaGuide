@@ -23,6 +23,7 @@ public class GroupController {
     private final GroupService groupService;
     private final ResponseMetadataService responseMetadataService;
 
+
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<Group>> createGroup(@RequestBody @Valid CreateGroupRequest createGroupRequest) {
         Group group = groupService.createGroup(createGroupRequest);

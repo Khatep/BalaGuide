@@ -38,4 +38,13 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
             WHERE course_id = :courseId AND name = :name
             """, nativeQuery = true)
     boolean isGroupExistsInCourseByName(String name, Long courseId);
+
+    @Query(value = """
+            SELECT g.*
+            FROM groups g
+            JOIN courses c ON g.course_id = c.id
+            WHERE c.education_center_id = :educationCenterId
+            """, nativeQuery = true)
+    List<Group> findAllByEducationCenterId(@Param("educationCenterId") Long educationCenterId);
+
 }
