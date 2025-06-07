@@ -46,6 +46,7 @@ public class CourseMapper {
                 .ageRange(course.getAgeRange())
                 .price(course.getPrice())
                 .numberOfLessons(course.getNumberOfLessonsInWeek())
+                .durabilityByWeeks(course.getDurabilityByWeeks())
                 .build();
     }
 
