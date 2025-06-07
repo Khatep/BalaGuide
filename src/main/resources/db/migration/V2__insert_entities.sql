@@ -110,6 +110,12 @@ VALUES (1, '2025-01-01', '2025-01-01', 'Юный программист',
         '10-13', 14000.00, 3, 4, 1);
 
 --UPDATE TABLE courses SET content ->> ;
+/*
+    "Lesson_1": {
+        "topic": "",
+        "description": "",
+    }
+*/
 
 ------------------------------------------------TEACHERS----------------------------------------------------------------
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
