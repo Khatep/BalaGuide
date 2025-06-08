@@ -17,9 +17,9 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
     Lesson getLessonById(Long lessonId);
 
     // Методы для работы с новой структурой
-    List<Lesson> findByGroupEducationCenterIdAndDateBetween(Long educationCenterId, LocalDate startDate, LocalDate endDate);
+    List<Lesson> findByGroupCourseEducationCenter_IdAndDateBetween(Long educationCenterId, LocalDate startDate, LocalDate endDate);
 
-    List<Lesson> findByGroupEducationCenterIdAndDate(Long educationCenterId, LocalDate date);
+    List<Lesson> findByGroupCourseEducationCenter_IdAndDate(Long educationCenterId, LocalDate date);
 
     List<Lesson> findByGroupIdAndDateBetween(Long groupId, LocalDate startDate, LocalDate endDate);
 

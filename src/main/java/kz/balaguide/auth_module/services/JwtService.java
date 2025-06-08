@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import kz.balaguide.auth_module.dtos.JwtResponseDto;
 import kz.balaguide.common_module.core.entities.AuthUser;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class JwtService {
 
@@ -28,6 +30,8 @@ public class JwtService {
     @Value("${token.lifetime}")
     @Getter
     private Long tokeLifetimeMillis;
+
+    private final RedisService redisService;
 
     /**
      * Extracting the username from the token
@@ -51,7 +55,10 @@ public class JwtService {
             claims.put("phoneNumber", customUserDetails.getPhoneNumber());
             claims.put("role", customUserDetails.getRole());
         }
-        return generateToken(claims, userDetails);
+
+        JwtResponseDto tokenDto = generateToken(claims, userDetails);
+        redisService.saveToken(userDetails.getUsername(), tokenDto.getToken(), tokeLifetimeMillis);
+        return tokenDto;
     }
 
     /**
@@ -63,7 +70,9 @@ public class JwtService {
      */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String phoneNumber = extractPhoneNumber(token);
-        return (phoneNumber.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        boolean notExpired = !isTokenExpired(token);
+        boolean matchesRedis = redisService.isTokenValid(phoneNumber, token);
+        return phoneNumber.equals(userDetails.getUsername()) && notExpired && matchesRedis;
     }
 
     /**

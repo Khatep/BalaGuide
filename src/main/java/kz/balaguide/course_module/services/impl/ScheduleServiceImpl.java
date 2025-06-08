@@ -35,7 +35,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         LocalDate endDate = startDate.plusDays(6);
 
         // Получаем все уроки в диапазоне дат для образовательного центра
-        List<Lesson> lessons = lessonRepository.findByGroupEducationCenterIdAndDateBetween(
+        List<Lesson> lessons = lessonRepository.findByGroupCourseEducationCenter_IdAndDateBetween(
                 educationCenterId, startDate, endDate);
 
         return lessons.stream()
@@ -61,7 +61,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             lessons = lessonRepository.findByGroupCourseIdAndDateBetween(
                     filter.getCourseId(), filter.getStartDate(), filter.getEndDate());
         } else {
-            lessons = lessonRepository.findByGroupEducationCenterIdAndDateBetween(
+            lessons = lessonRepository.findByGroupCourseEducationCenter_IdAndDateBetween(
                     filter.getEducationCenterId(), filter.getStartDate(), filter.getEndDate());
         }
 
@@ -170,7 +170,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public ScheduleStatsDto getScheduleStats(Long educationCenterId, LocalDate startDate, LocalDate endDate) {
-        List<Lesson> lessons = lessonRepository.findByGroupEducationCenterIdAndDateBetween(
+        List<Lesson> lessons = lessonRepository.findByGroupCourseEducationCenter_IdAndDateBetween(
                 educationCenterId, startDate, endDate);
 
         int totalLessons = lessons.size();
@@ -270,7 +270,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .collect(Collectors.toList());
 
         // Получаем занятые слоты на эту дату
-        List<Lesson> occupiedLessons = lessonRepository.findByGroupEducationCenterIdAndDate(
+        List<Lesson> occupiedLessons = lessonRepository.findByGroupCourseEducationCenter_IdAndDate(
                 educationCenterId, date);
 
         Set<Long> occupiedScheduleIds = occupiedLessons.stream()
