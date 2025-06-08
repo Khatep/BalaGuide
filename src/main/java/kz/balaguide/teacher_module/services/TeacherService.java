@@ -11,4 +11,8 @@ public interface TeacherService {
     Teacher findTeacherById(Long id);
 
     List<Teacher> findAllTeachersByEducationCenterId(Long educationCenterId);
+
+    String generateQrCodeForLesson(Long lessonId);
+
+    String getExistingQrCode(Long lessonId);
 }

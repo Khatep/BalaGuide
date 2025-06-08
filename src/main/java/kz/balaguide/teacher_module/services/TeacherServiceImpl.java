@@ -9,6 +9,7 @@ import kz.balaguide.education_center_module.repository.EducationCenterRepository
 import kz.balaguide.teacher_module.dto.CreateTeacherRequest;
 import kz.balaguide.teacher_module.mappers.TeacherMapper;
 import kz.balaguide.teacher_module.repositories.TeacherRepository;
+import kz.balaguide.teacher_module.utils.QrCodeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class TeacherServiceImpl implements TeacherService {
     private final TeacherRepository teacherRepository;
     private final EducationCenterRepository educationCenterRepository;
     private final TeacherMapper teacherMapper;
+    private final QrCodeUtil qrCodeUtil;
 
     private final AuthUserService authUserService;
     @Override
@@ -60,4 +62,17 @@ public class TeacherServiceImpl implements TeacherService {
     public List<Teacher> findAllTeachersByEducationCenterId(Long educationCenterId) {
         return teacherRepository.findAllByEducationCenterId(educationCenterId);
     }
+
+    @Override
+    public String generateQrCodeForLesson(Long lessonId) {
+        String attendanceUrl = "https://balaguide.kz/attendance/" + lessonId; // или ваш домен
+        return qrCodeUtil.generateBase64QrCode(attendanceUrl);
+    }
+
+    @Override
+    public String getExistingQrCode(Long lessonId) {
+        // если QR код уже был сгенерен и сохранён — возвращай его, иначе генерируй
+        return generateQrCodeForLesson(lessonId);
+    }
+
 }

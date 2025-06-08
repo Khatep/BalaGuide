@@ -13,12 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface EducationCenterRepository extends JpaRepository<EducationCenter, Long> {
-    /**
-     * Retrieves an {@link EducationCenter} entity by its email.
-     *
-     * @param email the email of the education center to be retrieved
-     * @return an {@link Optional} containing the {@link EducationCenter} if found, or empty if not found
-     */
+
     Optional<EducationCenter> findByEmail(String email);
 
     Optional<EducationCenter> findByPhoneNumber(String phoneNumber);
@@ -48,7 +43,7 @@ public interface EducationCenterRepository extends JpaRepository<EducationCenter
             """, nativeQuery = true)
     List<Map<String, Object>> getTopCoursesByRevenue(@Param("centerId") Long centerId, @Param("limit") int limit);
 
-    // 3. Распределение детей по курсам (Pie Chart)
+    // 3. Распределение детей по курсам
     @Query(value = """
                 SELECT c.course_name AS courseName, COUNT(DISTINCT cg.child_id) AS childrenCount
                 FROM child_group cg

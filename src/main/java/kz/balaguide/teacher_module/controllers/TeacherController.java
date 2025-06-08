@@ -49,4 +49,30 @@ public class TeacherController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    @GetMapping("/generate-qr/{lessonId}")
+    public ResponseEntity<ApiResponse<String>> generateQrCode(@PathVariable Long lessonId) {
+        String qrImageBase64 = teacherService.generateQrCodeForLesson(lessonId);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._2200);
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
+                .responseMetadata(responseMetadata)
+                .data(qrImageBase64)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/qr/{lessonId}")
+    public ResponseEntity<ApiResponse<String>> getQrCode(@PathVariable Long lessonId) {
+        String qrImageBase64 = teacherService.getExistingQrCode(lessonId);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._2200);
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
+                .responseMetadata(responseMetadata)
+                .data(qrImageBase64)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
 }
