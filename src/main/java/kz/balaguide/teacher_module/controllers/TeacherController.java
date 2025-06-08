@@ -6,14 +6,17 @@ import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.entities.Teacher;
 import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
+import kz.balaguide.course_module.dto.ScheduleItemDto;
 import kz.balaguide.teacher_module.dto.CreateTeacherRequest;
 import kz.balaguide.teacher_module.services.TeacherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -76,5 +79,12 @@ public class TeacherController {
         return ResponseEntity.ok(apiResponse);
     }
 
+//    @GetMapping("/{teacherId}/schedule")
+//    public ResponseEntity<ApiResponse<List<ScheduleItemDto>>> getTeacherSchedule(
+//            @PathVariable Long teacherId,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+//        // логика получения расписания учителя
+//    }
 
 }

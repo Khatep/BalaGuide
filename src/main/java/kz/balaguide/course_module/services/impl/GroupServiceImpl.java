@@ -1,4 +1,4 @@
-package kz.balaguide.course_module.services;
+package kz.balaguide.course_module.services.impl;
 
 import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.Group;
@@ -8,6 +8,7 @@ import kz.balaguide.course_module.dto.EnrollmentActionDto;
 import kz.balaguide.course_module.mappers.GroupMapper;
 import kz.balaguide.course_module.repository.CourseRepository;
 import kz.balaguide.course_module.repository.GroupRepository;
+import kz.balaguide.course_module.services.GroupService;
 import kz.balaguide.teacher_module.services.TeacherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,10 +1,12 @@
 package kz.balaguide.course_module.controllers;
 
 import feign.FeignException;
+import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
 import kz.balaguide.common_module.core.entities.Lesson;
 import kz.balaguide.course_module.services.LessonService;
 import kz.balaguide.sftp_module.clients.SftpClient;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
+import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/v1/lessons")
@@ -61,4 +65,12 @@ public class LessonController {
                     .body("❌ Upload failed: " + e.getMessage());
         }
     }
+
+//    @GetMapping("/by-date-range")
+//    public ResponseEntity<ApiResponse<List<Lesson>>> getLessonsByDateRange(
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+//            @RequestParam Long educationCenterId) {
+//
+//    }
 }

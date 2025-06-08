@@ -1,8 +1,9 @@
-package kz.balaguide.common_module.services.responsemetadata;
+package kz.balaguide.common_module.services.responsemetadata.impl;
 
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.repositories.responsemessage.ResponseMessageRepository;
+import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

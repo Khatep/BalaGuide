@@ -1,7 +1,8 @@
-package kz.balaguide.child_module.services;
+package kz.balaguide.child_module.services.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import kz.balaguide.child_module.repository.ChildRepository;
+import kz.balaguide.child_module.services.ChildService;
 import kz.balaguide.common_module.core.annotations.ForLog;
 import kz.balaguide.common_module.core.entities.*;
 import kz.balaguide.common_module.core.enums.ResponseCode;

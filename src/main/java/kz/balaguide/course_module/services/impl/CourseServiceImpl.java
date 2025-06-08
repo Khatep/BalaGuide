@@ -1,4 +1,4 @@
-package kz.balaguide.course_module.services;
+package kz.balaguide.course_module.services.impl;
 
 import kz.balaguide.child_module.repository.ChildRepository;
 import kz.balaguide.common_module.core.annotations.ForLog;
@@ -16,6 +16,7 @@ import kz.balaguide.course_module.dto.EnrollmentActionDto;
 import kz.balaguide.course_module.mappers.CourseMapper;
 import kz.balaguide.course_module.repository.CourseRepository;
 import kz.balaguide.course_module.repository.GroupRepository;
+import kz.balaguide.course_module.services.CourseService;
 import kz.balaguide.education_center_module.repository.EducationCenterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
