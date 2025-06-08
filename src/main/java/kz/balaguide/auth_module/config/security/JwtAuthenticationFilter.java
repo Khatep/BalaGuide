@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String path = request.getServletPath();
-        if (path.startsWith("/auth")) {
+        if (path.startsWith("/auth") || path.startsWith("/api/v1/sms") || path.startsWith("/api/v1/courses")) {
             filterChain.doFilter(request, response);
             return;
         }

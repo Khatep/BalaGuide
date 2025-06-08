@@ -102,3 +102,8 @@ management:
 sftp:
   url: ${SFTP_URL}
   path: ${SFTP_PATH}
+
+twilio:
+  account-sid: ${ACCOUNT_SID}
+  auth-token: ${AUTH_TOKEN}
+  phone-number: ${TWILIO_PHONE_NUMBER}

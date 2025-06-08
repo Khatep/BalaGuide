@@ -334,3 +334,15 @@ CREATE TABLE response_metadata
     message       TEXT
 );
 
+CREATE TABLE sms (
+    id BIGSERIAL PRIMARY KEY,
+    auth_user_id BIGINT NOT NULL,
+    otp_code VARCHAR(10) NOT NULL,
+    sent_at TIMESTAMP NOT NULL DEFAULT now(),
+    message_sid VARCHAR(64) NOT NULL,
+
+    CONSTRAINT fk_sms_auth_user
+        FOREIGN KEY (auth_user_id)
+        REFERENCES auth_users (id)
+        ON DELETE CASCADE
+);

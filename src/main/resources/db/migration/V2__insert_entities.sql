@@ -1,6 +1,6 @@
 ------------------------------------------------PARENTS-----------------------------------------------------------------
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
-VALUES (1, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77011112233',
+VALUES (1, '2025-01-01 00:00:00', '2025-01-01 00:00:00', '77711134882',
         '$2a$10$DloIFFbe/Zak9m3M.bUh3O93DCYel873exKgir3l/3k7/xl2Zwzjy', 'PARENT');
 
 INSERT INTO auth_users (id, created_date, update_date, phone_number, password, role)
@@ -21,7 +21,7 @@ VALUES (12, now(), now(), 'Aisulu', 'Nur', '77032221100', '1991-01-01', 'aisulu@
 INSERT INTO parents (id, created_date, update_date, first_name, last_name, phone_number, birth_date, email, address,
                      balance, auth_user_id)
 VALUES (1, '2025-01-01 00:00:00', '2025-01-01 00:00:00', 'Nurgali', 'Khatep',
-        '77011112233', '1999-01-01', 'nurgali.khatep2@gmail.com',
+        '77711134882', '1999-01-01', 'nurgali.khatep2@gmail.com',
         'Masanchi 90b', 540000, 1);
 
 INSERT INTO parents (id, created_date, update_date, first_name, last_name, phone_number, birth_date, email, address,

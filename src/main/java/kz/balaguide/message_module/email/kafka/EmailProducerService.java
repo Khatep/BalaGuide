@@ -1,4 +1,4 @@
-package kz.balaguide.notification_module.services.kafka.email;
+package kz.balaguide.message_module.email.kafka;
 
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.common_module.core.entities.Receipt;

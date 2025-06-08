@@ -1,6 +1,6 @@
-package kz.balaguide.notification_module.services.kafka.email;
+package kz.balaguide.message_module.email.kafka;
 
-import kz.balaguide.notification_module.services.messagesender.MessageSenderService;
+import kz.balaguide.message_module.email.messagesender.MessageSenderService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ParentNotFoundException;

@@ -1,4 +1,4 @@
-package kz.balaguide.notification_module.services.messagesender;
+package kz.balaguide.message_module.email.messagesender;
 
 import lombok.RequiredArgsConstructor;
 import kz.balaguide.common_module.core.entities.Receipt;

@@ -7,7 +7,7 @@ import kz.balaguide.common_module.core.enums.PaymentStatus;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.BalanceUpdateException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.InsufficientFundsException;
 import kz.balaguide.education_center_module.repository.EducationCenterRepository;
-import kz.balaguide.notification_module.services.kafka.email.EmailProducerService;
+import kz.balaguide.message_module.email.kafka.EmailProducerService;
 import kz.balaguide.parent_module.repository.ParentRepository;
 import kz.balaguide.payment_module.repository.PaymentRepository;
 import kz.balaguide.payment_module.services.receipt.ReceiptService;
