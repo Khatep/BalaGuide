@@ -25,4 +25,6 @@ public interface ChildService {
     boolean enrollChildToCourse(EnrollmentActionDto enrollmentActionDto);
 
     boolean unenrollChildFromCourse(EnrollmentActionDto enrollmentActionDto);
+
+    boolean markAttendanceFromQr(Long childId, Long lessonId);
 }

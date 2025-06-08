@@ -346,3 +346,34 @@ CREATE TABLE sms (
         REFERENCES auth_users (id)
         ON DELETE CASCADE
 );
+
+CREATE TABLE reviews (
+        id BIGSERIAL PRIMARY KEY,
+        created_date TIMESTAMP NOT NULL,
+        update_date TIMESTAMP NOT NULL,
+        parent_id BIGINT NOT NULL,
+        course_id BIGINT NOT NULL,
+        rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+        comment TEXT,
+
+        CONSTRAINT fk_reviews_parent
+            FOREIGN KEY (parent_id) REFERENCES parents(id) ON DELETE CASCADE,
+
+        CONSTRAINT fk_reviews_course
+            FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+);
+
+CREATE TABLE attendance (
+        id BIGSERIAL PRIMARY KEY,
+        created_date TIMESTAMP NOT NULL,
+        update_date TIMESTAMP NOT NULL,
+        child_id BIGINT NOT NULL,
+        lesson_id BIGINT NOT NULL,
+        attended BOOLEAN NOT NULL,
+
+        CONSTRAINT fk_attendance_child
+            FOREIGN KEY (child_id) REFERENCES children(id) ON DELETE CASCADE,
+
+        CONSTRAINT fk_attendance_lesson
+            FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
+);

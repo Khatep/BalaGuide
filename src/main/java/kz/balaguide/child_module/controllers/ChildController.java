@@ -130,4 +130,25 @@ public class ChildController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    @PostMapping("/attendance/scan")
+    public ResponseEntity<ApiResponse<Boolean>> scanQrAndMarkAttendance(
+            @RequestParam Long childId,
+            @RequestParam Long lessonId
+    ) {
+        boolean isMarked = childService.markAttendanceFromQr(childId, lessonId);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(
+                ResponseCode._1000
+                // например: 3000 = "Посещение успешно", 3001 = "Уже отмечено"
+        );
+
+        ApiResponse<Boolean> apiResponse = ApiResponse.<Boolean>builder()
+                .responseMetadata(responseMetadata)
+                .data(isMarked)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
 }

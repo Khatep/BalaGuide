@@ -1,11 +1,9 @@
 package kz.balaguide.child_module.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import kz.balaguide.child_module.repository.ChildRepository;
 import kz.balaguide.common_module.core.annotations.ForLog;
-import kz.balaguide.common_module.core.entities.Child;
-import kz.balaguide.common_module.core.entities.Course;
-import kz.balaguide.common_module.core.entities.Group;
-import kz.balaguide.common_module.core.entities.Parent;
+import kz.balaguide.common_module.core.entities.*;
 import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.financialoperation.heirs.InsufficientFundsException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.generic.ChildNotBelongToParentException;
@@ -15,7 +13,9 @@ import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.Childre
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.CourseNotFoundException;
 import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
 import kz.balaguide.course_module.dto.EnrollmentActionDto;
+import kz.balaguide.course_module.repository.AttendanceRepository;
 import kz.balaguide.course_module.repository.GroupRepository;
+import kz.balaguide.course_module.repository.LessonRepository;
 import kz.balaguide.course_module.services.CourseService;
 import kz.balaguide.course_module.services.GroupService;
 import kz.balaguide.parent_module.services.ParentService;
@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,8 +44,10 @@ public class ChildServiceImpl implements ChildService {
     private final CourseService courseService;
     private final GroupService groupService;
 
+    private final LessonRepository lessonRepository;
     private final ChildRepository childRepository;
     private final GroupRepository groupRepository;
+    private final AttendanceRepository attendanceRepository;
 
     @Override
     public Page<Child> findAll(int page, int size) {
@@ -198,6 +201,32 @@ public class ChildServiceImpl implements ChildService {
             return false;
         }
     }
+
+    @Override
+    public boolean markAttendanceFromQr(Long childId, Long lessonId) {
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new ChildNotFoundException("Child not found with id: " + childId));
+
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new EntityNotFoundException("Lesson not found with id: " + lessonId));
+
+        boolean alreadyMarked = attendanceRepository.existsByChildIdAndLessonId(childId, lessonId);
+        if (alreadyMarked) {
+            return false;
+        }
+
+        Attendance attendance = Attendance.builder()
+                .child(child)
+                .lesson(lesson)
+                .attended(true)
+                .createdDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .build();
+
+        attendanceRepository.save(attendance);
+        return true;
+    }
+
 
     /**
      * Copy non-null properties from source Child to target Child.
