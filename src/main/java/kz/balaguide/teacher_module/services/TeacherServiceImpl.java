@@ -65,7 +65,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public String generateQrCodeForLesson(Long lessonId) {
-        String attendanceUrl = "https://balaguide.kz/attendance/" + lessonId; // или ваш домен
+        String attendanceUrl = "http://balaguide.cloud.netbird.kz/api/v1/attendance/" + lessonId;
         return qrCodeUtil.generateBase64QrCode(attendanceUrl);
     }
 

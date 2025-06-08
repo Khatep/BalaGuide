@@ -1,12 +1,11 @@
 package kz.balaguide.education_center_module.controllers;
 
 import jakarta.validation.Valid;
+import kz.balaguide.child_module.mappers.ChildMapper;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
+import kz.balaguide.common_module.core.dtos.responses.ChildDto;
 import kz.balaguide.common_module.core.dtos.responses.GroupDto;
-import kz.balaguide.common_module.core.entities.Course;
-import kz.balaguide.common_module.core.entities.EducationCenter;
-import kz.balaguide.common_module.core.entities.Group;
-import kz.balaguide.common_module.core.entities.ResponseMetadata;
+import kz.balaguide.common_module.core.entities.*;
 import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
 import kz.balaguide.course_module.mappers.GroupMapper;
@@ -29,6 +28,7 @@ public class EducationCenterController {
     private final EducationCenterService educationCenterService;
     private final ResponseMetadataService responseMetadataService;
     private final GroupMapper groupMapper;
+    private final ChildMapper childMapper;
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<EducationCenter>> createEducationCenter(@RequestBody @Valid EducationCenterCreateReq educationCenterCreateReq) {
@@ -49,20 +49,6 @@ public class EducationCenterController {
         return ResponseEntity.ok(courses);
     }
 
-
-    @GetMapping("/{educationCenterId}/groups2")
-    public ResponseEntity<ApiResponse<List<Group>>> getAllGroupsByEducationCenterId2(@PathVariable Long educationCenterId) {
-        List<Group> groups = educationCenterService.findAllGroupsByEducationCenterId(educationCenterId);
-
-        ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._2000);
-        ApiResponse<List<Group>> apiResponse = ApiResponse.<List<Group>>builder()
-                .responseMetadata(responseMetadata)
-                .data(groups)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
-    }
-
     @GetMapping("/{educationCenterId}/groups")
     public ResponseEntity<ApiResponse<List<GroupDto>>> getAllGroupsByEducationCenterId(
             @PathVariable Long educationCenterId) {
@@ -80,6 +66,25 @@ public class EducationCenterController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{educationCenterId}/children")
+    public ResponseEntity<ApiResponse<List<ChildDto>>> getChildrenByEducationCenter(
+            @PathVariable Long educationCenterId
+    ) {
+        List<Child> children = educationCenterService.getChildrenByEducationCenter(educationCenterId);
+        List<ChildDto> childDtos = children.stream()
+                .map(childMapper::toChildDto)
+                .toList();
+
+        ResponseMetadata metadata = responseMetadataService.findByCode(ResponseCode._2000);
+        ApiResponse<List<ChildDto>> response = ApiResponse.<List<ChildDto>>builder()
+                .responseMetadata(metadata)
+                .data(childDtos)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
 
 
     @GetMapping(DASHBOARD_URL + "/total-revenue")

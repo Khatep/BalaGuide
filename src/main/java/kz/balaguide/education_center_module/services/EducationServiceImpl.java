@@ -1,10 +1,9 @@
 package kz.balaguide.education_center_module.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import kz.balaguide.auth_module.services.AuthUserService;
-import kz.balaguide.common_module.core.entities.AuthUser;
-import kz.balaguide.common_module.core.entities.Course;
-import kz.balaguide.common_module.core.entities.EducationCenter;
-import kz.balaguide.common_module.core.entities.Group;
+import kz.balaguide.child_module.repository.ChildRepository;
+import kz.balaguide.common_module.core.entities.*;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
 import kz.balaguide.course_module.repository.GroupRepository;
 import kz.balaguide.education_center_module.dtos.*;
@@ -30,6 +29,7 @@ public class EducationServiceImpl implements EducationCenterService {
     private final EducationCenterRepository educationCenterRepository;
     private final GroupRepository groupRepository;
     private final EducationCenterMapper educationCenterMapper;
+    private final ChildRepository childRepository;
 
     /**
      * Provides a custom {@link UserDetailsService} implementation for Spring Security
@@ -160,5 +160,14 @@ public class EducationServiceImpl implements EducationCenterService {
     public List<Group> findAllGroupsByEducationCenterId(Long educationCenterId) {
         return groupRepository.findAllByEducationCenterId(educationCenterId);
     }
+
+    @Override
+    public List<Child> getChildrenByEducationCenter(Long educationCenterId) {
+        EducationCenter educationCenter = educationCenterRepository.findById(educationCenterId)
+                .orElseThrow(() -> new EntityNotFoundException("Education center not found with id: " + educationCenterId));
+
+        return childRepository.findAllByEducationCenterId(educationCenter.getId());
+    }
+
 
 }

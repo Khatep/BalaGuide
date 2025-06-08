@@ -1,5 +1,6 @@
 package kz.balaguide.education_center_module.services;
 
+import kz.balaguide.common_module.core.entities.Child;
 import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.EducationCenter;
 import kz.balaguide.common_module.core.entities.Group;
@@ -31,4 +32,7 @@ public interface EducationCenterService {
     List<Course> getCoursesByEducationCenter(Long educationalCenterId);
 
     List<Group> findAllGroupsByEducationCenterId(Long educationCenterId);
+
+
+    List<Child> getChildrenByEducationCenter(Long educationCenterId);
 }
