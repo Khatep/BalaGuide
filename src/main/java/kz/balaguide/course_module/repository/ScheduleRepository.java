@@ -11,8 +11,12 @@ import java.util.List;
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    @Query(value = """
-        SELECT s FROM Schedule s WHERE s.educationCenter.id = :educationCenterId
-        """, nativeQuery = true)
+    @Query("""
+    SELECT DISTINCT s
+    FROM Schedule s
+    JOIN Lesson l ON l.schedule = s
+    WHERE l.group.course.educationCenter.id = :educationCenterId
+    """)
     List<Schedule> findByEducationCenterId(@Param("educationCenterId") Long educationCenterId);
+
 }

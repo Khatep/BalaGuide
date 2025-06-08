@@ -65,12 +65,4 @@ public class LessonController {
                     .body("❌ Upload failed: " + e.getMessage());
         }
     }
-
-//    @GetMapping("/by-date-range")
-//    public ResponseEntity<ApiResponse<List<Lesson>>> getLessonsByDateRange(
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-//            @RequestParam Long educationCenterId) {
-//
-//    }
 }
