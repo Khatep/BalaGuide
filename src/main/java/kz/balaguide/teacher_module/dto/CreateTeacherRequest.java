@@ -1,7 +1,5 @@
 package kz.balaguide.teacher_module.dto;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import kz.balaguide.common_module.core.enums.Gender;
 

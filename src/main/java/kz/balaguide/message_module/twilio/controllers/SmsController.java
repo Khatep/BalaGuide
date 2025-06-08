@@ -18,7 +18,6 @@ public class SmsController {
     private final SmsService smsService;
     private final OtpService otpService;
 
-    // Для тестов или ручной отправки сообщений
     @PostMapping
     public ResponseEntity<String> send(@RequestParam String to, @RequestParam String body) {
         String sid = smsService.sendSms(to, body);
