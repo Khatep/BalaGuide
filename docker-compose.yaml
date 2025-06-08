@@ -70,5 +70,23 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+
+  sftp-service:
+    container_name: sftp-service-balaguide
+    build:
+      context: /home/khatep/IdeaProjects/sftp-service   # путь до проекта sftp
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8086"
+    env_file:
+      - ../sftp-service/.env
+    restart: always
+    networks:
+      - balaguide-network
+
+networks:
+  balaguide-network:
+    driver: bridge
+
 volumes:
   pgdata:
