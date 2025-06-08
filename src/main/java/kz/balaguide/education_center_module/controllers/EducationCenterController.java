@@ -2,12 +2,14 @@ package kz.balaguide.education_center_module.controllers;
 
 import jakarta.validation.Valid;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
+import kz.balaguide.common_module.core.dtos.responses.GroupDto;
 import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.EducationCenter;
 import kz.balaguide.common_module.core.entities.Group;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
+import kz.balaguide.course_module.mappers.GroupMapper;
 import kz.balaguide.education_center_module.dtos.*;
 import kz.balaguide.education_center_module.services.EducationCenterService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class EducationCenterController {
     private static final String DASHBOARD_URL = "{centerId}/dashboard";
     private final EducationCenterService educationCenterService;
     private final ResponseMetadataService responseMetadataService;
+    private final GroupMapper groupMapper;
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<EducationCenter>> createEducationCenter(@RequestBody @Valid EducationCenterCreateReq educationCenterCreateReq) {
@@ -47,8 +50,8 @@ public class EducationCenterController {
     }
 
 
-    @GetMapping("/{educationCenterId}/groups")
-    public ResponseEntity<ApiResponse<List<Group>>> getAllGroupsByEducationCenterId(@PathVariable Long educationCenterId) {
+    @GetMapping("/{educationCenterId}/groups2")
+    public ResponseEntity<ApiResponse<List<Group>>> getAllGroupsByEducationCenterId2(@PathVariable Long educationCenterId) {
         List<Group> groups = educationCenterService.findAllGroupsByEducationCenterId(educationCenterId);
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(ResponseCode._2000);
@@ -59,6 +62,25 @@ public class EducationCenterController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    @GetMapping("/{educationCenterId}/groups")
+    public ResponseEntity<ApiResponse<List<GroupDto>>> getAllGroupsByEducationCenterId(
+            @PathVariable Long educationCenterId) {
+
+        List<Group> groups = educationCenterService.findAllGroupsByEducationCenterId(educationCenterId);
+        List<GroupDto> groupDtos = groups.stream()
+                .map(groupMapper::toGroupDto)
+                .toList();
+
+        ResponseMetadata metadata = responseMetadataService.findByCode(ResponseCode._2000);
+        ApiResponse<List<GroupDto>> response = ApiResponse.<List<GroupDto>>builder()
+                .responseMetadata(metadata)
+                .data(groupDtos)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
 
     @GetMapping(DASHBOARD_URL + "/total-revenue")
     public ResponseEntity<ApiResponse<Double>> getTotalRevenue(@PathVariable Long centerId) {

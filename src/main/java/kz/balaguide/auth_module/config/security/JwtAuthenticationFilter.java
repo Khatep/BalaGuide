@@ -46,6 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         var authHeader = request.getHeader(HEADER_NAME);
         if ((authHeader == null || authHeader.isEmpty()) || !authHeader.startsWith(BEARER_PREFIX)) {
             try {
+                log.warn("Request: {}", request);
                 filterChain.doFilter(request, response);
             } catch (InsufficientAuthenticationException e) {
                 log.warn("Insufficient authentication: {}", e.getMessage());
