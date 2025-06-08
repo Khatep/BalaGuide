@@ -12,7 +12,6 @@ import kz.balaguide.course_module.dto.EnrollmentActionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -140,7 +139,6 @@ public class ChildController {
 
         ResponseMetadata responseMetadata = responseMetadataService.findByCode(
                 ResponseCode._1000
-                // например: 3000 = "Посещение успешно", 3001 = "Уже отмечено"
         );
 
         ApiResponse<Boolean> apiResponse = ApiResponse.<Boolean>builder()
