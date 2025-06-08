@@ -128,14 +128,13 @@
             <version>3.2.0</version>
         </dependency>
 
-        <!-- OPEN API -->
-        <!--
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.2.0</version>
-        </dependency>
-        -->
+<!--        &lt;!&ndash; OPEN API &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springdoc</groupId>-->
+<!--            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>-->
+<!--            <version>2.5.0</version>-->
+<!--        </dependency>-->
+
 
         <!-- POSTGRESQL -->
         <dependency>

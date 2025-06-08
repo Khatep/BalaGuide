@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface LessonService {
     List<Lesson> findByGroupId(Long groupId);
+
+    Lesson getLessonById(Long lessonId);
 }

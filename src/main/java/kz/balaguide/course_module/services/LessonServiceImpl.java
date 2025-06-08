@@ -18,4 +18,9 @@ public class LessonServiceImpl implements LessonService{
         return lessonRepository.findAllByGroupId(groupId);
     }
 
+    @Override
+    public Lesson getLessonById(Long lessonId) {
+        return lessonRepository.getLessonById(lessonId);
+    }
+
 }
