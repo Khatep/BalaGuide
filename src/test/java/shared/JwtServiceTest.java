@@ -2,6 +2,7 @@ package shared;
 
 import kz.balaguide.auth_module.dtos.JwtResponseDto;
 import kz.balaguide.auth_module.services.JwtService;
+import kz.balaguide.auth_module.services.RedisService;
 import kz.balaguide.common_module.core.entities.AuthUser;
 import kz.balaguide.common_module.core.enums.Role;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,12 +16,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class JwtServiceTest {
 
     private JwtService jwtService;
-
+    private RedisService redisService;
     private final String signingKey = Base64.getEncoder().encodeToString("test-secret-key-1234567890123456".getBytes());
 
     @BeforeEach
     void setUp() {
-        jwtService = new JwtService();
+        jwtService = new JwtService(redisService);
         ReflectionTestUtils.setField(jwtService, "jwtSigningKey", signingKey);
         ReflectionTestUtils.setField(jwtService, "tokeLifetimeMillis", 3600000L); // 1 час
     }

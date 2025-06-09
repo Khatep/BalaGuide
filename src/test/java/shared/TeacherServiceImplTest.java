@@ -5,10 +5,12 @@ import kz.balaguide.common_module.core.entities.AuthUser;
 import kz.balaguide.common_module.core.entities.Teacher;
 import kz.balaguide.common_module.core.enums.Gender;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
+import kz.balaguide.education_center_module.repository.EducationCenterRepository;
 import kz.balaguide.teacher_module.dto.CreateTeacherRequest;
 import kz.balaguide.teacher_module.mappers.TeacherMapper;
 import kz.balaguide.teacher_module.repositories.TeacherRepository;
 import kz.balaguide.teacher_module.services.TeacherServiceImpl;
+import kz.balaguide.teacher_module.utils.QrCodeUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +27,8 @@ class TeacherServiceImplTest {
     private TeacherMapper teacherMapper;
     private AuthUserService authUserService;
     private TeacherServiceImpl teacherService;
+    private QrCodeUtil qrCodeUtil;
+    private EducationCenterRepository educationCenterRepository;
 
     @BeforeEach
     void setUp() {
@@ -32,7 +36,7 @@ class TeacherServiceImplTest {
         teacherMapper = mock(TeacherMapper.class);
         authUserService = mock(AuthUserService.class);
 
-        teacherService = new TeacherServiceImpl(teacherRepository, teacherMapper, authUserService);
+        teacherService = new TeacherServiceImpl(teacherRepository, educationCenterRepository, teacherMapper, qrCodeUtil, authUserService);
     }
 
     @Test

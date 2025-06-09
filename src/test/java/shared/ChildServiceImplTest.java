@@ -9,7 +9,9 @@ import kz.balaguide.common_module.core.enums.ResponseCode;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ChildrenNotFoundException;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.ChildNotFoundException;
 import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
+import kz.balaguide.course_module.repository.AttendanceRepository;
 import kz.balaguide.course_module.repository.GroupRepository;
+import kz.balaguide.course_module.repository.LessonRepository;
 import kz.balaguide.course_module.services.CourseService;
 import kz.balaguide.course_module.services.GroupService;
 import kz.balaguide.parent_module.services.ParentService;
@@ -35,6 +37,9 @@ class ChildServiceImplTest {
     private GroupService groupService;
     private ChildRepository childRepository;
     private GroupRepository groupRepository;
+    private LessonRepository lessonRepository;
+    private AttendanceRepository attendanceRepository;
+
 
     private ChildServiceImpl childService;
 
@@ -50,7 +55,8 @@ class ChildServiceImplTest {
 
         childService = new ChildServiceImpl(
             responseMetadataService, parentService, paymentService,
-            courseService, groupService, childRepository, groupRepository
+            courseService, groupService, lessonRepository, childRepository, groupRepository,
+            attendanceRepository
         );
     }
 

@@ -1,10 +1,12 @@
 package shared;
 
 import kz.balaguide.auth_module.services.AuthUserService;
+import kz.balaguide.child_module.repository.ChildRepository;
 import kz.balaguide.common_module.core.entities.AuthUser;
 import kz.balaguide.common_module.core.entities.Course;
 import kz.balaguide.common_module.core.entities.EducationCenter;
 import kz.balaguide.common_module.core.exceptions.buisnesslogic.alreadyexists.UserAlreadyExistsException;
+import kz.balaguide.course_module.repository.GroupRepository;
 import kz.balaguide.education_center_module.dtos.*;
 import kz.balaguide.education_center_module.mappers.EducationCenterMapper;
 import kz.balaguide.education_center_module.repository.EducationCenterRepository;
@@ -23,8 +25,9 @@ class EducationServiceImplTest {
     private EducationCenterRepository educationCenterRepository;
     private AuthUserService authUserService;
     private EducationCenterMapper educationCenterMapper;
-
+    private GroupRepository groupRepository;
     private EducationServiceImpl educationService;
+    private ChildRepository childRepository;
 
     @BeforeEach
     void setup() {
@@ -32,7 +35,8 @@ class EducationServiceImplTest {
         authUserService = mock(AuthUserService.class);
         educationCenterMapper = mock(EducationCenterMapper.class);
 
-        educationService = new EducationServiceImpl(authUserService, educationCenterRepository, educationCenterMapper);
+        educationService = new EducationServiceImpl(authUserService, educationCenterRepository, groupRepository,
+                educationCenterMapper, childRepository);
     }
 
     @Test
