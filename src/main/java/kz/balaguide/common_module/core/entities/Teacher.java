@@ -95,6 +95,13 @@ public class Teacher extends AbstractEntity implements Comparable<Teacher> {
     @JsonIgnore
     private List<Course> myCourses;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "education_center_id", nullable = false)
+    @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private EducationCenter educationCenter;
+
+
     @Override
     public int compareTo(Teacher o) {
         return getId().compareTo(o.getId());

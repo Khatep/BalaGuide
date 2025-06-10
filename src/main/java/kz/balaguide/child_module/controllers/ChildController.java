@@ -12,7 +12,6 @@ import kz.balaguide.course_module.dto.EnrollmentActionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -130,4 +129,24 @@ public class ChildController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    @PostMapping("/attendance/scan")
+    public ResponseEntity<ApiResponse<Boolean>> scanQrAndMarkAttendance(
+            @RequestParam Long childId,
+            @RequestParam Long lessonId
+    ) {
+        boolean isMarked = childService.markAttendanceFromQr(childId, lessonId);
+
+        ResponseMetadata responseMetadata = responseMetadataService.findByCode(
+                ResponseCode._1000
+        );
+
+        ApiResponse<Boolean> apiResponse = ApiResponse.<Boolean>builder()
+                .responseMetadata(responseMetadata)
+                .data(isMarked)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
 }

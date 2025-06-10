@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import kz.balaguide.common_module.core.dtos.responses.ApiResponse;
 import kz.balaguide.common_module.core.entities.ResponseMetadata;
 import kz.balaguide.common_module.core.enums.ResponseCode;
+import kz.balaguide.common_module.core.exceptions.buisnesslogic.notfound.CourseNotFoundException;
 import kz.balaguide.common_module.services.responsemetadata.ResponseMetadataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/courses")
@@ -38,6 +40,21 @@ public class CourseController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    @GetMapping("/{courseId}")
+    public ResponseEntity<Course> getCourseById(@PathVariable Long courseId) {
+        Optional<Course> courseOpt = courseService.findCourseById(courseId);
+        Course course = null;
+        if (courseOpt.isPresent()) {
+            course = courseOpt.get();
+        }
+
+        if (course == null) {
+            throw new CourseNotFoundException("Course with id " + courseId + " not found");
+        }
+
+        return ResponseEntity.ok(course);
     }
 
     @PutMapping("/{courseId}")

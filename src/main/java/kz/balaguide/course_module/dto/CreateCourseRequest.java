@@ -36,5 +36,8 @@ public record CreateCourseRequest(
 
         @NotNull(message = "Number of lessons must not be null")
         @Positive(message = "Number of lessons must be greater than zero")
-        Integer numberOfLessons
+        Integer numberOfLessons,
+
+        @NotNull(message = "Durability by weeks must not be null")
+        Integer durabilityByWeeks
 ) {}
