@@ -21,45 +21,32 @@ public class KafkaConfiguration {
     @Value("${spring.kafka.bootstrap-servers}")
     private String kafkaBootstrapServers;
 
-    /**
-     * Creates a new Kafka topic named "receipt" with a single partition and a replication factor of 1.
-     *
-     * <p>This topic is used for publishing receipt-related messages.
-     *
-     * @return a {@link NewTopic} object representing the Kafka topic "receipt"
-     */
     @Bean
     public NewTopic receiptTopic() {
         return new NewTopic("receipt", 1, (short) 1);
     }
 
-    /**
-     * Configures and provides a {@link ProducerFactory} for producing Kafka messages
-     * with keys as {@link String} and values as {@link Receipt}.
-     *
-     * <p>The configuration properties specify the Kafka server address, the key serializer,
-     * and the JSON serializer for the message values.
-     *
-     * @return a {@link ProducerFactory} configured for sending receipt messages to Kafka
-     */
     @Bean
     public ProducerFactory<String, Receipt> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
+        // Для "exactly-once"
+        configProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true); // включаем идемпотентность
+        configProps.put(ProducerConfig.ACKS_CONFIG, "all");               // ждём подтверждения от всех реплик
+        configProps.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE); // бесконечные повторные попытки
+        configProps.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5); // безопасное значение для EOS
+
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
-    /**
-     * Provides a {@link KafkaTemplate} for sending messages to Kafka, using the configured producer factory.
-     *
-     * <p>This template is used to send receipt-related messages to the "receipt" topic.
-     *
-     * @return a {@link KafkaTemplate} for publishing receipt messages
-     */
     @Bean
     public KafkaTemplate<String, Receipt> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+        KafkaTemplate<String, Receipt> kafkaTemplate = new KafkaTemplate<>(producerFactory());
+        kafkaTemplate.setTransactionIdPrefix("receipt-tx-"); // префикс для транзакций
+        return kafkaTemplate;
     }
+
 }

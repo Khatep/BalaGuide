@@ -16,4 +16,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     @Query("SELECT new kz.balaguide.course_module.dto.CourseDto(c.name, c.price) FROM Course c WHERE c.id = :courseId")
     CourseDto findCoursePriceAndNameById(@Param("courseId") Long courseId);
+
+    @Query("SELECT c FROM Course c JOIN FETCH c.groups")
+    List<Course> findAllWithGroups();
 }
